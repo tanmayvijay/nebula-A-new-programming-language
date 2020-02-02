@@ -1,0 +1,158 @@
+# // nebula //
+
+
+# Language Rules:
+new lines terminate a statement
+white spaces are ignored
+# snake_case is used in code, other cases will also work ... just ignore this rule
+
+
+
+
+
+# Comments:
+$ this is a comment in nebula
+$$ this
+    is
+    a
+    multiline
+    comment
+    in 
+    nebula $$
+
+# terminator:
+'\n'
+
+# variables:
+type var_name
+type var_name = value
+
+
+# types:
+string       integer       decimal      bool
+
+# identifiers:
+naming rule: [a-zA-Z_][a-zA-Z0-9_]*
+
+# values
+string: "something"     ""      "\n"        "c"
+
+
+# Loops:
+for type i from 1 to 10{
+
+}
+
+for type i in list{
+
+}
+
+while conditional_expr{
+
+}
+
+repeat{
+
+} until reverse_conditional_expr
+
+
+
+# blocks:
+block_signature{
+
+}
+
+block_signature
+{
+
+}
+
+
+# Expressions:
+id = unary_op expression
+id = expression binary_op expression
+id = conditional_expr && true_case || false_case    # ternary_operator
+
+# unary_operators:
+! - NOT
+~ - NOT
+- - minus
+
+# binary_operators:
++
+-
+*
+/
+%
+^
+
+# expressions:
+(expression) op (expression op expression)
+expression: 
+x + y
+x - y
+x * y
+x / y
+x ^ y
+x++
+++x
+x--
+--x
+
+x += y
+x -= y
+x *= y
+x /= y
+x %= y
+x ^= y
+
+
+
+# conditional_expr:
+x < y       x <= y
+x > y       x >= y
+x == y      x != y
+
+
+
+# Operator Precedence: -- keep it like C
+()
+^
+/   *
+%
++   -
+
+
+
+# input methods:
+scan x # scans and assigns based on data_type of x
+
+# output method
+display x, y, z ... each separated by a space ... automatic:('\n') at end
+
+
+# Functions or Methods
+fun func_name (type param, type param) returns return_type return_var_name{
+    ...
+    compute return_var_name here
+    its automatically returned
+    ...
+}
+
+
+# classes:
+class Class_Name inherits [list of classes to inherit from] {
+    
+    type var_name
+    type var_name = value
+
+
+    fun init(){
+        # constructor
+    }
+
+    # other functions
+
+    # try to make the order of functions irrelevent
+    
+}
