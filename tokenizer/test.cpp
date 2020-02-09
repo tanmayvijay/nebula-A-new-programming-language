@@ -1,27 +1,18 @@
-//token data
-#include<regex>
-#include "token_type.h"
+#include<iostream>
+#include<string>
+
+#include "tokenizer.hpp"
 
 using namespace std;
+int main(){
+	string s ="type var_name = \"value\"\n";
+		s += "int x = 234\n";
+		s += "print \"Hello World!\"\n";
+		
+	tokenizer tz(s);
 
-
-class token_data{
-	basic_regex<char> pattern;
-	token_type type;
+	while(tz.has_next_token()){
+		cout << tz.next_token().get_token();
+	}
 	
-	public:
-		token_data(basic_regex<char> pattern, token_type type){
-			this->pattern = pattern;
-			this->type = type;
-		}
-		
-		basic_regex<char> get_pattern(){
-			return pattern;
-		}
-		
-		token_type get_type(){
-			return type;
-		}
-};
-
-
+}

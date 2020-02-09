@@ -16,9 +16,18 @@ class token{
 	token_type type;
 	
 	public:
+		token(){
+			this->token_ = "";
+			this->type = TOKEN_;
+		}
+
 		token(string token_, token_type type){
 			this->token_ = token_;
 			this->type = type;
+		}
+		
+		bool exists(){
+			return this->token_ != "";
 		}
 		
 		string get_token(){
@@ -28,6 +37,8 @@ class token{
 		token_type get_token_type(){
 			return type;
 		}
+		
+		
 	
 };
 
