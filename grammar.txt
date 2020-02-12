@@ -142,6 +142,9 @@ fun func_name (type param, type param) returns return_type return_var_name{
     ...
 }
 
+# Function or Method invocation
+return_type var_name = func_name(params)
+
 
 # classes:
 class Class_Name inherits [list of classes to inherit from] {
