@@ -24,8 +24,8 @@ $$ this
 '\n'
 
 # variables declaration and initialization:
-type var_name
-type var_name = value
+var type var_name
+var type var_name = value
 
 
 # types:

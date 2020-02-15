@@ -1,45 +1,40 @@
 // token
 
-#ifndef TOKEN
-#define TOKEN
+#ifndef TOKEN_H
+#define TOKEN_H
 
 
 #include<string>
 
 #include "token_type.hpp"
 
-using namespace std;
 
-
-class token{
-	string token_;
-	token_type type;
+class TOKEN{
+	std::string token;
+	TOKEN_TYPE type;
 	
 	public:
-		token(){
-			this->token_ = "";
+		TOKEN(){
+			this->token = "";
 			this->type = TOKEN_;
 		}
 
-		token(string token_, token_type type){
-			this->token_ = token_;
+		TOKEN(std::string token, TOKEN_TYPE type){
+			this->token = token;
 			this->type = type;
 		}
 		
 		bool exists(){
-			return this->token_ != "";
+			return this->token != "";
 		}
 		
-		string get_token(){
-			return token_;
+		std::string get_token(){
+			return token;
 		}
 		
-		token_type get_token_type(){
+		TOKEN_TYPE get_token_type(){
 			return type;
 		}
-		
-		
-	
 };
 
 #endif

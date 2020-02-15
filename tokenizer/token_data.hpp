@@ -1,6 +1,6 @@
 //token data
-#ifndef TOKEN_DATA
-#define TOKEN_DATA
+#ifndef TOKEN_DATA_H
+#define TOKEN_DATA_H
 
 #include<regex>
 
@@ -9,12 +9,12 @@
 using namespace std;
 
 
-class token_data{
+class TOKEN_DATA{
 	basic_regex<char> pattern;
-	token_type type;
+	TOKEN_TYPE type;
 	
 	public:
-		token_data(basic_regex<char> pattern, token_type type){
+		TOKEN_DATA(basic_regex<char> pattern, TOKEN_TYPE type){
 			this->pattern = pattern;
 			this->type = type;
 		}
@@ -23,7 +23,7 @@ class token_data{
 			return pattern;
 		}
 		
-		token_type get_type(){
+		TOKEN_TYPE get_type(){
 			return type;
 		}
 };

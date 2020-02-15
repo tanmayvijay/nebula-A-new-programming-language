@@ -2,31 +2,31 @@
 #ifndef TOKEN_TYPE_H
 #define TOKEN_TYPE_H
 
-enum token_type {
+enum TOKEN_TYPE {
 	
 	// empty token
-	EMPTY,
+	EMPTY_,
 	
 	// single length tokens
 	TOKEN_,
 
 	// comments
-	COMMENT,
+	COMMENT_,
 
 	// any name not a keyword
-	IDENTIFIER,
+	IDENTIFIER_,
 
 	// numbers
-	INTEGER_LITERAL,
+	INTEGER_LITERAL_,
 
 	// floats and doubles
-	DECIMAL,
+	DECIMAL_LITERAL_,
 
 	// enclosed in braces, can be anything "Hey", "1234", "Hey12Hello 12346"
-	STRING_LITERAL,
+	STRING_LITERAL_,
 
 	// boolean ones
-	BOOLEAN
+	BOOLEAN_LITERAL_
 
 	
 };

@@ -1,5 +1,5 @@
-#ifndef UTILS
-#define UTILS
+#ifndef UTILS_H
+#define UTILS_H
 
 #include<string>
 #include<vector>
@@ -7,7 +7,7 @@
 
 
 // trim leading and trailing spaces from a string
-std::string trim(const std::string& str, const std::string char_to_trim=" \t\n\s"){
+std::string _trim_(const std::string& str, const std::string char_to_trim=" \t\n"){
 	const auto str_begin = str.find_first_not_of(char_to_trim);
 	if(str_begin == std::string::npos)
 		return "";
@@ -19,8 +19,8 @@ std::string trim(const std::string& str, const std::string char_to_trim=" \t\n\s
 }
 
 
-// slit string based on a delimiter
-std::vector<std::string> rex_split(const std::string &s, const std::string& rgx_str = "\\s+"){
+// split a string based on a delimiter
+std::vector<std::string> _rex_split_(const std::string &s, const std::string& rgx_str = "\\s+"){
 	std::vector<std::string> elems;
 	std::basic_regex<char> rgx (rgx_str);
 	

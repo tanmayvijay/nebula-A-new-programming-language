@@ -1,15 +1,17 @@
-#ifndef PARSER
-#define PARSER
+#ifndef PARSER_H
+#define PARSER_H
 
-#include "../blocks.hpp"
+#include<string>
+
+#include "../block/block.hpp"
 #include "../tokenizer/tokenizer.hpp"
 
 template <class T>
-class parser{
+class PARSER{
 	
-	virtual bool should_parse(string line) = 0;
+	virtual bool parsable(std::string line) = 0;
 	
-	virtual T parse(block* super_block, tokenizer tokenizer_) = 0;
+	virtual T parse(BLOCK* super_block, TOKENIZER tokenizer) = 0;
 	
 };
 

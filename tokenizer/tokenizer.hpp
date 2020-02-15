@@ -14,30 +14,29 @@
 
 #include "../utils/utils.hpp"
 
-using namespace std;
 
-class tokenizer{
-	std::vector<token_data> token_datas;
+class TOKENIZER{
+	std::vector<TOKEN_DATA> token_datas;
 	std::string str;
-	token last_token;
+	TOKEN last_token;
 	bool push_back_;
 	
 	public:
-		tokenizer(std::string str){
+		TOKENIZER(std::string str){
 			this->str = str;
 			
-			token_datas.push_back( token_data( std::basic_regex<char>("^(\".*\")"), STRING_LITERAL ) );
-			token_datas.push_back( token_data( std::basic_regex<char>("^([a-zA-Z_][a-zA-Z_0-9]*)"), IDENTIFIER ) );
-			token_datas.push_back( token_data( std::basic_regex<char>("^((-)?[0-9]+)"), INTEGER_LITERAL ) );
+			token_datas.push_back( TOKEN_DATA( std::basic_regex<char>("^(\".*\")"), STRING_LITERAL_ ) );
+			token_datas.push_back( TOKEN_DATA( std::basic_regex<char>("^([a-zA-Z_][a-zA-Z_0-9]*)"), IDENTIFIER_ ) );
+			token_datas.push_back( TOKEN_DATA( std::basic_regex<char>("^((-)?[0-9]+)"), INTEGER_LITERAL_ ) );
 			
 			
 			for(std::string s: {"=", "\\(", "\\)", "\\.", "\\,"})
-				token_datas.push_back(token_data(std::basic_regex<char>("^(" + s + ")"), TOKEN_));
+				token_datas.push_back(TOKEN_DATA(std::basic_regex<char>("^(" + s + ")"), TOKEN_));
 			
 		}
 		
-		token next_token(){
-			str = trim(str);
+		TOKEN next_token(){
+			str = _trim_(str);
 			
 			if (push_back_){
 				push_back_ = false;
@@ -45,19 +44,19 @@ class tokenizer{
 			}
 			
 			if(str == "")
-				return last_token = token("", EMPTY);
+				return last_token = TOKEN("", EMPTY_);
 				
-			for(token_data td: token_datas){
+			for(TOKEN_DATA td: token_datas){
 				std::smatch matched_value;
 				if ( regex_search(str, matched_value, td.get_pattern() ) ){
-					std::string s = trim( matched_value.str() );
+					std::string s = _trim_( matched_value.str() );
 					
 					str = regex_replace(str, basic_regex<char>(s), "", std::regex_constants::format_first_only);
 					
-					if(td.get_type() == STRING_LITERAL)
-						return last_token = token(s.substr(1, s.length()-2), STRING_LITERAL);
+					if(td.get_type() == STRING_LITERAL_)
+						return last_token = TOKEN(s.substr(1, s.length()-2), STRING_LITERAL_);
 					else
-						return last_token = token(s, td.get_type() );
+						return last_token = TOKEN(s, td.get_type() );
 				}
 			}
 			
