@@ -12,7 +12,7 @@
 #include "../var_type.hpp"
 #include "../tokenizer/token.hpp"
 #include "../tokenizer/token_type.hpp"
-
+#include "../variable.hpp"
 
 
 class VARIABLE_PARSER : public PARSER<BLOCK*>{
@@ -48,6 +48,13 @@ class VARIABLE_PARSER : public PARSER<BLOCK*>{
 		std::string value;
 		value = value_token.get_token();
 		
+		if (value_token.get_token_type() == IDENTIFIER_){
+			value = super_block->get_variable(value_token.get_token())->get_value();
+		}
+		
+		VARIABLE new_variable = VARIABLE(type, name, value);
+		
+		super_block->add_variable(new_variable);
 		
 		
 		
