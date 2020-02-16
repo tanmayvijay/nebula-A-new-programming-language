@@ -35,6 +35,12 @@ class BLOCK{
 			return this->super_block;
 		}
 		
+		
+		std::vector<BLOCK*> get_sub_blocks(){
+			return sub_blocks;
+		}
+		
+		
 		void add_variable(VARIABLE& variable){
 			variables.push_back(&variable);
 		}

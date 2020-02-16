@@ -39,6 +39,9 @@ class VARIABLE_PARSER : public PARSER<BLOCK*>{
 		transform(type_.begin(), type_.end(), type_.begin(), ::toupper);
 		VAR_TYPE type = var_type_mapping.find(type_)->second;
 		
+		if (type == VOID_)
+			throw std::exception("Void is not a variable type.");
+		
 		std::string name = tokenizer.next_token().get_token();
 		
 		tokenizer.next_token();
