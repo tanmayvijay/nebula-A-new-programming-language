@@ -1,2 +1,3 @@
-print "Hello World, Nebula here!"
-
+display "Hello World, Nebula here!\n"
+string x = "Hello"
+display x
