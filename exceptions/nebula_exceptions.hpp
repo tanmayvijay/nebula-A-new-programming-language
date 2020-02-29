@@ -1,0 +1,5 @@
+#ifndef NEBULA_EXCEPTIONS_H
+#define NEBULA_EXCEPTIONS_H
+
+#endif
+

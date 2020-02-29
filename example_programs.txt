@@ -1,0 +1,60 @@
+$ hello world program:
+display "hello, World!"
+
+
+$ variables:
+string var1 = "hello"
+string var2
+var2 = " world"
+integer x
+x = 10
+integer y = 20
+integer z = x + y - x*10 + y/x
+x = x/z*20+15-y
+
+display var1, var2, "Cool", 1234, 123.456, True
+
+
+
+$ Conditional
+
+bool x = True
+bool y = !x
+
+integer a = 10
+integer b = 20
+bool z = (a > b && b != 20) || a == b/10
+
+display x, y, a, b, z
+
+
+
+$ If Statements
+integer a = 10
+integer b = 20
+
+if (a > b && b != 20) || a == b/10{
+display a + b
+}
+
+
+
+$ for loop:
+for i from 3 to 15{
+scan x
+display x
+}
+
+
+$ while loop
+
+integer i = 10
+while i > 5{
+x = i*30
+display x
+}
+
+
+
+
+id = (operator)? ((id|number) (operator))+
