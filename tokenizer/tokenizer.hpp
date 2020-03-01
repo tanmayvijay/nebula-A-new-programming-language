@@ -16,6 +16,8 @@ enum TokenType {
 		_OPERATOR_LITERAL_,
 		_OPEN_BRACKET_LITERAL_,
 		_CLOSE_BRACKET_LITERAL_,
+		_OPEN_PARENTHESIS_LITERAL_,
+		_CLOSE_PARENTHESIS_LITERAL_,
 		_OTHER_TOKEN_LITERAL_
 	};
 	
@@ -99,6 +101,13 @@ class Tokenizer{
 				TokenPattern(_CLOSE_BRACKET_LITERAL_, "^(\\))")
 			);
 			
+			this->patterns.push_back(
+				TokenPattern(_OPEN_PARENTHESIS_LITERAL_, "^(\\{)")
+			);
+			
+			this->patterns.push_back(
+				TokenPattern(_CLOSE_PARENTHESIS_LITERAL_, "^(\\})")
+			);
 			
 			std::string operators[] = {"=", "\\+", "-", "\\*", "/", "%", "\\^"};
 			
@@ -107,14 +116,14 @@ class Tokenizer{
 					TokenPattern(_OPERATOR_LITERAL_, "^(" + op + ")")
 				);
 			}
-//			
-//			std::string other_tokens[] = {"\\.", ","};
-//			
-//			for (std::string ot : other_tokens){
-//				this->patterns.push_back(
-//					TokenPattern(_OTHER_TOKEN_LITERAL_, "^(" + ot + ")")
-//				);
-//			}
+			
+			std::string other_tokens[] = {"\\.", ","};
+			
+			for (std::string ot : other_tokens){
+				this->patterns.push_back(
+					TokenPattern(_OTHER_TOKEN_LITERAL_, "^(" + ot + ")")
+				);
+			}
 
 			
 		}
@@ -144,10 +153,8 @@ class Tokenizer{
 						temp_token_data = matched_value[1].str();
 						temp_token_type = pattern.get_pattern_type();
 						
-						std::cout << temp_token_type << " - " << temp_token_data << std::endl;
 //						std::string temp_line;
 //						std::regex_replace(std::back_inserter(temp_line), line.begin(), line.end(), std::basic_regex<char>(temp_token_data), "", std::regex_constants::format_first_only);
-//						
 //						line = temp_line;
 
 						line = line.substr(temp_token_data.length());
