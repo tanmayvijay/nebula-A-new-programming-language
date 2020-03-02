@@ -16,8 +16,24 @@ int main(int argc, char* argv[]){
 	
 	std::ifstream input_file(file_name);
 	
-	queue<std::vector<Token> > program_tokens = tokenizing_helper(input_file);
+	std::queue<std::vector<Token> > program_tokens = tokenizing_helper(input_file);
 	Block program_block = parsing_helper(program_tokens);
 	
+//	parser_tests
+//	for(Element* e : program_block.get_elements()){
+//		if (!e) std::cout << "NULL\n";
+//	}
+	
+//	tokenizer tests
+//	while(!program_tokens.empty()){
+//		std::vector<Token> t = program_tokens.front();
+//		program_tokens.pop();
+//		
+//		for(Token x: t){
+//			std::cout << x.get_token_data() << std::endl;
+//		}
+//		std::cout << std::endl;
+//	}
+		
 	return 0;
 }

@@ -4,18 +4,21 @@
 #include<vector>
 #include<string>
 #include<queue>
+#include<fstream>
 
 #include "tokenizer/tokenizer.hpp"
 
-queue<std::vector<Token> > tokenizing_helper(std::ifstream input_file){
-	queue<std::vector<Token> > program_tokens;
+std::queue<std::vector<Token> > tokenizing_helper(std::ifstream& input_file){
+	std::queue<std::vector<Token> > program_tokens;
 	std::string line;
 
 	Tokenizer tokenizer;
 	
 	while(std::getline(input_file, line)){
-		std::vector<Token> line_tokens = tokenizer.tokenize(line);
-		program_tokens.push(line_tokens);
+		if (line.length()){
+			std::vector<Token> line_tokens = tokenizer.tokenize(line);
+			program_tokens.push(line_tokens);
+		}
 	}
 	
 	return program_tokens;
