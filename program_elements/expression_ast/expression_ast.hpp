@@ -2,7 +2,11 @@
 #define EXPRESSION_H
 
 #include<string>
+#include<iostream>
+#include<map>
+
 #include "../variable/variable.hpp"
+#include "../../tokenizer/tokenizer.hpp"
 
 
 enum NodeType{
@@ -11,12 +15,22 @@ enum NodeType{
 };
 
 
-class ExpressionAST{
+class ExpressionAST {
 	NodeType type;
+	Token node_data = Token(_OTHER_TOKEN_LITERAL_, "");
 	
 	public:
-		ExpressionAST(NodeType type){
+		ExpressionAST(NodeType type, Token& node_data){
 			this->type = type;
+			this->node_data = node_data;
+		}
+		
+		NodeType get_node_type(){
+			return this->type;
+		}
+		
+		Token get_node_data(){
+			return this->node_data;
 		}
 		
 		virtual void _repr_() = 0;
@@ -29,37 +43,43 @@ enum OperatorType{
 	_UNARY_OPERATOR_
 };
 
-enum Operator{
-	_PLUS_,
-	_MINUS_,
-	_MULTIPLY_,
-	_DIVIDE_,
+
+enum OperatorPrecedence{
+	_PLUS_MINUS_,
+	_MULTIPLY_DIVIDE_,
 	_MODULUS_,
-	_POWER_,
+	_BRACKET_
 };
 
+std::map<std::string, OperatorPrecedence> operator_precendence_mapping {
+			{"+", _PLUS_MINUS_},
+			{"-", _PLUS_MINUS_},
+			{"*", _MULTIPLY_DIVIDE_},
+			{"/", _MULTIPLY_DIVIDE_},
+			{"%", _MODULUS_},
+			{"(", _BRACKET_}
+};
+
+
+
+
 class OperatorNode : public ExpressionAST{
-	ExpressionAST* left_node;
-	ExpressionAST* right_node;
+	ExpressionAST* left_node = NULL;
+	ExpressionAST* right_node = NULL;
 	
-	OperatorType operator_type; // binary or unary
+	OperatorPrecedence precedence;
 	
-	Operator op; // Actual operator
+//	OperatorType operator_type; // binary or unary
 	
 	public:
-		OperatorNode(OperatorType operator_type, Opreator op) : ExpressionAST(_OPERATOR_NODE_){
-			this->operator_type = operator_type;
-			this->op = op;
+		OperatorNode(Token& node_data) : ExpressionAST(_OPERATOR_NODE_, node_data){
+			this->precedence = operator_precendence_mapping.find(node_data.get_token_data())->second;
 		}
 		
-		OperatorType get_operator_type(){
-			return this->operator_type;
+		OperatorPrecedence get_operator_precedence(){
+			return this->precedence;
 		}
-		
-		Operator get_operator(){
-			return this->op;
-		}
-		
+
 		
 		ExpressionAST* get_left_node(){
 			return this->left_node;
@@ -79,31 +99,28 @@ class OperatorNode : public ExpressionAST{
 		
 		
 		void _repr_(){
+			std::cout << "[";
+			
 			this->left_node->_repr_();
 			
-			std::cout << " " << 
+			std::cout << " " << this->get_node_data().get_token_data() << " ";
 			
 			this->right_node->_repr_();
+			
+			std::cout << "] ";
 		}
 			
 };
 
 
 class OperandNode : public ExpressionAST{
-	ValueHolder* value_holder;
-	
 	public:
-		OperandNode(ValueHolder* value_holder) : ExpressionAST(_OPERAND_NODE_){
-			this->value_holder = value_holder
+		OperandNode(Token& node_data) : ExpressionAST(_OPERAND_NODE_, node_data){
+			
 		}
-		
-		ValueHolder* get_value_holder(){
-			return this->get_value_holder;
-		}
-		
 		
 		void _repr_(){
-			std::cout << " " << this->value_holder->get_value(); 
+			std::cout << this->get_node_data().get_token_data();
 		}
 		
 	

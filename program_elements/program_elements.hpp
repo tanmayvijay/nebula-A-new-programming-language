@@ -14,13 +14,15 @@ class Element{
 	public:
 
 		virtual void run() = 0;
+		virtual void _repr_() = 0;
+
 };
 
 /////////////////////////////////////////////////
 
 class Block : public Element{
-	std::vector<Element*> sub_elements;
-	std::vector<Variable*> variables; // added while executing program
+	std::vector<Element*>* sub_elements;
+	std::vector<Variable*>* variables; // added while executing program
 	Block* super_block = NULL;
 	
 	public:
@@ -28,12 +30,12 @@ class Block : public Element{
 			this->super_block = super_block;
 		}
 		
-		Block(std::vector<Element*> sub_elements, Block* super_block = NULL){
+		Block(std::vector<Element*>* sub_elements, Block* super_block = NULL){
 			this->super_block = super_block;
 			this->sub_elements = sub_elements;
 		}
 		
-		std::vector<Element*> get_elements(){
+		std::vector<Element*>* get_elements(){
 			return this->sub_elements;
 		}
 		
@@ -46,7 +48,7 @@ class Block : public Element{
 //		}
 		
 		void add_variable(Variable* variable){ // used while executing program
-			this->variables.push_back(variable);
+			this->variables->push_back(variable);
 		}
 		
 		Block* get_super_block(){
@@ -56,6 +58,15 @@ class Block : public Element{
 		// implement run
 		void run(){
 			std::cout << "Inside block" << std::endl;
+		}
+		
+		void _repr_(){
+			std::cout << std::endl << "------- BLOCK START -------" << std::endl;
+			for(Element* e: *sub_elements){
+				e->_repr_();
+			}
+			std::cout << std::endl << "------- BLOCK END -------" << std::endl;
+
 		}
 		
 		// implement find_variable
@@ -74,6 +85,7 @@ class Statement : public Element{
 			return this->super_block;
 		}
 		
+		// implement _repr_() or leave it
 		
 		// implement run -- or leave it abstract
 		
@@ -84,16 +96,22 @@ class Statement : public Element{
 //////////////////////////////////////////////////
 
 // those statements in which only an expression is there. like shell expressions.
-class SimpleStatement : public Statement{
+class ExpressionStatement : public Statement{
 	ExpressionAST* expression_ast;
 	
 	public:
-		SimpleStatement(Block* super_block, ExpressionAST* expression_ast) : Statement(super_block){
+		ExpressionStatement(Block* super_block, ExpressionAST* expression_ast) : Statement(super_block){
 			this->expression_ast = expression_ast;
 		}
 		
 		virtual void run(){ // implement this
-			std::cout << "Inside Simple Statement run" << std::endl;
+			std::cout << "Inside Expression Statement run" << std::endl;
+		}
+		
+		void _repr_(){
+			std::cout << " ::: ";
+			expression_ast->_repr_();
+			std::cout << " :::" << std::endl;
 		}
 		
 };
@@ -110,37 +128,53 @@ class SimpleStatement : public Statement{
 
 
 class VariableDeclarationStatement : public Statement{
-	VariableType type;
+	ValueType type;
 	std::string name;
-	ExpressionAST* value_expression_ast;
+	ExpressionStatement* expression_sub_statement = NULL;
 	
 	public:
-		VariableDeclarationStatement(Block* super_block, VariableType type, std::string name, ExpressionAST value_Expression_ast) : Statement(super_block){
+		VariableDeclarationStatement(Block* super_block, ValueType type, std::string name, ExpressionStatement* expression_sub_statement) : Statement(super_block){
 			this->type = type;
 			this->name = name;
-			this->value_expression_ast = value_expression_ast;
+			this->expression_sub_statement = expression_sub_statement;
 		}
 		
 		
 		void run(){
 			std::cout << "Inside var decln" << std::endl;
 		}
+		
+		void _repr_(){
+			std::cout << std::endl << "VDS ~ " << this->type << " : " << this->name;
+			
+			if (expression_sub_statement)
+				expression_sub_statement->_repr_();
+			
+			std::cout << std::endl;
+		}
 
 };
 
 
 class VariableAssignmentStatement : public Statement{
-	Variable* variable;
-	ExpressionAST* value_expression_ast;
+	std::string variable_name;
+	ExpressionStatement* expression_sub_statement;
 	
 	public:
-		VariableAssignmentStatement(Block* super_block, Variable* variable, ExpressionAST* value_expression_ast) : Statement(super_block){
-			this->variable = variable;
-			this->value_expression_ast = value_expression_ast;
+		VariableAssignmentStatement(Block* super_block, std::string variable_name, ExpressionStatement* expression_sub_statement) : Statement(super_block){
+			this->variable_name = variable_name;
+			this->expression_sub_statement = expression_sub_statement;
 		}
 		
 		void run() {
 			std::cout << "Inside var assi" << std::endl;
+		}
+		
+		void _repr_(){
+			std::cout << "VAS ~ " << this->variable_name;
+			expression_sub_statement->_repr_();
+			
+			std::cout  <<  std::endl;
 		}
 	
 };

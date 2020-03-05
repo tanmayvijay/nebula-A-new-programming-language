@@ -26,7 +26,8 @@ class ValueHolder{
 		ValueType get_type(){
 			return this->type;
 		}
-	
+		
+		virtual std::string get_value() = 0;
 };
 
 

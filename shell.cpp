@@ -17,7 +17,12 @@ int main(int argc, char* argv[]){
 	std::ifstream input_file(file_name);
 	
 	std::queue<std::vector<Token> > program_tokens = tokenizing_helper(input_file);
-	Block program_block = parsing_helper(program_tokens);
+	
+	Block* program_block = parsing_helper(program_tokens);
+	
+	//parser tests - 2 
+//	if(!program_block->get_elements()->at(0)) std::cout << "Empty block\n";
+	program_block->_repr_();
 	
 //	parser_tests
 //	for(Element* e : program_block.get_elements()){
