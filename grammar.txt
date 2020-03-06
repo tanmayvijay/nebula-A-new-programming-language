@@ -82,7 +82,7 @@ var_name = func_name(params?)
 
 
 # unary_operators:
-! - NOT
+not - NOT
 ~ - NOT
 - - minus
 
@@ -121,11 +121,13 @@ x < y       x <= y
 x > y       x >= y
 x == y      x != y
 
-
+Example:
+x == y or (z+1 !=0) and not(x+y >= 10) or not a
+Equivalent Intermediate code:
+[ [ [x == y]  or  [ [ [z + 1]  != 0]  and  [ not  [ [x + y]  >= 10] ] ] ]  or  [ not a] ]
 
 # Operator Precedence: -- keep it like C
 ()
-^
 /   *
 %
 +   -
