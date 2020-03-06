@@ -7,6 +7,7 @@
 #include<fstream>
 
 #include "tokenizer/tokenizer.hpp"
+#include "utils/utils.hpp"
 
 std::queue<std::vector<Token> > tokenizing_helper(std::ifstream& input_file){
 	std::queue<std::vector<Token> > program_tokens;
@@ -15,7 +16,7 @@ std::queue<std::vector<Token> > tokenizing_helper(std::ifstream& input_file){
 	Tokenizer tokenizer;
 	
 	while(std::getline(input_file, line)){
-		if (line.length()){
+		if (_trim_(line).length()){ // to handle empty tokens
 			std::vector<Token> line_tokens = tokenizer.tokenize(line);
 			program_tokens.push(line_tokens);
 		}

@@ -35,10 +35,12 @@ int main(int argc, char* argv[]){
 //		program_tokens.pop();
 //		
 //		for(Token x: t){
-//			std::cout << x.get_token_data() << std::endl;
+//			std::cout << "'" << x.get_token_data() << "'" << std::endl;
 //		}
 //		std::cout << std::endl;
 //	}
+
+
 		
 	return 0;
 }

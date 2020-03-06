@@ -10,27 +10,19 @@
 #include "../exceptions/nebula_exceptions.hpp"
 
 enum TokenType {
-		_NUMBER_LITERAL_,
-		_STRING_LITERAL_,
-		_IDENTIFIER_OR_KEYWORD_LITERAL_,
-		_ARITHMETIC_OPERATOR_LITERAL_,
-		_RELATIONAL_OPERATOR_LITERAL_,
-		_LOGICAL_OPERATOR_LITERAL_,
-		_OPEN_BRACKET_LITERAL_,
-		_CLOSE_BRACKET_LITERAL_,
-		_OPEN_PARENTHESIS_LITERAL_,
-		_CLOSE_PARENTHESIS_LITERAL_,
-		_OTHER_TOKEN_LITERAL_
-	};
-	
-//class TokenType{
-//	token_types type;
-//	
-//	public:
-//		token_types get_token_type(){
-//			return this->type;
-//		}
-//};
+	_COMMENT_LINE_,
+	_NUMBER_LITERAL_,
+	_STRING_LITERAL_,
+	_IDENTIFIER_OR_KEYWORD_LITERAL_,
+	_ARITHMETIC_OPERATOR_LITERAL_,
+	_RELATIONAL_OPERATOR_LITERAL_,
+	_LOGICAL_OPERATOR_LITERAL_,
+	_OPEN_BRACKET_LITERAL_,
+	_CLOSE_BRACKET_LITERAL_,
+	_OPEN_PARENTHESIS_LITERAL_,
+	_CLOSE_PARENTHESIS_LITERAL_,
+	_OTHER_TOKEN_LITERAL_
+};
 
 
 class Token{
@@ -83,6 +75,11 @@ class Tokenizer{
 	
 	public:
 		Tokenizer(){
+			
+			this->patterns.push_back(
+				TokenPattern(_COMMENT_LINE_, "^(\\$.*)")
+			);
+			
 			this->patterns.push_back(
 				TokenPattern(_STRING_LITERAL_, "^(\"(.*\\n?)*\")")
 			);
@@ -107,7 +104,7 @@ class Tokenizer{
 			}
 			
 			
-			std::string logical_operators[] = {"and", "or", "not"};
+			std::string logical_operators[] = {"and\\b", "or\\b", "not\\b"};
 			
 			for (std::string op: logical_operators){
 				this->patterns.push_back(
@@ -124,7 +121,8 @@ class Tokenizer{
 			);
 			
 			this->patterns.push_back(
-				TokenPattern(_NUMBER_LITERAL_, "^([0-9]+(\\.[0-9]+)?)[^a-zA-Z_]")
+//				TokenPattern(_NUMBER_LITERAL_, "^([0-9]+(\\.[0-9]+)?)[^a-zA-Z_]")  // this one will cause probem when a number is at the end of line
+				TokenPattern(_NUMBER_LITERAL_, "^([0-9]+(\\.[0-9]+)?)\\b")
 			);
 			
 			this->patterns.push_back(
@@ -144,7 +142,7 @@ class Tokenizer{
 			);
 			
 			
-			std::string other_tokens[] = {"=", "\\.", ","};
+			std::string other_tokens[] = {"=", "\\.", ","}; // "." token has no need yet
 			
 			for (std::string ot : other_tokens){
 				this->patterns.push_back(
@@ -193,12 +191,19 @@ class Tokenizer{
 					}
 				}
 				
-				if (!matched_flag) throw std::exception(); // change this
+				if (!matched_flag)
+					throw std::exception(); // change this
+				
 				
 				Token new_token = Token(temp_token_type, temp_token_data);
-				
+			
 				tokens_vector.push_back(new_token);
+				
+				
+				
 			}
+
+			
 			return tokens_vector;
 		}
 };

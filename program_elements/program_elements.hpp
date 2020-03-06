@@ -171,7 +171,7 @@ class VariableAssignmentStatement : public Statement{
 		}
 		
 		void _repr_(){
-			std::cout << "VAS ~ " << this->variable_name;
+			std::cout << std::endl << "VAS ~ " << this->variable_name;
 			expression_sub_statement->_repr_();
 			
 			std::cout  <<  std::endl;
@@ -179,6 +179,29 @@ class VariableAssignmentStatement : public Statement{
 	
 };
 
+
+// display statement
+class OutputStatement : public Statement{
+	std::vector<ExpressionStatement*> expressions;
+	
+	public:
+		OutputStatement(Block* super_block, std::vector<ExpressionStatement*> expressions) : Statement(super_block){
+			this->expressions = expressions;
+		}
+		
+		void run() {
+			std::cout << "Inside display statement" << std::endl;
+		}
+		
+		void _repr_(){
+			std::cout << std::endl << "display: ~ \n";
+			
+			for(ExpressionStatement* exp : expressions){
+				exp->_repr_();
+			}
+			
+		}
+};
 
 
 #endif

@@ -25,15 +25,23 @@ std::map<std::string, ValueType> string_to_ValueType_mapping {
 };
 
 
-std::basic_regex<char> expression_statement_pattern("^([a-zA-Z0-9_()+-*/%>=<! ]+)$");
+
+//  Regular Expressions for all code elements
+
+std::basic_regex<char> comment_statement_pattern("^(\\$.*)$");
+std::basic_regex<char> output_statement_pattern("^(display ([^,]+)( , [^,]+)*)$");
 std::basic_regex<char> variable_declaration_statement_pattern("^([a-zA-Z_][a-zA-Z_0-9]* [a-zA-Z_][a-zA-Z_0-9]*( = .+)?)$");
 std::basic_regex<char> variable_assignment_statement_pattern("^([a-zA-Z_][a-zA-Z_0-9]* = .+)$");
+std::basic_regex<char> expression_statement_pattern( "^([a-zA-Z0-9_()+-*/%>=<! ]+)$");
+
+//  End of Regular Expressions for all code elements
+
 
 
 bool parsable(std::vector<Token> line_tokens, std::basic_regex<char> pattern){
 	std::string line = "";
 	for(Token& lt: line_tokens){
-		line = line + lt.get_token_data() + " ";
+			line = line + lt.get_token_data() + " ";
 	}
 
 	line = _trim_from_end_(line);
@@ -196,6 +204,33 @@ VariableAssignmentStatement* variable_assignment_statement_parser(std::queue<std
 	return new VariableAssignmentStatement(super_block, name, expression);
 }
 
+
+OutputStatement* output_statement_parser(std::queue<std::vector<Token> >& program_tokens, Block* super_block){
+	std::vector<Token> line_tokens = program_tokens.front();
+	program_tokens.pop();
+	
+	std::vector<ExpressionStatement*> expression_statements;
+	
+//	std::vector<Token> expression_tokens(line_tokens.begin()+2, line_tokens.end());
+//	ExpressionStatement* expression = expression_statement_parser(expression_tokens, super_block);
+	
+	std::vector<Token> expression_tokens;
+	for(Token& lt : line_tokens){
+		if (lt.get_token_data() != ","){
+			expression_tokens.push_back(lt);
+		}
+		else{
+			ExpressionStatement* expression = expression_statement_parser(expression_tokens, super_block);
+			expression_statements.push_back(expression);
+			expression_tokens.clear();
+		}
+	}
+	ExpressionStatement* expression = expression_statement_parser(expression_tokens, super_block);
+	expression_statements.push_back(expression);
+	
+	return new OutputStatement(super_block, expression_statements);
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 
 
@@ -214,38 +249,36 @@ std::vector<Element*>* program_parser(std::queue<std::vector<Token> > program_to
 		next_element = NULL;
 		
 		bool line_parsed = false;
-
-		if (parsable(line_tokens, variable_declaration_statement_pattern)){
+		
+		if (parsable(line_tokens, comment_statement_pattern)){
+//			next_element = comment_statement_parser(program_tokens, NULL);
+			program_tokens.pop();
+			continue;
+		}
+		else if (parsable(line_tokens, output_statement_pattern)){
+//			next_element = comment_statement_parser(program_tokens, NULL);
+			next_element = output_statement_parser(program_tokens, NULL);
+			line_parsed = true;
+		}
+		else if (parsable(line_tokens, variable_declaration_statement_pattern)){
 			next_element = variable_declaration_statement_parser(program_tokens, NULL);
-//			next_element->_repr_();
-			
 			line_parsed = true;
 		}
 		else if (parsable(line_tokens, variable_assignment_statement_pattern)){
 			next_element = variable_assignment_statement_parser(program_tokens, NULL);
-//			next_element->_repr_();
 			line_parsed = true;
 		}
 		else if (parsable(line_tokens, expression_statement_pattern)){
 			
 			next_element = expression_statement_parser(program_tokens, NULL);
-//			std::cout << "here\n";
-//			next_element->_repr_();
 			line_parsed = true;
 		}
 		
 		if (!line_parsed){
 			std::cout << "\nline not parsed\n";
-
+			
 			throw std::exception();
 		}
-		
-//		next_element->_repr_();
-		
-//		std::cout << "\n\n\n##########################################";
-//		for(Element* e : *program_elements){
-//			e->_repr_();
-//		}
 		
 		program_elements->push_back(next_element);
 		
@@ -255,7 +288,6 @@ std::vector<Element*>* program_parser(std::queue<std::vector<Token> > program_to
 	
 	
 	return program_elements;
-//	return new Block(program_elements);
 }
 
 
