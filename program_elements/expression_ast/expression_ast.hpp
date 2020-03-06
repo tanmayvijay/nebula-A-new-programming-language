@@ -38,26 +38,42 @@ class ExpressionAST {
 };
 
 
-enum OperatorType{
-	_BINARY_OPERATOR_,
-	_UNARY_OPERATOR_
-};
-
-
 enum OperatorPrecedence{
+	_OR_,
+	_AND_,
+	_IS_EQUAL_IS_NOT_EQUAL_,
+	_GT_GTE_LT_LTE_,
 	_PLUS_MINUS_,
-	_MULTIPLY_DIVIDE_,
-	_MODULUS_,
-	_BRACKET_
+	_MULTIPLY_DIVIDE_MODULUS_,
+	_NOT_,
+	_SQUARE_BRACKET_,
+	_BRACKET_,
 };
 
 std::map<std::string, OperatorPrecedence> operator_precendence_mapping {
-			{"+", _PLUS_MINUS_},
-			{"-", _PLUS_MINUS_},
-			{"*", _MULTIPLY_DIVIDE_},
-			{"/", _MULTIPLY_DIVIDE_},
-			{"%", _MODULUS_},
-			{"(", _BRACKET_}
+	{"or", _OR_},
+	{"and", _AND_},
+	{"==", _IS_EQUAL_IS_NOT_EQUAL_},
+	{"!=", _IS_EQUAL_IS_NOT_EQUAL_},
+	{">", _GT_GTE_LT_LTE_},
+	{">=", _GT_GTE_LT_LTE_},
+	{"<", _GT_GTE_LT_LTE_},
+	{"<=", _GT_GTE_LT_LTE_},
+	{"+", _PLUS_MINUS_},
+	{"-", _PLUS_MINUS_},
+	{"*", _MULTIPLY_DIVIDE_MODULUS_},
+	{"/", _MULTIPLY_DIVIDE_MODULUS_},
+	{"%", _MULTIPLY_DIVIDE_MODULUS_},
+	{"not", _NOT_},
+	{"[", _SQUARE_BRACKET_},
+	{"(", _BRACKET_}
+	
+};
+
+
+enum OperatorType{
+	_UNARY_OP_,
+	_BINARY_OP_
 };
 
 
@@ -67,6 +83,8 @@ class OperatorNode : public ExpressionAST{
 	ExpressionAST* left_node = NULL;
 	ExpressionAST* right_node = NULL;
 	
+	OperatorType operator_type;
+	
 	OperatorPrecedence precedence;
 	
 //	OperatorType operator_type; // binary or unary
@@ -74,10 +92,19 @@ class OperatorNode : public ExpressionAST{
 	public:
 		OperatorNode(Token& node_data) : ExpressionAST(_OPERATOR_NODE_, node_data){
 			this->precedence = operator_precendence_mapping.find(node_data.get_token_data())->second;
+			
+			if (node_data.get_token_data() == "not")
+				this->operator_type = _UNARY_OP_;
+			else
+				this->operator_type = _BINARY_OP_;
 		}
 		
 		OperatorPrecedence get_operator_precedence(){
 			return this->precedence;
+		}
+		
+		OperatorType get_operator_type(){
+			return this->operator_type;
 		}
 
 		
@@ -99,9 +126,10 @@ class OperatorNode : public ExpressionAST{
 		
 		
 		void _repr_(){
-			std::cout << "[";
+			std::cout << " [";
 			
-			this->left_node->_repr_();
+			if (this->left_node)
+				this->left_node->_repr_();
 			
 			std::cout << " " << this->get_node_data().get_token_data() << " ";
 			

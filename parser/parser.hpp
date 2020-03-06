@@ -25,7 +25,7 @@ std::map<std::string, ValueType> string_to_ValueType_mapping {
 };
 
 
-std::basic_regex<char> expression_statement_pattern("^([a-zA-Z0-9_()+-*/%^ ]+)$");
+std::basic_regex<char> expression_statement_pattern("^([a-zA-Z0-9_()+-*/%>=<! ]+)$");
 std::basic_regex<char> variable_declaration_statement_pattern("^([a-zA-Z_][a-zA-Z_0-9]* [a-zA-Z_][a-zA-Z_0-9]*( = .+)?)$");
 std::basic_regex<char> variable_assignment_statement_pattern("^([a-zA-Z_][a-zA-Z_0-9]* = .+)$");
 
@@ -47,12 +47,12 @@ ExpressionStatement* expression_statement_parser(std::queue<std::vector<Token> >
 	std::vector<Token> line_tokens = program_tokens.front();
 	program_tokens.pop();
 	
-	Token oper_bracket_token(_OPEN_BRACKET_LITERAL_, "(");
+	Token open_bracket_token(_OPEN_BRACKET_LITERAL_, "(");
 	Token close_bracket_token(_CLOSE_BRACKET_LITERAL_, ")");
-	line_tokens.insert(line_tokens.begin(), oper_bracket_token);
+	line_tokens.insert(line_tokens.begin(), open_bracket_token);
 	line_tokens.push_back(close_bracket_token);
 	
-	int size = line_tokens.size();
+//	int size = line_tokens.size();
 	
 	std::stack<OperatorNode*> operator_stack;
 	std::stack<ExpressionAST*> expression_stack;
@@ -62,7 +62,7 @@ ExpressionStatement* expression_statement_parser(std::queue<std::vector<Token> >
 	
 	for (Token& token : line_tokens){
 //		std::cout << token.get_token_data() << std::endl;
-		size--;
+//		size--;
 		TokenType token_type = token.get_token_type();
 
 		if (token_type == _OPEN_BRACKET_LITERAL_){
@@ -78,8 +78,8 @@ ExpressionStatement* expression_statement_parser(std::queue<std::vector<Token> >
 			expression_stack.push( operand );
 		}				
 			
-		else if (token_type == _OPERATOR_LITERAL_){
-//			std::cout << token.get_token_data() << "operator\n";
+		else if (token_type == _ARITHMETIC_OPERATOR_LITERAL_ || token_type == _RELATIONAL_OPERATOR_LITERAL_ || token_type == _LOGICAL_OPERATOR_LITERAL_){
+//			std::cout << token.get_token_data() << ":operator\n";
 			OperatorPrecedence op_precedence = operator_precendence_mapping.find(token.get_token_data())->second;
 			while( operator_stack.size() > 1 && operator_stack.top()->get_operator_precedence() >= op_precedence && operator_stack.top()->get_node_data().get_token_type() != _OPEN_BRACKET_LITERAL_){
 				op_node = operator_stack.top();
@@ -89,12 +89,15 @@ ExpressionStatement* expression_statement_parser(std::queue<std::vector<Token> >
 				expression_stack.pop();
 				
 				ExpressionAST* left_expr = NULL;
-				try{
-					left_expr = expression_stack.top();
-					expression_stack.pop();
-				}catch (std::exception &e){
-					// do nothing
-				}
+//				try{
+					if (op_node->get_operator_type() == _BINARY_OP_){
+						left_expr = expression_stack.top();
+						expression_stack.pop();
+					}
+					
+//				}catch (std::exception &e){
+////					std::cout << e.what();
+//				}
 				
 				op_node->set_left_node(left_expr);
 				op_node->set_right_node(right_expr);
@@ -121,12 +124,20 @@ ExpressionStatement* expression_statement_parser(std::queue<std::vector<Token> >
 				expression_stack.pop();
 				
 				ExpressionAST* left_expr = NULL;
-				try{
+////				try{
+//					
+////					left_expr = expression_stack.top();
+////					expression_stack.pop();
+//					
+//					
+////				}catch (std::exception &e){
+//////					std::cout << e.what();
+////				}
+				if (op_node->get_operator_type() == _BINARY_OP_){
 					left_expr = expression_stack.top();
 					expression_stack.pop();
-				}catch (std::exception &e){
-					// do nothing
 				}
+
 				
 				op_node->set_left_node(left_expr);
 				op_node->set_right_node(right_expr);

@@ -26,7 +26,7 @@ string       integer       decimal      bool
 # Expressions:
 unary_op expression
 expression binary_op expression
-conditional_expr && true_case || false_case    # ternary_operator
+// conditional_expr && true_case || false_case    # ternary_operator
 
 
 # identifiers:
@@ -64,7 +64,7 @@ while conditional_expr{
 
 
 
-# Functions or Methods
+# Functions or Methods -- run brings the function into memory -- invoke executes the function statements
 fun func_name (type param, type param) returns return_type return_var_name{
     ...
     compute return_var_name here

@@ -13,7 +13,9 @@ enum TokenType {
 		_NUMBER_LITERAL_,
 		_STRING_LITERAL_,
 		_IDENTIFIER_OR_KEYWORD_LITERAL_,
-		_OPERATOR_LITERAL_,
+		_ARITHMETIC_OPERATOR_LITERAL_,
+		_RELATIONAL_OPERATOR_LITERAL_,
+		_LOGICAL_OPERATOR_LITERAL_,
 		_OPEN_BRACKET_LITERAL_,
 		_CLOSE_BRACKET_LITERAL_,
 		_OPEN_PARENTHESIS_LITERAL_,
@@ -85,6 +87,38 @@ class Tokenizer{
 				TokenPattern(_STRING_LITERAL_, "^(\"(.*\\n?)*\")")
 			);
 			
+//			operators
+			
+			std::string arithmetic_operators[] = {"\\*\\*", "\\+", "-", "\\*", "/", "%"};
+			
+			for (std::string op: arithmetic_operators){
+				this->patterns.push_back(
+					TokenPattern(_ARITHMETIC_OPERATOR_LITERAL_, "^(" + op + ")")
+				);
+			}
+			
+			
+			std::string relational_operators[] = {"==", "\\!=", ">=", "<=", ">", "<"};
+			
+			for (std::string op: relational_operators){
+				this->patterns.push_back(
+					TokenPattern(_RELATIONAL_OPERATOR_LITERAL_, "^(" + op + ")")
+				);
+			}
+			
+			
+			std::string logical_operators[] = {"and", "or", "not"};
+			
+			for (std::string op: logical_operators){
+				this->patterns.push_back(
+					TokenPattern(_LOGICAL_OPERATOR_LITERAL_, "^(" + op + ")")
+				);
+			}
+
+//			operators end
+			
+			
+			
 			this->patterns.push_back(
 				TokenPattern(_IDENTIFIER_OR_KEYWORD_LITERAL_, "^([a-zA-Z_][a-zA-Z0-9_]*)")
 			);
@@ -109,21 +143,15 @@ class Tokenizer{
 				TokenPattern(_CLOSE_PARENTHESIS_LITERAL_, "^(\\})")
 			);
 			
-			std::string operators[] = {"=", "\\+", "-", "\\*", "/", "%", "\\^"};
 			
-			for (std::string op: operators){
-				this->patterns.push_back(
-					TokenPattern(_OPERATOR_LITERAL_, "^(" + op + ")")
-				);
-			}
-			
-			std::string other_tokens[] = {"\\.", ","};
+			std::string other_tokens[] = {"=", "\\.", ","};
 			
 			for (std::string ot : other_tokens){
 				this->patterns.push_back(
 					TokenPattern(_OTHER_TOKEN_LITERAL_, "^(" + ot + ")")
 				);
 			}
+			
 
 			
 		}
