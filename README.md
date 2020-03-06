@@ -11,3 +11,9 @@ At this point, when I start, I have no idea how compilers or interpreters work. 
 * Simple Expression Statements
 * Variable Declaration Statements
 * Variable Assignment Statements
+
+
+### Edit-3: Added all types of expressions:
+* Arithmetic
+* Relational
+* Logical
