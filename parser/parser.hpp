@@ -89,16 +89,11 @@ ExpressionStatement* expression_statement_parser(std::queue<std::vector<Token> >
 				expression_stack.pop();
 				
 				ExpressionAST* left_expr = NULL;
-//				try{
-					if (op_node->get_operator_type() == _BINARY_OP_){
-						left_expr = expression_stack.top();
-						expression_stack.pop();
-					}
+				if (op_node->get_operator_type() == _BINARY_OP_){
+					left_expr = expression_stack.top();
+					expression_stack.pop();
+				}
 					
-//				}catch (std::exception &e){
-////					std::cout << e.what();
-//				}
-				
 				op_node->set_left_node(left_expr);
 				op_node->set_right_node(right_expr);
 				
@@ -124,15 +119,7 @@ ExpressionStatement* expression_statement_parser(std::queue<std::vector<Token> >
 				expression_stack.pop();
 				
 				ExpressionAST* left_expr = NULL;
-////				try{
-//					
-////					left_expr = expression_stack.top();
-////					expression_stack.pop();
-//					
-//					
-////				}catch (std::exception &e){
-//////					std::cout << e.what();
-////				}
+
 				if (op_node->get_operator_type() == _BINARY_OP_){
 					left_expr = expression_stack.top();
 					expression_stack.pop();
