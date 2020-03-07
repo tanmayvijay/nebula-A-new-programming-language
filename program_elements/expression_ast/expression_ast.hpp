@@ -5,7 +5,6 @@
 #include<iostream>
 #include<map>
 
-#include "../variable/variable.hpp"
 #include "../../tokenizer/tokenizer.hpp"
 
 
@@ -153,31 +152,6 @@ class OperandNode : public ExpressionAST{
 		
 	
 };
-
-
-
-
-
-
-
-
-//
-//class ArithmaticExpression : public ExpressionAST{
-//	
-//};
-//
-//class RelationalExpression : public ExpressionAST{
-//	
-//};
-//
-//class LogicalExpression : public ExpressionAST{
-//	
-//};
-//
-//class ConditionalExpression : public ExpressionAST{
-//	
-//};
-//
 
 
 #endif

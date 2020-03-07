@@ -13,7 +13,7 @@
 #include "../program_elements/program_elements.hpp"
 #include "../tokenizer/tokenizer.hpp"
 #include "../utils/utils.hpp"
-#include "../program_elements/variable/variable.hpp"
+#include "../program_elements/value_type.hpp"
 #include "../program_elements/expression_ast/expression_ast.hpp"
 
 

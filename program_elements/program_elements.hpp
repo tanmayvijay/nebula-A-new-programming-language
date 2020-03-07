@@ -5,7 +5,7 @@
 #include<vector>
 #include<iostream>
 
-#include "variable/variable.hpp"
+#include "value_type.hpp"
 #include "expression_ast/expression_ast.hpp"
 
 
@@ -22,7 +22,7 @@ class Element{
 
 class Block : public Element{
 	std::vector<Element*>* sub_elements;
-	std::vector<Variable*>* variables; // added while executing program
+	std::vector<Symbol*> symbol_table;
 	Block* super_block = NULL;
 	
 	public:
@@ -39,20 +39,16 @@ class Block : public Element{
 			return this->sub_elements;
 		}
 		
-//		void add_element(Element* sub_element){
-//			this->sub_elements.push_back(sub_element);
-//		}
-//		
-//		void add_elements(std::vector<Element*> sub_elements){
-//			this->sub_elements = sub_elements;
-//		}
-		
-		void add_variable(Variable* variable){ // used while executing program
-			this->variables->push_back(variable);
-		}
-		
 		Block* get_super_block(){
 			return this->super_block;
+		}
+		
+		bool add_symbol(Symbol* symbol){ // returns true is symbol is successfullt added to block
+			for (Symbol* sym : symbol_table){
+				if (sym->get_symbol_name() == symbol->get_symbol_name()) return false;
+			}
+			this->symbol_table.push_back(symbol);
+			return true;
 		}
 		
 		// implement run
@@ -116,15 +112,6 @@ class ExpressionStatement : public Statement{
 		
 };
 
-
-//class FunctionCallStatement : public Statement{
-//	std::vector<Variable> parameters;
-//	
-//	public:
-//		FunctionCallStatement(){
-//			
-//		}
-//};
 
 
 class VariableDeclarationStatement : public Statement{
@@ -203,5 +190,10 @@ class OutputStatement : public Statement{
 		}
 };
 
+
+// scan statement
+//class InputStatement : public Statement{
+//	
+//};
 
 #endif

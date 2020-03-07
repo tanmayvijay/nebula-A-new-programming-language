@@ -6,9 +6,10 @@
 #include<queue>
 
 #include "tokenizing_helper.hpp"
-#include "parsing_helper.hpp"
+//#include "parsing_helper.hpp"
 #include "program_elements/program_elements.hpp"
 #include "tokenizer/tokenizer.hpp"
+#inlcude "parser/parser.hpp"
 
 int main(int argc, char* argv[]){
 	if (argc < 1) throw std::exception(); // change this
@@ -18,7 +19,7 @@ int main(int argc, char* argv[]){
 	
 	std::queue<std::vector<Token> > program_tokens = tokenizing_helper(input_file);
 	
-	Block* program_block = parsing_helper(program_tokens);
+	Block* program_block = program_parser(program_tokens);
 	
 //	parser tests - 2 
 //	if(!program_block->get_elements()->at(0)) std::cout << "Empty block\n";
