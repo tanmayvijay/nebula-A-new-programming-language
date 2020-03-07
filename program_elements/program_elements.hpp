@@ -98,9 +98,10 @@ class Block : public Element{
 		void _repr_(){
 			std::cout << std::endl << "------- BLOCK START -------" << std::endl;
 			std::cout << "\nSymbol Table:\n";
-			printf("%5s |%15s |%20s |\n", "Type", "Name", "Value Expression");
+			printf("%5s |%15s |%30s\n", "Type", "Name", "Value Expression");
+			std::cout << "-------------------------------------------------------\n";
 			for(Symbol* sym: symbol_table){
-				printf("%5d |%15s |", sym->get_value_type(), sym->get_symbol_name().c_str());
+				printf("%5d |%15s | ", sym->get_value_type(), sym->get_symbol_name().c_str());
 				sym->get_symbol_value()->_repr_();
 				std::cout << "\n";
 			}
@@ -235,12 +236,14 @@ class OutputStatement : public Statement{
 		}
 		
 		void _repr_(){
-			std::cout << std::endl << "display: ~ \n";
+			std::cout << "display: ~ \n";
 			
 			for(ExpressionAST* exp : expressions){
 				exp->_repr_();
+				std::cout << " \t ";
 			}
 			
+			std::cout << std::endl;
 		}
 };
 

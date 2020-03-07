@@ -7,14 +7,14 @@ bool y
 
 $ ok so this is a comment
 y = True
+           
+
+     display var, "some string"
+
+decimal n = x + y * True
 
 
-$display var, "some string"
-
-x + y * True
-
-
-$display y, x
+display y, x
 
 $ ok so this is a comment
 $ ok so this is a comment

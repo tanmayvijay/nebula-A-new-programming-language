@@ -243,13 +243,16 @@ OutputStatement* output_statement_parser(std::queue<std::vector<Token> >& progra
 	std::vector<Token> line_tokens = program_lines.front();
 	program_lines.pop();
 	
+//	for (Token& t : line_tokens){
+//		std::cout << "'" << t.get_token_data() << "' ";
+//	}
+//	std::cout << "\n";
+	
 	std::vector<ExpressionAST*> expressions;
-	
-//	std::vector<Token> expression_tokens(line_tokens.begin()+2, line_tokens.end());
-//	ExpressionStatement* expression = expression_statement_parser(expression_tokens, super_block);
-	
+		
 	std::vector<Token> expression_tokens;
-	for(Token& lt : line_tokens){
+	for(int i=1; i<line_tokens.size(); i++){
+		Token& lt = line_tokens.at(i);
 		if (lt.get_token_data() != ","){
 			expression_tokens.push_back(lt);
 		}
@@ -290,7 +293,6 @@ Block* program_parser(std::queue<std::vector<Token> > program_lines){
 			continue;
 		}
 		else if (parsable(line_tokens, output_statement_pattern)){
-//			next_element = comment_statement_parser(program_lines, NULL);
 			next_element = output_statement_parser(program_lines, program_block);
 			line_parsed = true;
 		}
