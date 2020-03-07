@@ -17,3 +17,9 @@ At this point, when I start, I have no idea how compilers or interpreters work. 
 * Arithmetic
 * Relational
 * Logical
+
+
+### Edit-4: Changed entire expression and program_element architecture to support Symbol Table:
+* Each block has its own symbol table.
+* Symbol Table is now updated everytime a Variable Declaration Statement or Variable Assignment Statement is encountered.
+* Variables are searched in the most closely nested block.
