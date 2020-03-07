@@ -23,6 +23,14 @@ class Symbol{
 		std::string get_symbol_name(){
 			return this->id_name;
 		}
+		
+		ValueType get_value_type(){
+			return this->type;
+		}
+		
+		std::string get_symbol_value(){
+			return this->value;
+		}
 	
 };
 

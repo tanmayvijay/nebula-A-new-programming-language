@@ -6,6 +6,7 @@
 #include<map>
 
 #include "../../tokenizer/tokenizer.hpp"
+#include "../value_type.hpp"
 
 
 enum NodeType{
@@ -16,21 +17,21 @@ enum NodeType{
 
 class ExpressionAST {
 	NodeType type;
-	Token node_data = Token(_OTHER_TOKEN_LITERAL_, "");
+//	Token node_data = Token(_OTHER_TOKEN_LITERAL_, "");
 	
 	public:
-		ExpressionAST(NodeType type, Token& node_data){
+		ExpressionAST(NodeType type){
 			this->type = type;
-			this->node_data = node_data;
+//			this->node_data = node_data;
 		}
 		
 		NodeType get_node_type(){
 			return this->type;
 		}
 		
-		Token get_node_data(){
-			return this->node_data;
-		}
+//		Token get_node_data(){
+//			return this->node_data;
+//		}
 		
 		virtual void _repr_() = 0;
 		
@@ -77,8 +78,38 @@ enum OperatorType{
 
 
 
+enum Operator{
+	_PLUS_OP_, _MINUS_OP_, _MULTIPLY_OP_, _DIVIDE_OP_, _MODULUS_OP_,
+	_AND_OP_, _OR_OP_, _NOT_OP_,
+	_EQUAL_OP_, _NOT_EQUAL_OP_, _GT_OP_, _GTE_OP_, _LT_OP_, _LTE_OP_,
+	_OPEN_SQUARE_BRACKET_OP_, _OPEN_ROUND_BRACKET_OP_,
+}; // add ** (power) to it
+
+
+std::map<std::string, OperatorPrecedence> string_to_operator_mapping {
+	{"or", _OR_OP_},
+	{"and", _AND_OP_},
+	{"==", _EQUAL_OP_},
+	{"!=", _NOT_EQUAL_OP_},
+	{">", _GT_OP_},
+	{">=", _GTE_OP_},
+	{"<", _LT_OP_},
+	{"<=", _LTE_OP_},
+	{"+", _PLUS_OP_},
+	{"-", _MINUS_OP_},
+	{"*", _MULTIPLY_OP_},
+	{"/", _DIVIDE_OP_},
+	{"%", _MODULUS_OP_},
+	{"not", _NOT_OP_},
+	{"[", _OPEN_SQUARE_BRACKET_OP_},
+	{"(", _OPEN_ROUND_BRACKET_OP_}
+	
+};
+
 
 class OperatorNode : public ExpressionAST{
+	std::Operator op;
+	
 	ExpressionAST* left_node = NULL;
 	ExpressionAST* right_node = NULL;
 	
@@ -89,13 +120,18 @@ class OperatorNode : public ExpressionAST{
 //	OperatorType operator_type; // binary or unary
 	
 	public:
-		OperatorNode(Token& node_data) : ExpressionAST(_OPERATOR_NODE_, node_data){
-			this->precedence = operator_precendence_mapping.find(node_data.get_token_data())->second;
+		OperatorNode(std::string op_string) : ExpressionAST(_OPERATOR_NODE_){
+			this->op = string_to_operator_mapping.find(op_string)->second;
+			this->precedence = operator_precendence_mapping.find(op_string)->second;
 			
-			if (node_data.get_token_data() == "not")
+			if (op_str == "not")
 				this->operator_type = _UNARY_OP_;
 			else
 				this->operator_type = _BINARY_OP_;
+		}
+		
+		Operator get_operator(){
+			return this->op; 
 		}
 		
 		OperatorPrecedence get_operator_precedence(){
@@ -141,9 +177,12 @@ class OperatorNode : public ExpressionAST{
 
 
 class OperandNode : public ExpressionAST{
+	ValueType operand_type;
+	std::string operand_value;
 	public:
-		OperandNode(Token& node_data) : ExpressionAST(_OPERAND_NODE_, node_data){
-			
+		OperandNode(ValueType operand_type, std::string operand_value) : ExpressionAST(_OPERAND_NODE_){
+			this->operand_type = operand_type;
+			this->operand_value = opreand_value;
 		}
 		
 		void _repr_(){

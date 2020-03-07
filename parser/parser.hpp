@@ -15,6 +15,7 @@
 #include "../utils/utils.hpp"
 #include "../program_elements/value_type.hpp"
 #include "../program_elements/expression_ast/expression_ast.hpp"
+#include "../program_elements/symbol_table/symbol_table.hpp"
 
 
 std::map<std::string, ValueType> string_to_ValueType_mapping {
@@ -49,6 +50,14 @@ bool parsable(std::vector<Token> line_tokens, std::basic_regex<char> pattern){
 }
 
 
+
+std::map<TokenType, ValueType> TokenType_to_ValueType_mapping{
+	{_INTEGER_LITERAL_, _INTEGER_},
+	{_DECIMAL_LITERAL_, _DECIMAL_},
+	{_STRING_LITERAL_, _STRING_},
+	{_BOOLEAN_LITERAL_, _BOOLEAN_}
+};
+
 // when entire line is an expression
 ExpressionStatement* expression_statement_parser(std::queue<std::vector<Token> >& program_lines, Block* super_block){
 	
@@ -75,24 +84,33 @@ ExpressionStatement* expression_statement_parser(std::queue<std::vector<Token> >
 
 		if (token_type == _OPEN_BRACKET_LITERAL_){
 //			std::cout << "(\n";
-			op_node = new OperatorNode(token);
+			op_node = new OperatorNode(token.get_token_data());
 			operator_stack.push( op_node );
 		}
 		
-		else if (token_type == _NUMBER_LITERAL_ ||
+		else if (token_type == _IDENTIFIER_OR_KEYWORD_LITERAL_){
+			Symbol* symbol = super_block->find_symbol(token.get_token_data());
+			operand = new OperandNode(symbol->get_value_type(), symbol->get_symbol_value())
+		}
+		
+		else if (token_type == _INTEGER_LITERAL_ ||
+				 token_type == _DECIMAL_LITERAL_ ||
 				 token_type == _STRING_LITERAL_ ||
-				 token_type == _IDENTIFIER_OR_KEYWORD_LITERAL_){
+				 token_type == _BOOLEAN_LITERAL_
+				 ){
 //			std::cout << "operand\n";
-			operand = new OperandNode(token);
+			ValueType v_type = TokenType_to_ValueType_mapping.find(token_type)->second;
+			operand = new OperandNode(v_type, token.get_token_data());
 			expression_stack.push( operand );
 		}				
 			
 		else if (token_type == _ARITHMETIC_OPERATOR_LITERAL_ ||
 				 token_type == _RELATIONAL_OPERATOR_LITERAL_ ||
-				 token_type == _LOGICAL_OPERATOR_LITERAL_){
+				 token_type == _LOGICAL_OPERATOR_LITERAL_
+				 ){
 //			std::cout << token.get_token_data() << ":operator\n";
 			OperatorPrecedence op_precedence = operator_precendence_mapping.find(token.get_token_data())->second;
-			while( operator_stack.size() > 1 && operator_stack.top()->get_operator_precedence() >= op_precedence && operator_stack.top()->get_node_data().get_token_type() != _OPEN_BRACKET_LITERAL_){
+			while( operator_stack.size() > 1 && operator_stack.top()->get_operator_precedence() >= op_precedence && operator_stack.top()->get_operator() != _OPEN_ROUND_BRACKET_OP_){
 				op_node = operator_stack.top();
 				operator_stack.pop();
 				
@@ -111,13 +129,13 @@ ExpressionStatement* expression_statement_parser(std::queue<std::vector<Token> >
 				expression_stack.push( op_node );
 			}
 			
-			op_node = new OperatorNode(token);
+			op_node = new OperatorNode(token.get_token_data());
 			operator_stack.push( op_node);
 		}
 		
 		else if(token_type == _CLOSE_BRACKET_LITERAL_){
 //			std::cout << ")\n" << size << "\n";
-			while( operator_stack.size() > 1 && operator_stack.top()->get_node_data().get_token_type() != _OPEN_BRACKET_LITERAL_){
+			while( operator_stack.size() > 1 && operator_stack.top()->get_operator() != _OPEN_ROUND_BRACKET_OP_){
 				op_node = operator_stack.top();
 				operator_stack.pop();
 				
@@ -150,6 +168,7 @@ ExpressionStatement* expression_statement_parser(std::queue<std::vector<Token> >
 		}
 		
 		else{
+			std::cout << "Expression cannot be parse at token: '" << token.get_token_data() << "'\n";
 			throw std::exception();
 		}
 	}

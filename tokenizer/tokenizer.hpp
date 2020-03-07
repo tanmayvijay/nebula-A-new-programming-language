@@ -11,7 +11,9 @@
 
 enum TokenType {
 	_COMMENT_LINE_,
-	_NUMBER_LITERAL_,
+	_INTEGER_LITERAL_,
+	_DECIMAL_LITERAL_,
+	_BOOLEAN_LITERAL_,
 	_STRING_LITERAL_,
 	_IDENTIFIER_OR_KEYWORD_LITERAL_,
 	_ARITHMETIC_OPERATOR_LITERAL_,
@@ -114,15 +116,21 @@ class Tokenizer{
 
 //			operators end
 			
-			
+			this->patterns.push_back(
+				TokenPattern(_BOOLEAN_LITERAL_, "^(true|false)\\b")
+			);
 			
 			this->patterns.push_back(
 				TokenPattern(_IDENTIFIER_OR_KEYWORD_LITERAL_, "^([a-zA-Z_][a-zA-Z0-9_]*)")
 			);
 			
 			this->patterns.push_back(
+				TokenPattern(_DECIMAL_LITERAL_, "^([0-9]+\\.[0-9]+)\\b")
+			);
+			
+			this->patterns.push_back(
 //				TokenPattern(_NUMBER_LITERAL_, "^([0-9]+(\\.[0-9]+)?)[^a-zA-Z_]")  // this one will cause probem when a number is at the end of line
-				TokenPattern(_NUMBER_LITERAL_, "^([0-9]+(\\.[0-9]+)?)\\b")
+				TokenPattern(_INTEGER_LITERAL_, "^([0-9]+\\b")
 			);
 			
 			this->patterns.push_back(

@@ -55,6 +55,29 @@ class Block : public Element{
 			return true;
 		}
 		
+		Symbol* find_symbol(std::string sym_name){
+			bool found_symbol = false;
+			Symbol* symbol_to_return = NULL;
+			for(Symbol* sym : symbol_table){
+				if (sym->get_symbol_name() == name){
+					symbol_to_return = sym;
+					found_symbol = true;
+				}
+			}
+			
+			if (!found_symbol){
+				if (this->super_block)
+				symbol_to_return = this->super_block->find_symbol(sym_name);
+				
+				if (!symbol_to_return){
+					std::cout << "\nSymbol '" << sym_name << "' not found\n";
+					throw std::exception();
+				}
+			}
+			
+			return symbol_to_return;
+		}
+		
 		// implement run
 		void run(){
 			std::cout << "Inside block" << std::endl;
