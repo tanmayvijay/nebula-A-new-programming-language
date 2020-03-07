@@ -21,7 +21,7 @@ class Element{
 /////////////////////////////////////////////////
 
 class Block : public Element{
-	std::vector<Element*>* sub_elements;
+	std::vector<Element*> sub_elements;
 	std::vector<Symbol*> symbol_table;
 	Block* super_block = NULL;
 	
@@ -30,9 +30,13 @@ class Block : public Element{
 			this->super_block = super_block;
 		}
 		
-		Block(std::vector<Element*>* sub_elements, Block* super_block = NULL){
-			this->super_block = super_block;
-			this->sub_elements = sub_elements;
+//		Block(std::vector<Element*>* sub_elements, Block* super_block = NULL){
+//			this->super_block = super_block;
+//			this->sub_elements = sub_elements;
+//		}
+
+		void add_element(Element* element){
+			this->sub_elements.push_back(element);
 		}
 		
 		std::vector<Element*>* get_elements(){

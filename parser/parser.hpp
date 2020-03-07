@@ -50,10 +50,10 @@ bool parsable(std::vector<Token> line_tokens, std::basic_regex<char> pattern){
 
 
 // when entire line is an expression
-ExpressionStatement* expression_statement_parser(std::queue<std::vector<Token> >& program_tokens, Block* super_block){
+ExpressionStatement* expression_statement_parser(std::queue<std::vector<Token> >& program_lines, Block* super_block){
 	
-	std::vector<Token> line_tokens = program_tokens.front();
-	program_tokens.pop();
+	std::vector<Token> line_tokens = program_lines.front();
+	program_lines.pop();
 	
 	Token open_bracket_token(_OPEN_BRACKET_LITERAL_, "(");
 	Token close_bracket_token(_CLOSE_BRACKET_LITERAL_, ")");
@@ -169,9 +169,9 @@ ExpressionStatement* expression_statement_parser(std::vector<Token>& line_tokens
 
 
 
-VariableDeclarationStatement* variable_declaration_statement_parser(std::queue<std::vector<Token> >& program_tokens, Block* super_block){
-	std::vector<Token> line_tokens = program_tokens.front();
-	program_tokens.pop();
+VariableDeclarationStatement* variable_declaration_statement_parser(std::queue<std::vector<Token> >& program_lines, Block* super_block){
+	std::vector<Token> line_tokens = program_lines.front();
+	program_lines.pop();
 	
 	std::string type_string = line_tokens.at(0).get_token_data();
 	ValueType type = string_to_ValueType_mapping.find(type_string)->second;
@@ -191,9 +191,9 @@ VariableDeclarationStatement* variable_declaration_statement_parser(std::queue<s
 
 
 
-VariableAssignmentStatement* variable_assignment_statement_parser(std::queue<std::vector<Token> >& program_tokens, Block* super_block){
-	std::vector<Token> line_tokens = program_tokens.front();
-	program_tokens.pop();
+VariableAssignmentStatement* variable_assignment_statement_parser(std::queue<std::vector<Token> >& program_lines, Block* super_block){
+	std::vector<Token> line_tokens = program_lines.front();
+	program_lines.pop();
 	
 	std::string name = line_tokens.at(0).get_token_data();
 	
@@ -205,9 +205,9 @@ VariableAssignmentStatement* variable_assignment_statement_parser(std::queue<std
 }
 
 
-OutputStatement* output_statement_parser(std::queue<std::vector<Token> >& program_tokens, Block* super_block){
-	std::vector<Token> line_tokens = program_tokens.front();
-	program_tokens.pop();
+OutputStatement* output_statement_parser(std::queue<std::vector<Token> >& program_lines, Block* super_block){
+	std::vector<Token> line_tokens = program_lines.front();
+	program_lines.pop();
 	
 	std::vector<ExpressionStatement*> expression_statements;
 	
@@ -236,58 +236,57 @@ OutputStatement* output_statement_parser(std::queue<std::vector<Token> >& progra
 
 
 
-std::vector<Element*>* program_parser(std::queue<std::vector<Token> > program_tokens){
-
-	std::vector<Element*>* program_elements = new std::vector<Element*>();
+Block* program_parser(std::queue<std::vector<Token> > program_lines){
+	
+	Block* program_block = new Block()
 	
 	Element* next_element = NULL;
 	
-	while( !program_tokens.empty() ){
+	while( !program_lines.empty() ){
 		
-		std::vector<Token> line_tokens = program_tokens.front();
+		std::vector<Token> line_tokens = program_lines.front();
 
 		next_element = NULL;
 		
 		bool line_parsed = false;
 		
 		if (parsable(line_tokens, comment_statement_pattern)){
-//			next_element = comment_statement_parser(program_tokens, NULL);
-			program_tokens.pop();
+//			next_element = comment_statement_parser(program_lines, NULL);
+			program_lines.pop();
 			continue;
 		}
 		else if (parsable(line_tokens, output_statement_pattern)){
-//			next_element = comment_statement_parser(program_tokens, NULL);
-			next_element = output_statement_parser(program_tokens, NULL);
+//			next_element = comment_statement_parser(program_lines, NULL);
+			next_element = output_statement_parser(program_lines, program_block);
 			line_parsed = true;
 		}
 		else if (parsable(line_tokens, variable_declaration_statement_pattern)){
-			next_element = variable_declaration_statement_parser(program_tokens, NULL);
+			next_element = variable_declaration_statement_parser(program_lines, program_block);
 			line_parsed = true;
 		}
 		else if (parsable(line_tokens, variable_assignment_statement_pattern)){
-			next_element = variable_assignment_statement_parser(program_tokens, NULL);
+			next_element = variable_assignment_statement_parser(program_lines, program_block);
 			line_parsed = true;
 		}
 		else if (parsable(line_tokens, expression_statement_pattern)){
 			
-			next_element = expression_statement_parser(program_tokens, NULL);
+			next_element = expression_statement_parser(program_lines, program_block);
 			line_parsed = true;
 		}
 		
 		if (!line_parsed){
-			std::cout << "\nline not parsed\n";
-			
+			std::cout << "\nline not parsed\n";	
 			throw std::exception();
 		}
 		
-		program_elements->push_back(next_element);
+		program_block->add_element(next_element);
 		
 	}
 	
 	
 	
 	
-	return program_elements;
+	return program_block;
 }
 
 
