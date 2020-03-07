@@ -9,33 +9,17 @@ $ ok so this is a comment
 y = True
 
 
+$display var, "some string"
+
+x + y * True
+
+
+$display y, x
+
 $ ok so this is a comment
-
-
-
 $ ok so this is a comment
-something is   =  cool
 $ ok so this is a comment
-
-
-x +y-23*8/jhb
-x +y-23*8/(wjdfbj + 1/3947*jhfgh) 
 $ ok so this is a comment
-
-
-x +y-23*8/(wjdfbj + 1/3947*jhfgh) + (sfbk- kasbjfjk+2745 + jsd83)*194679 - (kjbksfkj+fbjk) - (sjqfn) % dlknf
-
-x > y and y <= z and not(x+y==0) or not a and b != a and not (a-c+d!=75)
-
-
-x == y or (z+1 !=0) and not(x+y >= 10) or not a
-
-display c, x, (x+c-23)*(sfbk- kasbjfjk+2745 + jsd83)*194679, (sfbk- kasbjfjk+2745 + jsd83)*194679, nothing_man, hey_hey
-
-display x + 233, a *143
-
-integer y = 10-234*x+1
-a *143
 
 $ ok so this is a comment
 $ ok so this is a comment

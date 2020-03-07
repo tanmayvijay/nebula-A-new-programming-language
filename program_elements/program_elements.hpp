@@ -7,7 +7,7 @@
 
 #include "value_type.hpp"
 #include "expression_ast/expression_ast.hpp"
-
+#include "symbol_table/symbol_table.hpp"
 
 
 class Element{
@@ -39,7 +39,7 @@ class Block : public Element{
 			this->sub_elements.push_back(element);
 		}
 		
-		std::vector<Element*>* get_elements(){
+		std::vector<Element*> get_elements(){
 			return this->sub_elements;
 		}
 		
@@ -47,7 +47,7 @@ class Block : public Element{
 			return this->super_block;
 		}
 		
-		bool add_symbol(Symbol* symbol){ // returns true is symbol is successfullt added to block
+		bool add_symbol(Symbol* symbol){ // returns true if symbol is successfully added to block
 			for (Symbol* sym : symbol_table){
 				if (sym->get_symbol_name() == symbol->get_symbol_name()) return false;
 			}
@@ -55,11 +55,23 @@ class Block : public Element{
 			return true;
 		}
 		
+		bool check_symbol_already_exists(std::string sym_name){
+//			bool found_symbol = false;
+			for (Symbol* sym : symbol_table){
+				if (sym->get_symbol_name() == sym_name){
+//					found_symbol = true;
+					return true;
+				}
+			}
+			
+			return false;
+		}
+		
 		Symbol* find_symbol(std::string sym_name){
 			bool found_symbol = false;
 			Symbol* symbol_to_return = NULL;
 			for(Symbol* sym : symbol_table){
-				if (sym->get_symbol_name() == name){
+				if (sym->get_symbol_name() == sym_name){
 					symbol_to_return = sym;
 					found_symbol = true;
 				}
@@ -85,7 +97,16 @@ class Block : public Element{
 		
 		void _repr_(){
 			std::cout << std::endl << "------- BLOCK START -------" << std::endl;
-			for(Element* e: *sub_elements){
+			std::cout << "\nSymbol Table:\n";
+			printf("%5s |%15s |%20s |\n", "Type", "Name", "Value Expression");
+			for(Symbol* sym: symbol_table){
+				printf("%5d |%15s |", sym->get_value_type(), sym->get_symbol_name().c_str());
+				sym->get_symbol_value()->_repr_();
+				std::cout << "\n";
+			}
+		
+			std::cout << "\n\n";
+			for(Element* e: sub_elements){
 				e->_repr_();
 			}
 			std::cout << std::endl << "------- BLOCK END -------" << std::endl;
@@ -131,6 +152,10 @@ class ExpressionStatement : public Statement{
 			std::cout << "Inside Expression Statement run" << std::endl;
 		}
 		
+		ExpressionAST* get_expression(){
+			return this->expression_ast;
+		}
+		
 		void _repr_(){
 			std::cout << " ::: ";
 			expression_ast->_repr_();
@@ -144,13 +169,13 @@ class ExpressionStatement : public Statement{
 class VariableDeclarationStatement : public Statement{
 	ValueType type;
 	std::string name;
-	ExpressionStatement* expression_sub_statement = NULL;
+	ExpressionAST* value_expression = NULL;
 	
 	public:
-		VariableDeclarationStatement(Block* super_block, ValueType type, std::string name, ExpressionStatement* expression_sub_statement) : Statement(super_block){
+		VariableDeclarationStatement(Block* super_block, ValueType type, std::string name, ExpressionAST* value_expression) : Statement(super_block){
 			this->type = type;
 			this->name = name;
-			this->expression_sub_statement = expression_sub_statement;
+			this->value_expression = value_expression;
 		}
 		
 		
@@ -159,10 +184,12 @@ class VariableDeclarationStatement : public Statement{
 		}
 		
 		void _repr_(){
-			std::cout << std::endl << "VDS ~ " << this->type << " : " << this->name;
+			std::cout << "VDS ~ " << this->type << " :: " << this->name;
 			
-			if (expression_sub_statement)
-				expression_sub_statement->_repr_();
+			if (value_expression){
+				std::cout << " :: ";
+				value_expression->_repr_();
+			}
 			
 			std::cout << std::endl;
 		}
@@ -172,12 +199,12 @@ class VariableDeclarationStatement : public Statement{
 
 class VariableAssignmentStatement : public Statement{
 	std::string variable_name;
-	ExpressionStatement* expression_sub_statement;
+	ExpressionAST* expression;
 	
 	public:
-		VariableAssignmentStatement(Block* super_block, std::string variable_name, ExpressionStatement* expression_sub_statement) : Statement(super_block){
+		VariableAssignmentStatement(Block* super_block, std::string variable_name, ExpressionAST* expression) : Statement(super_block){
 			this->variable_name = variable_name;
-			this->expression_sub_statement = expression_sub_statement;
+			this->expression = expression;
 		}
 		
 		void run() {
@@ -185,10 +212,10 @@ class VariableAssignmentStatement : public Statement{
 		}
 		
 		void _repr_(){
-			std::cout << std::endl << "VAS ~ " << this->variable_name;
-			expression_sub_statement->_repr_();
+			std::cout << "VAS ~ " << this->variable_name << " :: ";
+			expression->_repr_();
 			
-			std::cout  <<  std::endl;
+			std::cout << std::endl;
 		}
 	
 };
@@ -196,10 +223,10 @@ class VariableAssignmentStatement : public Statement{
 
 // display statement
 class OutputStatement : public Statement{
-	std::vector<ExpressionStatement*> expressions;
+	std::vector<ExpressionAST*> expressions;
 	
 	public:
-		OutputStatement(Block* super_block, std::vector<ExpressionStatement*> expressions) : Statement(super_block){
+		OutputStatement(Block* super_block, std::vector<ExpressionAST*> expressions) : Statement(super_block){
 			this->expressions = expressions;
 		}
 		
@@ -210,7 +237,7 @@ class OutputStatement : public Statement{
 		void _repr_(){
 			std::cout << std::endl << "display: ~ \n";
 			
-			for(ExpressionStatement* exp : expressions){
+			for(ExpressionAST* exp : expressions){
 				exp->_repr_();
 			}
 			

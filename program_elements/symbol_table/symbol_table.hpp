@@ -4,20 +4,19 @@
 #include<string>
 
 #include "../value_type.hpp"
-#include "../program_elements.hpp"
+#include "../expression_ast/expression_ast.hpp"
 
 class Symbol{
 	ValueType type;
 	std::string id_name;
-	std::string value;
-	Block* super_block;
+	ExpressionAST* value_expression = NULL;
+	
 	
 	public:
-		Symbol(ValueType type, std::string id_name, std::string value, Block* super_block){
+		Symbol(ValueType type, std::string id_name, ExpressionAST* value){
 			this->type = type;
 			this->id_name = id_name;
-			this->value = value;
-			this->super_block = super_block;
+			this->value_expression = value;
 		}
 		
 		std::string get_symbol_name(){
@@ -28,8 +27,12 @@ class Symbol{
 			return this->type;
 		}
 		
-		std::string get_symbol_value(){
-			return this->value;
+		ExpressionAST* get_symbol_value(){
+			return this->value_expression;
+		}
+		
+		void set_value(ExpressionAST* expression){
+			this->value_expression = expression;
 		}
 	
 };

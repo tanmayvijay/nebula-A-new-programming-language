@@ -9,7 +9,7 @@
 //#include "parsing_helper.hpp"
 #include "program_elements/program_elements.hpp"
 #include "tokenizer/tokenizer.hpp"
-#inlcude "parser/parser.hpp"
+#include "parser/parser.hpp"
 
 int main(int argc, char* argv[]){
 	if (argc < 1) throw std::exception(); // change this

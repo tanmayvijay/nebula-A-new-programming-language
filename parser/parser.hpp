@@ -75,7 +75,8 @@ ExpressionStatement* expression_statement_parser(std::queue<std::vector<Token> >
 	std::stack<ExpressionAST*> expression_stack;
 	
 	OperatorNode* op_node;
-	OperandNode* operand;
+	OperandNodeWithExpression* operand_w_exp;
+	OperandNodeFinal* operand_final;
 	
 	for (Token& token : line_tokens){
 //		std::cout << token.get_token_data() << std::endl;
@@ -90,7 +91,8 @@ ExpressionStatement* expression_statement_parser(std::queue<std::vector<Token> >
 		
 		else if (token_type == _IDENTIFIER_OR_KEYWORD_LITERAL_){
 			Symbol* symbol = super_block->find_symbol(token.get_token_data());
-			operand = new OperandNode(symbol->get_value_type(), symbol->get_symbol_value())
+			operand_w_exp = new OperandNodeWithExpression(symbol->get_value_type(), symbol->get_symbol_value());
+			expression_stack.push( operand_w_exp );
 		}
 		
 		else if (token_type == _INTEGER_LITERAL_ ||
@@ -100,8 +102,8 @@ ExpressionStatement* expression_statement_parser(std::queue<std::vector<Token> >
 				 ){
 //			std::cout << "operand\n";
 			ValueType v_type = TokenType_to_ValueType_mapping.find(token_type)->second;
-			operand = new OperandNode(v_type, token.get_token_data());
-			expression_stack.push( operand );
+			operand_final = new OperandNodeFinal(v_type, token.get_token_data());
+			expression_stack.push( operand_final );
 		}				
 			
 		else if (token_type == _ARITHMETIC_OPERATOR_LITERAL_ ||
@@ -200,12 +202,20 @@ VariableDeclarationStatement* variable_declaration_statement_parser(std::queue<s
 	
 	std::string name = line_tokens.at(1).get_token_data();
 	
-	ExpressionStatement* expression = NULL;
+	ExpressionAST* expression = NULL;
 	
 	if (line_tokens.size() > 2){
 		std::vector<Token> expression_tokens(line_tokens.begin()+3, line_tokens.end()); // "=" skipped
-		expression = expression_statement_parser(expression_tokens, super_block);
+		expression = expression_statement_parser(expression_tokens, super_block)->get_expression();
 	}
+	
+	if (super_block->check_symbol_already_exists(name)){
+		std::cout << "\nSymbol '" << name << "' already declared before!\n";
+		throw std::exception();
+	}
+	
+	Symbol* symbol = new Symbol(type, name, expression);
+	super_block->add_symbol(symbol);
 	
 	return new VariableDeclarationStatement (super_block, type, name, expression);
 }
@@ -220,8 +230,10 @@ VariableAssignmentStatement* variable_assignment_statement_parser(std::queue<std
 	std::string name = line_tokens.at(0).get_token_data();
 	
 	std::vector<Token> expression_tokens(line_tokens.begin()+2, line_tokens.end());
-	ExpressionStatement* expression = expression_statement_parser(expression_tokens, super_block);
+	ExpressionAST* expression = expression_statement_parser(expression_tokens, super_block)->get_expression();
 	
+	Symbol* symbol = super_block->find_symbol(name);
+	symbol->set_value(expression);
 	
 	return new VariableAssignmentStatement(super_block, name, expression);
 }
@@ -231,7 +243,7 @@ OutputStatement* output_statement_parser(std::queue<std::vector<Token> >& progra
 	std::vector<Token> line_tokens = program_lines.front();
 	program_lines.pop();
 	
-	std::vector<ExpressionStatement*> expression_statements;
+	std::vector<ExpressionAST*> expressions;
 	
 //	std::vector<Token> expression_tokens(line_tokens.begin()+2, line_tokens.end());
 //	ExpressionStatement* expression = expression_statement_parser(expression_tokens, super_block);
@@ -242,15 +254,15 @@ OutputStatement* output_statement_parser(std::queue<std::vector<Token> >& progra
 			expression_tokens.push_back(lt);
 		}
 		else{
-			ExpressionStatement* expression = expression_statement_parser(expression_tokens, super_block);
-			expression_statements.push_back(expression);
+			ExpressionAST* expression = expression_statement_parser(expression_tokens, super_block)->get_expression();
+			expressions.push_back(expression);
 			expression_tokens.clear();
 		}
 	}
-	ExpressionStatement* expression = expression_statement_parser(expression_tokens, super_block);
-	expression_statements.push_back(expression);
+	ExpressionAST* expression = expression_statement_parser(expression_tokens, super_block)->get_expression();
+	expressions.push_back(expression);
 	
-	return new OutputStatement(super_block, expression_statements);
+	return new OutputStatement(super_block, expressions);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -260,7 +272,7 @@ OutputStatement* output_statement_parser(std::queue<std::vector<Token> >& progra
 
 Block* program_parser(std::queue<std::vector<Token> > program_lines){
 	
-	Block* program_block = new Block()
+	Block* program_block = new Block();
 	
 	Element* next_element = NULL;
 	

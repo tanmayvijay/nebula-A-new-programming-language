@@ -117,7 +117,7 @@ class Tokenizer{
 //			operators end
 			
 			this->patterns.push_back(
-				TokenPattern(_BOOLEAN_LITERAL_, "^(true|false)\\b")
+				TokenPattern(_BOOLEAN_LITERAL_, "^((True)|(False))\\b")
 			);
 			
 			this->patterns.push_back(
@@ -127,10 +127,10 @@ class Tokenizer{
 			this->patterns.push_back(
 				TokenPattern(_DECIMAL_LITERAL_, "^([0-9]+\\.[0-9]+)\\b")
 			);
-			
+//			std::cout << "\nhere\n";
 			this->patterns.push_back(
 //				TokenPattern(_NUMBER_LITERAL_, "^([0-9]+(\\.[0-9]+)?)[^a-zA-Z_]")  // this one will cause probem when a number is at the end of line
-				TokenPattern(_INTEGER_LITERAL_, "^([0-9]+\\b")
+				TokenPattern(_INTEGER_LITERAL_, "^([0-9]+)\\b")
 			);
 			
 			this->patterns.push_back(

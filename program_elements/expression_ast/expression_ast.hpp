@@ -86,7 +86,7 @@ enum Operator{
 }; // add ** (power) to it
 
 
-std::map<std::string, OperatorPrecedence> string_to_operator_mapping {
+std::map<std::string, Operator> string_to_operator_mapping {
 	{"or", _OR_OP_},
 	{"and", _AND_OP_},
 	{"==", _EQUAL_OP_},
@@ -108,7 +108,7 @@ std::map<std::string, OperatorPrecedence> string_to_operator_mapping {
 
 
 class OperatorNode : public ExpressionAST{
-	std::Operator op;
+	Operator op;
 	
 	ExpressionAST* left_node = NULL;
 	ExpressionAST* right_node = NULL;
@@ -124,7 +124,7 @@ class OperatorNode : public ExpressionAST{
 			this->op = string_to_operator_mapping.find(op_string)->second;
 			this->precedence = operator_precendence_mapping.find(op_string)->second;
 			
-			if (op_str == "not")
+			if (op == _NOT_OP_)
 				this->operator_type = _UNARY_OP_;
 			else
 				this->operator_type = _BINARY_OP_;
@@ -161,35 +161,56 @@ class OperatorNode : public ExpressionAST{
 		
 		
 		void _repr_(){
-			std::cout << " [";
+			std::cout << " [ ";
 			
 			if (this->left_node)
 				this->left_node->_repr_();
 			
-			std::cout << " " << this->get_node_data().get_token_data() << " ";
+			std::cout << " " << this->op << " ";
 			
 			this->right_node->_repr_();
 			
-			std::cout << "] ";
+			std::cout << " ] ";
 		}
 			
 };
 
 
-class OperandNode : public ExpressionAST{
+class OperandNodeWithExpression : public ExpressionAST{
 	ValueType operand_type;
-	std::string operand_value;
+	ExpressionAST* operand_value_expression;
 	public:
-		OperandNode(ValueType operand_type, std::string operand_value) : ExpressionAST(_OPERAND_NODE_){
+		OperandNodeWithExpression(ValueType operand_type, ExpressionAST* operand_value) : ExpressionAST(_OPERAND_NODE_){
 			this->operand_type = operand_type;
-			this->operand_value = opreand_value;
+			this->operand_value_expression = operand_value;
 		}
 		
 		void _repr_(){
-			std::cout << this->get_node_data().get_token_data();
+			std::cout << " [ ";
+			operand_value_expression->_repr_();
+			std::cout << " ] ";
 		}
 		
+		
+		// evaluate frther calls the expression's evaluate;
 	
+};
+
+
+class OperandNodeFinal : public ExpressionAST{
+	ValueType operand_type;
+	std::string operand_value;
+	public:
+		OperandNodeFinal(ValueType operand_type, std::string operand_value) : ExpressionAST(_OPERAND_NODE_){
+			this->operand_type = operand_type;
+			this->operand_value = operand_value;
+		}
+		
+		void _repr_(){
+			std::cout << operand_value;
+		}
+		
+		// evaluate simply returns string value	
 };
 
 
