@@ -79,14 +79,17 @@ ExpressionStatement* expression_statement_parser(std::queue<std::vector<Token> >
 			operator_stack.push( op_node );
 		}
 		
-		else if (token_type == _NUMBER_LITERAL_ || token_type == _STRING_LITERAL_ ||
-				token_type == _IDENTIFIER_OR_KEYWORD_LITERAL_){
+		else if (token_type == _NUMBER_LITERAL_ ||
+				 token_type == _STRING_LITERAL_ ||
+				 token_type == _IDENTIFIER_OR_KEYWORD_LITERAL_){
 //			std::cout << "operand\n";
 			operand = new OperandNode(token);
 			expression_stack.push( operand );
 		}				
 			
-		else if (token_type == _ARITHMETIC_OPERATOR_LITERAL_ || token_type == _RELATIONAL_OPERATOR_LITERAL_ || token_type == _LOGICAL_OPERATOR_LITERAL_){
+		else if (token_type == _ARITHMETIC_OPERATOR_LITERAL_ ||
+				 token_type == _RELATIONAL_OPERATOR_LITERAL_ ||
+				 token_type == _LOGICAL_OPERATOR_LITERAL_){
 //			std::cout << token.get_token_data() << ":operator\n";
 			OperatorPrecedence op_precedence = operator_precendence_mapping.find(token.get_token_data())->second;
 			while( operator_stack.size() > 1 && operator_stack.top()->get_operator_precedence() >= op_precedence && operator_stack.top()->get_node_data().get_token_type() != _OPEN_BRACKET_LITERAL_){
