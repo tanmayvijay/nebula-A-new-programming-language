@@ -43,6 +43,10 @@ class Block : public Element{
 			return this->sub_elements;
 		}
 		
+		std::vector<Symbol*> get_symbol_table(){
+			return this->symbol_table;
+		}
+		
 		Block* get_super_block(){
 			return this->super_block;
 		}
@@ -114,6 +118,7 @@ class Block : public Element{
 			for(Element* e: sub_elements){
 				e->_repr_();
 			}
+
 			std::cout << std::endl << "------- BLOCK END -------" << std::endl;
 
 		}
@@ -240,7 +245,7 @@ class OutputStatement : public Statement{
 		}
 		
 		void _repr_(){
-			std::cout << "display: ~ \n";
+			std::cout << "display: ";
 			
 			for(ExpressionAST* exp : expressions){
 				exp->_repr_();
@@ -267,7 +272,7 @@ class InputStatement : public Statement{
 		}
 		
 		void _repr_(){
-			std::cout << "scan: ~ \n";
+			std::cout << "scan: ";
 			
 			for(Symbol* sym : variables){
 				std::cout << sym->get_value_type() << " : " << sym->get_symbol_name() << "\n";
@@ -279,11 +284,68 @@ class InputStatement : public Statement{
 
 /////////////////////////// BLOCKS //////////////////////////////////
 
+class ConditionalBlock : public Block{ // for if, else if, else
+										// else block has condition == NULL
+										// super_block is an IFBlock
+	ExpressionAST* condition_expression;
+	public:
+		ConditionalBlock(Block* super_block, ExpressionAST* condition_expression) : Block(super_block){
+			this->condition_expression = condition_expression;
+		}
+		
+		void run() {
+			std::cout << "Inside conditional statement" << std::endl;
+		}
+		
+		void _repr_(){
+			std::cout << "------------ IF CONDITION -----------------\n";
+			
+			if (this->condition_expression){
+				std::cout << "Condition: ";
+				this->condition_expression->_repr_();
+			}
+			
+			
+			std::cout << "\nSymbol Table:\n";
+			printf("%5s |%15s |%30s\n", "Type", "Name", "Value Expression");
+			std::cout << "-------------------------------------------------------\n";
+			for(Symbol* sym: this->get_symbol_table() ){
+				printf("%5d |%15s | ", sym->get_value_type(), sym->get_symbol_name().c_str());
+				sym->get_symbol_value()->_repr_();
+				std::cout << "\n";
+			}
+		
+			std::cout << "\n\n";
+			
+			for(Element* e: this->get_elements()){
+				e->_repr_();
+			}
+			
+			std::cout << "------------ IF CONDITION END -------------\n";
+		}
+};
 
 
 
+class IFBlock : public Block{ // sub-elements vector contains all the ConditionaBlocks.
+	public:
+		IFBlock(Block* super_block) : Block(super_block){
+		}
+		
+		void run() {
+			std::cout << "Inside if statement" << std::endl;
+		}
+		
+		void _repr_(){
+			std::cout << "------------ IF BLOCK -----------------\n";
 
-
+			for(Element* e: this->get_elements()){
+				e->_repr_();
+			}
+			
+			std::cout << "------------ IF BLOCK END -------------\n";
+		}
+};
 
 
 

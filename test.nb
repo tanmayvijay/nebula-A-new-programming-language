@@ -22,6 +22,32 @@ scan x
 
 scan x, y, var, n
 
+
+if x > y {
+string some
+display y, x
+display var, "awesome"
+
+$ nested if statement
+if some == x{
+display "nested"
+}
+else {
+scan var
+}
+
+some = "I love coding"
+display some
+scan y
+}
+else if var == 124652 {
+display "equal"
+}
+else {
+display "else block", False
+}
+
+
 $ ok so this is a comment
 $ ok so this is a comment
 $ ok so this is a comment

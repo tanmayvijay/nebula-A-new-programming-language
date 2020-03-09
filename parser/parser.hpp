@@ -18,6 +18,11 @@
 #include "../program_elements/symbol_table/symbol_table.hpp"
 
 
+
+Element* parse_line(std::queue<std::vector<Token> >& program_lines, Block* super_block);
+
+
+
 std::map<std::string, ValueType> string_to_ValueType_mapping {
 			{"string", _STRING_},
 			{"integer", _INTEGER_},
@@ -32,6 +37,9 @@ std::map<std::string, ValueType> string_to_ValueType_mapping {
 std::basic_regex<char> comment_statement_pattern("^(\\$.*)$");
 std::basic_regex<char> output_statement_pattern("^(display ([^,]+)( , [^,]+)*)$");
 std::basic_regex<char> input_statement_pattern("^(scan ([a-zA-Z_][a-zA-Z_0-9]*)( , [a-zA-Z_][a-zA-Z_0-9]*)*)$");
+std::basic_regex<char> if_statement_pattern("^(if [a-zA-Z0-9._()+-*/%>=<! ]+\\{)$");
+std::basic_regex<char> else_if_statement_pattern("^(else if [a-zA-Z0-9._()+-*/%>=<! ]+\\{)$");
+std::basic_regex<char> else_statement_pattern("^(else \\{)$");
 std::basic_regex<char> variable_declaration_statement_pattern("^([a-zA-Z_][a-zA-Z_0-9]* [a-zA-Z_][a-zA-Z_0-9]*( = .+)?)$");
 std::basic_regex<char> variable_assignment_statement_pattern("^([a-zA-Z_][a-zA-Z_0-9]* = .+)$");
 std::basic_regex<char> expression_statement_pattern( "^([a-zA-Z0-9._()+-*/%>=<! ]+)$");
@@ -292,8 +300,123 @@ InputStatement* input_statement_parser(std::queue<std::vector<Token> >& program_
 	return new InputStatement(super_block, variables);
 }
 
+
+IFBlock* if_block_parser(std::queue<std::vector<Token> >& program_lines, Block* super_block){
+	std::vector<Token> line_tokens = program_lines.front();
+	program_lines.pop();
+	
+	std::vector<Token> expression_in_line = std::vector<Token>(line_tokens.begin()+1, line_tokens.end()-1);
+	ExpressionAST* condition_expression = expression_statement_parser(expression_in_line, super_block)->get_expression();
+	
+	IFBlock* if_block = new IFBlock(super_block);
+	
+	ConditionalBlock* if_condition_block = new ConditionalBlock(if_block, condition_expression);
+	
+	while(program_lines.front().at(0).get_token_type() != _CLOSE_PARENTHESIS_LITERAL_){ // if 
+		
+		Element* next_element = parse_line(program_lines, if_condition_block);
+		if(next_element)
+			if_condition_block->add_element(next_element);
+	}
+	
+	if_block->add_element(if_condition_block);
+	program_lines.pop();
+	
+	
+	while( parsable(program_lines.front(), else_if_statement_pattern) ){ // else if
+		line_tokens = program_lines.front();
+		program_lines.pop();
+		expression_in_line = std::vector<Token>(line_tokens.begin()+2, line_tokens.end()-1);
+		condition_expression = expression_statement_parser(expression_in_line, super_block)->get_expression();
+		
+		ConditionalBlock* else_if_condition_block = new ConditionalBlock(if_block, condition_expression);
+		
+		while(program_lines.front().at(0).get_token_type() != _CLOSE_PARENTHESIS_LITERAL_){
+			
+			Element* next_element = parse_line(program_lines, else_if_condition_block);
+			if(next_element)
+				else_if_condition_block->add_element(next_element);
+		}
+		
+		if_block->add_element(else_if_condition_block);
+		program_lines.pop();
+		
+	}
+	
+	
+	line_tokens = program_lines.front(); //else
+	if (parsable(line_tokens, else_statement_pattern)){
+		program_lines.pop();
+		
+		ConditionalBlock* else_condition_block = new ConditionalBlock(if_block, NULL);
+		
+		while(program_lines.front().at(0).get_token_type() != _CLOSE_PARENTHESIS_LITERAL_){
+			
+			Element* next_element = parse_line(program_lines, else_condition_block);
+			if(next_element)
+				else_condition_block->add_element(next_element);
+		}
+		
+		if_block->add_element(else_condition_block);
+		program_lines.pop();
+	}
+	
+	
+	return if_block;
+	
+	
+}
+
+
 ////////////////////////////////////////////////////////////////////////////////
 
+
+
+Element* parse_line(std::queue<std::vector<Token> >& program_lines, Block* super_block){
+	
+	std::vector<Token> line_tokens = program_lines.front();
+	
+	
+//	for(Token& t : line_tokens){
+//		std::cout << t.get_token_data() << " ";
+//	}
+//	std::cout << "\n";
+	
+	if (parsable(line_tokens, comment_statement_pattern)){
+		program_lines.pop();
+		return NULL;
+	}
+	else if (parsable(line_tokens, output_statement_pattern)){
+		return output_statement_parser(program_lines, super_block);
+	}
+	else if (parsable(line_tokens, input_statement_pattern)){
+		return input_statement_parser(program_lines, super_block);
+	}
+	else if (parsable(line_tokens, if_statement_pattern)){
+		return if_block_parser(program_lines, super_block);
+	}
+	else if (parsable(line_tokens, else_if_statement_pattern)){
+		std::cout << "\n'else if' block without if block\n";
+		throw std::exception();
+	}
+	else if (parsable(line_tokens, else_statement_pattern)){
+		std::cout << "\n'else' block without if block\n";
+		throw std::exception();
+	}
+	else if (parsable(line_tokens, variable_declaration_statement_pattern)){
+		return variable_declaration_statement_parser(program_lines, super_block);
+	}
+	else if (parsable(line_tokens, variable_assignment_statement_pattern)){
+		return variable_assignment_statement_parser(program_lines, super_block);
+	}
+	else if (parsable(line_tokens, expression_statement_pattern)){
+		return expression_statement_parser(program_lines, super_block);
+	}
+	else{
+		std::cout << "\nline not parsed\n";	
+		throw std::exception();
+	}
+}
 
 
 
@@ -305,45 +428,10 @@ Block* program_parser(std::queue<std::vector<Token> > program_lines){
 	
 	while( !program_lines.empty() ){
 		
-		std::vector<Token> line_tokens = program_lines.front();
-
-		next_element = NULL;
+		next_element = parse_line(program_lines, program_block);
 		
-		bool line_parsed = false;
-		
-		if (parsable(line_tokens, comment_statement_pattern)){
-//			next_element = comment_statement_parser(program_lines, NULL);
-			program_lines.pop();
-			continue;
-		}
-		else if (parsable(line_tokens, output_statement_pattern)){
-			next_element = output_statement_parser(program_lines, program_block);
-			line_parsed = true;
-		}
-		else if (parsable(line_tokens, input_statement_pattern)){
-			next_element = input_statement_parser(program_lines, program_block);
-			line_parsed = true;
-		}
-		else if (parsable(line_tokens, variable_declaration_statement_pattern)){
-			next_element = variable_declaration_statement_parser(program_lines, program_block);
-			line_parsed = true;
-		}
-		else if (parsable(line_tokens, variable_assignment_statement_pattern)){
-			next_element = variable_assignment_statement_parser(program_lines, program_block);
-			line_parsed = true;
-		}
-		else if (parsable(line_tokens, expression_statement_pattern)){
-			
-			next_element = expression_statement_parser(program_lines, program_block);
-			line_parsed = true;
-		}
-		
-		if (!line_parsed){
-			std::cout << "\nline not parsed\n";	
-			throw std::exception();
-		}
-		
-		program_block->add_element(next_element);
+		if (next_element)
+			program_block->add_element(next_element);
 		
 	}
 	
