@@ -76,8 +76,10 @@ ExpressionStatement* expression_statement_parser(std::queue<std::vector<Token> >
 	std::stack<ExpressionAST*> expression_stack;
 	
 	OperatorNode* op_node;
-	OperandNodeWithExpression* operand_w_exp;
-	OperandNodeFinal* operand_final;
+//	OperandNodeWithExpression* operand_w_exp;
+//	OperandNodeFinal* operand_final;
+	OperandNodeWithSymbol* operand_w_exp;
+	OperandNodeWithConstant* operand_final;
 	
 	for (Token& token : line_tokens){
 //		std::cout << token.get_token_data() << std::endl;
@@ -92,7 +94,7 @@ ExpressionStatement* expression_statement_parser(std::queue<std::vector<Token> >
 		
 		else if (token_type == _IDENTIFIER_OR_KEYWORD_LITERAL_){
 			Symbol* symbol = super_block->find_symbol(token.get_token_data());
-			operand_w_exp = new OperandNodeWithExpression(symbol->get_value_type(), symbol->get_symbol_value());
+			operand_w_exp = new OperandNodeWithSymbol(symbol);
 			expression_stack.push( operand_w_exp );
 		}
 		
@@ -103,7 +105,7 @@ ExpressionStatement* expression_statement_parser(std::queue<std::vector<Token> >
 				 ){
 //			std::cout << "operand\n";
 			ValueType v_type = TokenType_to_ValueType_mapping.find(token_type)->second;
-			operand_final = new OperandNodeFinal(v_type, token.get_token_data());
+			operand_final = new OperandNodeWithConstant(v_type, token.get_token_data());
 			expression_stack.push( operand_final );
 		}				
 			

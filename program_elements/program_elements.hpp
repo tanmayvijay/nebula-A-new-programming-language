@@ -275,4 +275,21 @@ class InputStatement : public Statement{
 		}
 };
 
+
+
+/////////////////////////// BLOCKS //////////////////////////////////
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #endif

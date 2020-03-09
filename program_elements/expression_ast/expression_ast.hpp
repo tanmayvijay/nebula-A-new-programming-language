@@ -9,6 +9,7 @@
 #include "../value_type.hpp"
 
 
+
 enum NodeType{
 	_OPERATOR_NODE_,
 	_OPERAND_NODE_
@@ -175,19 +176,25 @@ class OperatorNode : public ExpressionAST{
 			
 };
 
+#include "../symbol_table/symbol_table.hpp"
 
-class OperandNodeWithExpression : public ExpressionAST{
-	ValueType operand_type;
-	ExpressionAST* operand_value_expression;
+class OperandNodeWithSymbol : public ExpressionAST{
+//	ValueType operand_type;
+//	ExpressionAST* operand_value_expression;
+	Symbol* symbol;
 	public:
-		OperandNodeWithExpression(ValueType operand_type, ExpressionAST* operand_value) : ExpressionAST(_OPERAND_NODE_){
-			this->operand_type = operand_type;
-			this->operand_value_expression = operand_value;
+//		OperandNodeWithExpression(ValueType operand_type, ExpressionAST* operand_value) : ExpressionAST(_OPERAND_NODE_){
+//			this->operand_type = operand_type;
+//			this->operand_value_expression = operand_value;
+//		}
+
+		OperandNodeWithSymbol(Symbol* symbol) : ExpressionAST(_OPERAND_NODE_){
+			this->symbol = symbol;
 		}
 		
 		void _repr_(){
 			std::cout << " [ ";
-			operand_value_expression->_repr_();
+			std::cout << symbol->get_symbol_name();
 			std::cout << " ] ";
 		}
 		
@@ -197,11 +204,16 @@ class OperandNodeWithExpression : public ExpressionAST{
 };
 
 
-class OperandNodeFinal : public ExpressionAST{
+class OperandNodeWithConstant : public ExpressionAST{
 	ValueType operand_type;
 	std::string operand_value;
 	public:
-		OperandNodeFinal(ValueType operand_type, std::string operand_value) : ExpressionAST(_OPERAND_NODE_){
+//		OperandNodeFinal(ValueType operand_type, std::string operand_value) : ExpressionAST(_OPERAND_NODE_){
+//			this->operand_type = operand_type;
+//			this->operand_value = operand_value;
+//		}
+
+		OperandNodeWithConstant(ValueType operand_type, std::string operand_value) : ExpressionAST(_OPERAND_NODE_){
 			this->operand_type = operand_type;
 			this->operand_value = operand_value;
 		}
