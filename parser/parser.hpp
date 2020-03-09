@@ -31,9 +31,10 @@ std::map<std::string, ValueType> string_to_ValueType_mapping {
 
 std::basic_regex<char> comment_statement_pattern("^(\\$.*)$");
 std::basic_regex<char> output_statement_pattern("^(display ([^,]+)( , [^,]+)*)$");
+std::basic_regex<char> input_statement_pattern("^(scan ([a-zA-Z_][a-zA-Z_0-9]*)( , [a-zA-Z_][a-zA-Z_0-9]*)*)$");
 std::basic_regex<char> variable_declaration_statement_pattern("^([a-zA-Z_][a-zA-Z_0-9]* [a-zA-Z_][a-zA-Z_0-9]*( = .+)?)$");
 std::basic_regex<char> variable_assignment_statement_pattern("^([a-zA-Z_][a-zA-Z_0-9]* = .+)$");
-std::basic_regex<char> expression_statement_pattern( "^([a-zA-Z0-9_()+-*/%>=<! ]+)$");
+std::basic_regex<char> expression_statement_pattern( "^([a-zA-Z0-9._()+-*/%>=<! ]+)$");
 
 //  End of Regular Expressions for all code elements
 
@@ -209,7 +210,7 @@ VariableDeclarationStatement* variable_declaration_statement_parser(std::queue<s
 		expression = expression_statement_parser(expression_tokens, super_block)->get_expression();
 	}
 	
-	if (super_block->check_symbol_already_exists(name)){
+	if (super_block->check_symbol_already_exists_in_this_block(name)){
 		std::cout << "\nSymbol '" << name << "' already declared before!\n";
 		throw std::exception();
 	}
@@ -268,6 +269,27 @@ OutputStatement* output_statement_parser(std::queue<std::vector<Token> >& progra
 	return new OutputStatement(super_block, expressions);
 }
 
+
+InputStatement* input_statement_parser(std::queue<std::vector<Token> >& program_lines, Block* super_block){
+	std::vector<Token> line_tokens = program_lines.front();
+	program_lines.pop();
+	
+	std::vector<Symbol*> variables;
+	
+	for(int i=1; i<line_tokens.size(); i+=2 ){ // skip 'scan' token and then skip alternate ',' tokens
+		Token& var = line_tokens.at(i);
+		Symbol* symbol = super_block->find_symbol(var.get_token_data());
+		if (!symbol){
+			std::cout << "\nSymbol '" << var.get_token_data() << "' does not exist or accessed before declaration!\n";
+			throw std::exception();
+		}
+		
+		variables.push_back(symbol);
+	}
+	
+	return new InputStatement(super_block, variables);
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 
 
@@ -294,6 +316,10 @@ Block* program_parser(std::queue<std::vector<Token> > program_lines){
 		}
 		else if (parsable(line_tokens, output_statement_pattern)){
 			next_element = output_statement_parser(program_lines, program_block);
+			line_parsed = true;
+		}
+		else if (parsable(line_tokens, input_statement_pattern)){
+			next_element = input_statement_parser(program_lines, program_block);
 			line_parsed = true;
 		}
 		else if (parsable(line_tokens, variable_declaration_statement_pattern)){

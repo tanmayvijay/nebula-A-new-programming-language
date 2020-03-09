@@ -55,7 +55,7 @@ class Block : public Element{
 			return true;
 		}
 		
-		bool check_symbol_already_exists(std::string sym_name){
+		bool check_symbol_already_exists_in_this_block(std::string sym_name){
 //			bool found_symbol = false;
 			for (Symbol* sym : symbol_table){
 				if (sym->get_symbol_name() == sym_name){
@@ -66,6 +66,10 @@ class Block : public Element{
 			
 			return false;
 		}
+		
+//		bool check_symbol_exists_in_program(std::string sym_name){
+//			
+//		}
 		
 		Symbol* find_symbol(std::string sym_name){
 			bool found_symbol = false;
@@ -249,8 +253,26 @@ class OutputStatement : public Statement{
 
 
 // scan statement
-//class InputStatement : public Statement{
-//	
-//};
+class InputStatement : public Statement{
+	std::vector<Symbol*> variables;
+	
+	public:
+		InputStatement(Block* super_block, std::vector<Symbol*> variables) : Statement(super_block){
+			this->variables = variables;
+		}
+		
+		
+		void run() {
+			std::cout << "Inside scan statement" << std::endl;
+		}
+		
+		void _repr_(){
+			std::cout << "scan: ~ \n";
+			
+			for(Symbol* sym : variables){
+				std::cout << sym->get_value_type() << " : " << sym->get_symbol_name() << "\n";
+			}
+		}
+};
 
 #endif

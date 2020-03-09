@@ -16,6 +16,12 @@ decimal n = x + y * True
 
 display y, x
 
+
+scan x
+
+
+scan x, y, var, n
+
 $ ok so this is a comment
 $ ok so this is a comment
 $ ok so this is a comment
