@@ -2,9 +2,13 @@
 #define SYMBOL_TABLE_H
 
 #include<string>
+#include<vector>
 
 #include "../value_type.hpp"
-#include "../expression_ast/expression_ast.hpp"
+
+
+//#include "../expression_ast/expression_ast.hpp"
+class ExpressionAST;
 
 class Symbol{
 	ValueType type;
@@ -35,6 +39,45 @@ class Symbol{
 			this->value_expression = expression;
 		}
 	
+};
+
+
+
+
+class Block;
+
+class Function : public Symbol{
+	std::vector<Symbol*> parameters;
+	Symbol* return_variable;
+	Block* function_block;
+	
+	public:
+		Function(std::string func_name, std::vector<Symbol*> parameters, ValueType return_type, Symbol* return_variable, Block* function_block) : Symbol(return_type, func_name, NULL){
+			this->parameters = parameters;
+			this->return_variable = return_variable;
+			this->function_block = function_block;
+		}
+		
+		std::string get_function_name(){
+			return this->get_symbol_name();
+		}
+		
+		std::vector<Symbol*> get_parameters(){
+			return this->parameters;
+		}
+		
+		ValueType get_return_type(){
+			return this->get_value_type();
+		}
+		
+		Symbol* get_return_variable(){
+			return this->return_variable;
+		}
+		
+		Block* get_function_block(){
+			return this->function_block;
+		}
+		
 };
 
 

@@ -10,12 +10,13 @@
 #include "symbol_table/symbol_table.hpp"
 
 
+
+
 class Element{
 	public:
 
 		virtual void run() = 0;
 		virtual void _repr_() = 0;
-
 };
 
 /////////////////////////////////////////////////
@@ -29,16 +30,8 @@ class Block : public Element{
 		Block(Block* super_block = NULL){
 			this->super_block = super_block;
 		}
-		
-//		Block(std::vector<Element*>* sub_elements, Block* super_block = NULL){
-//			this->super_block = super_block;
-//			this->sub_elements = sub_elements;
-//		}
 
-		void add_element(Element* element){
-			this->sub_elements.push_back(element);
-		}
-		
+		// getters		
 		std::vector<Element*> get_elements(){
 			return this->sub_elements;
 		}
@@ -51,29 +44,32 @@ class Block : public Element{
 			return this->super_block;
 		}
 		
-		bool add_symbol(Symbol* symbol){ // returns true if symbol is successfully added to block
-			for (Symbol* sym : symbol_table){
-				if (sym->get_symbol_name() == symbol->get_symbol_name()) return false;
-			}
-			this->symbol_table.push_back(symbol);
-			return true;
+		// setters
+		void add_element(Element* element){
+			this->sub_elements.push_back(element);
 		}
 		
+		bool add_symbol(Symbol* symbol){ // returns true if symbol is successfully added to block
+			for (Symbol* sym : symbol_table){
+				if (sym->get_symbol_name() == symbol->get_symbol_name()){
+					std::cout << "\nSymbol : '" << sym->get_symbol_name() << "' alreaady exists!\n";
+					throw std::exception();
+				}
+			}
+			this->symbol_table.push_back(symbol);
+		}
+		
+		
+		// other methods
 		bool check_symbol_already_exists_in_this_block(std::string sym_name){
-//			bool found_symbol = false;
 			for (Symbol* sym : symbol_table){
 				if (sym->get_symbol_name() == sym_name){
-//					found_symbol = true;
 					return true;
 				}
 			}
 			
 			return false;
 		}
-		
-//		bool check_symbol_exists_in_program(std::string sym_name){
-//			
-//		}
 		
 		Symbol* find_symbol(std::string sym_name){
 			bool found_symbol = false;
@@ -98,7 +94,7 @@ class Block : public Element{
 			return symbol_to_return;
 		}
 		
-		// implement run
+		
 		void run(){
 			std::cout << "Inside block" << std::endl;
 		}
@@ -122,9 +118,6 @@ class Block : public Element{
 			std::cout << std::endl << "------- BLOCK END -------" << std::endl;
 
 		}
-		
-		// implement find_variable
-		
 };
 
 
@@ -314,6 +307,13 @@ class ConditionalBlock : public Block{ // for if, else if, else
 				sym->get_symbol_value()->_repr_();
 				std::cout << "\n";
 			}
+			
+//			std::cout << "\n\nFunction - Function Table:\n";
+//			printf("%5s |%15s |\n", "Ret. Type", "Func Name");
+//			std::cout << "-------------------------------------------------------\n";
+//			for(Function* func : this->get_function_table()){
+//				printf("%5d |%15s |\n", func->get_return_type(), func->get_function_name().c_str());
+//			}
 		
 			std::cout << "\n\n";
 			
@@ -323,13 +323,15 @@ class ConditionalBlock : public Block{ // for if, else if, else
 			
 			std::cout << "------------ IF CONDITION END -------------\n";
 		}
+		
+		
 };
 
 
 
-class IFBlock : public Block{ // sub-elements vector contains all the ConditionaBlocks.
+class IfBlock : public Block{ // sub-elements vector contains all the ConditionaBlocks.
 	public:
-		IFBlock(Block* super_block) : Block(super_block){
+		IfBlock(Block* super_block) : Block(super_block){
 		}
 		
 		void run() {
@@ -348,13 +350,13 @@ class IFBlock : public Block{ // sub-elements vector contains all the Conditiona
 };
 
 
-class FORBlock : public Block{
+class ForBlock : public Block{
 	int lower_limit;
 	int higher_limit;
 	int step_size;
 	Symbol* loop_variable;
 	public:
-		FORBlock(Block* super_block, std::string loop_variable_name, int ll, int hl, int ss=1) : Block(super_block){
+		ForBlock(Block* super_block, std::string loop_variable_name, int ll, int hl, int ss=1) : Block(super_block){
 			this->lower_limit = ll;
 			this->higher_limit = hl;
 			this->step_size = ss;
@@ -380,6 +382,13 @@ class FORBlock : public Block{
 				sym->get_symbol_value()->_repr_();
 				std::cout << "\n";
 			}
+			
+//			std::cout << "\n\nFunction - Function Table:\n";
+//			printf("%5s |%15s |\n", "Ret. Type", "Func Name");
+//			std::cout << "-------------------------------------------------------\n";
+//			for(FunctionBlock* func : this->get_function_table()){
+//				printf("%5d |%15s |\n", func->get_return_type(), func->get_function_name().c_str());
+//			}
 		
 			std::cout << "\n\n";
 
@@ -394,11 +403,11 @@ class FORBlock : public Block{
 
 
 
-class WHILEBlock : public Block{
+class WhileBlock : public Block{
 	ExpressionAST* condition_expression;
 	
 	public:
-		WHILEBlock(Block* super_block, ExpressionAST* condition_expression) : Block(super_block){
+		WhileBlock(Block* super_block, ExpressionAST* condition_expression) : Block(super_block){
 			this->condition_expression = condition_expression;
 		}
 		
@@ -422,6 +431,13 @@ class WHILEBlock : public Block{
 				sym->get_symbol_value()->_repr_();
 				std::cout << "\n";
 			}
+			
+//			std::cout << "\n\nFunction - Function Table:\n";
+//			printf("%5s |%15s |\n", "Ret. Type", "Func Name");
+//			std::cout << "-------------------------------------------------------\n";
+//			for(Function* func : this->get_function_table()){
+//				printf("%5d |%15s |\n", func->get_return_type(), func->get_function_name().c_str());
+//			}
 		
 			std::cout << "\n\n";
 
@@ -434,6 +450,8 @@ class WHILEBlock : public Block{
 		
 		
 };
+
+
 
 
 

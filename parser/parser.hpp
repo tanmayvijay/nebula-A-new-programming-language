@@ -42,6 +42,7 @@ std::basic_regex<char> else_if_statement_pattern("^(else if [a-zA-Z0-9._()+*/%>=
 std::basic_regex<char> else_statement_pattern("^(else \\{)$");
 std::basic_regex<char> for_statement_pattern("^(for [a-zA-Z_][a-zA-Z0-9_]* from [0-9]+ to [0-9]+( with [0-9]+)? \\{)$");
 std::basic_regex<char> while_statement_pattern("^(while [a-zA-Z0-9._()+*/%>=<! -]+\\{)$");
+std::basic_regex<char> function_statement_pattern("^(fun [a-zA-Z_][a-zA-Z0-9_]* \\( ([a-zA-Z0-9._()+*/%>=<! -]+ (, [a-zA-Z0-9._()+*/%>=<! -]+)* )?\\) returns [a-zA-Z_][a-zA-Z0-9_]* [a-zA-Z_][a-zA-Z0-9_]* \\{)$");
 std::basic_regex<char> variable_declaration_statement_pattern("^([a-zA-Z_][a-zA-Z0-9_]* [a-zA-Z_][a-zA-Z_0-9]*( = .+)?)$");
 std::basic_regex<char> variable_assignment_statement_pattern("^([a-zA-Z_][a-zA-Z_0-9]* = .+)$");
 std::basic_regex<char> expression_statement_pattern( "^([a-zA-Z0-9._()+*/%>=<! -]+)$");
@@ -303,14 +304,14 @@ InputStatement* input_statement_parser(std::queue<std::vector<Token> >& program_
 }
 
 
-IFBlock* if_block_parser(std::queue<std::vector<Token> >& program_lines, Block* super_block){
+IfBlock* if_block_parser(std::queue<std::vector<Token> >& program_lines, Block* super_block){
 	std::vector<Token> line_tokens = program_lines.front();
 	program_lines.pop();
 	
 	std::vector<Token> expression_in_line = std::vector<Token>(line_tokens.begin()+1, line_tokens.end()-1);
 	ExpressionAST* condition_expression = expression_statement_parser(expression_in_line, super_block)->get_expression();
 	
-	IFBlock* if_block = new IFBlock(super_block);
+	IfBlock* if_block = new IfBlock(super_block);
 	
 	ConditionalBlock* if_condition_block = new ConditionalBlock(if_block, condition_expression);
 	
@@ -371,7 +372,7 @@ IFBlock* if_block_parser(std::queue<std::vector<Token> >& program_lines, Block* 
 
 
 
-FORBlock* for_block_parser(std::queue<std::vector<Token> >& program_lines, Block* super_block){
+ForBlock* for_block_parser(std::queue<std::vector<Token> >& program_lines, Block* super_block){
 	std::vector<Token> line_tokens = program_lines.front();
 	program_lines.pop();
 	
@@ -385,7 +386,7 @@ FORBlock* for_block_parser(std::queue<std::vector<Token> >& program_lines, Block
 		step_size = std::stoi(line_tokens.at(7).get_token_data());
 	}
 	
-	FORBlock* for_block = new FORBlock(super_block, loop_variable_name, lower_limit, higher_limit, step_size);
+	ForBlock* for_block = new ForBlock(super_block, loop_variable_name, lower_limit, higher_limit, step_size);
 	
 	while(program_lines.front().at(0).get_token_type() != _CLOSE_PARENTHESIS_LITERAL_){
 		
@@ -403,14 +404,14 @@ FORBlock* for_block_parser(std::queue<std::vector<Token> >& program_lines, Block
 
 
 
-WHILEBlock* while_block_parser(std::queue<std::vector<Token> >& program_lines, Block* super_block){
+WhileBlock* while_block_parser(std::queue<std::vector<Token> >& program_lines, Block* super_block){
 	std::vector<Token> line_tokens = program_lines.front();
 	program_lines.pop();
 	
 	std::vector<Token> expression_in_line = std::vector<Token>(line_tokens.begin()+1, line_tokens.end()-1);
 	ExpressionAST* condition_expression = expression_statement_parser(expression_in_line, super_block)->get_expression();
 	
-	WHILEBlock* while_block = new WHILEBlock(super_block, condition_expression);
+	WhileBlock* while_block = new WhileBlock(super_block, condition_expression);
 	
 	while(program_lines.front().at(0).get_token_type() != _CLOSE_PARENTHESIS_LITERAL_){
 		Element* next_element = parse_line(program_lines, while_block);
@@ -420,6 +421,60 @@ WHILEBlock* while_block_parser(std::queue<std::vector<Token> >& program_lines, B
 	program_lines.pop();
 	
 	return while_block;
+}
+
+
+Element* function_block_parser(std::queue<std::vector<Token> >& program_lines, Block* super_block){
+	std::vector<Token> line_tokens = program_lines.front();
+	program_lines.pop();
+	
+	std::string func_name = line_tokens.at(1).get_token_data();
+	
+	std::vector<Symbol*> parameters;
+	
+	int i=3; // i at first param-type
+	while(line_tokens.at(i).get_token_type() != _CLOSE_BRACKET_LITERAL_){
+		
+		ValueType param_type = string_to_ValueType_mapping.find(line_tokens.at(i).get_token_data())->second;
+		i++; // i at param name
+		std::string param_name = line_tokens.at(i).get_token_data();
+		OperandNodeWithConstant* param_default_value = new OperandNodeWithConstant(param_type);
+		
+		Symbol* param = new Symbol(param_type, param_name, param_default_value);
+		
+		parameters.push_back(param);
+		
+		i++; // i at , or )
+		if (line_tokens.at(i).get_token_data() == ",") i++; // i at token after ,
+	}
+	
+	i += 2; // i at return type
+	
+	ValueType return_type = string_to_ValueType_mapping.find(line_tokens.at(i).get_token_data())->second;
+	std::string return_variable_name = line_tokens.at(++i).get_token_data();
+	OperandNodeWithConstant* return_var_default_value = new OperandNodeWithConstant(return_type);
+	Symbol* return_variable = new Symbol(return_type, return_variable_name, return_var_default_value);
+	
+	Block* function_block = new Block(super_block);
+	for(Symbol* param : parameters){
+		function_block->add_symbol(param);
+	}
+	function_block->add_symbol(return_variable);
+	
+	
+	while(program_lines.front().at(0).get_token_type() != _CLOSE_PARENTHESIS_LITERAL_){
+		Element* next_element = parse_line(program_lines, function_block);
+		if (next_element)
+			function_block->add_element(next_element);
+	}
+	program_lines.pop();
+	
+	Function* function = new Function(func_name, parameters, return_type, return_variable, function_block);
+	
+	super_block->add_symbol(function);
+	
+	function_block->_repr_();
+	return NULL;
 }
 
 
@@ -461,6 +516,9 @@ Element* parse_line(std::queue<std::vector<Token> >& program_lines, Block* super
 	}
 	else if (parsable(line_tokens, while_statement_pattern)){
 		return while_block_parser(program_lines, super_block);
+	}
+	else if (parsable(line_tokens, function_statement_pattern)){
+		return function_block_parser(program_lines, super_block);
 	}
 	else if (parsable(line_tokens, variable_declaration_statement_pattern)){
 		return variable_declaration_statement_parser(program_lines, super_block);

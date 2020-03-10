@@ -204,6 +204,18 @@ class OperandNodeWithSymbol : public ExpressionAST{
 };
 
 
+
+std::map<ValueType, std::string> ValueType_to_default_value_mapping {
+	{_NONE_, "N/A"},
+	{_INTEGER_, "0"},
+	{_DECIMAL_, "0.0"},
+	{_STRING_, ""},
+	{_BOOLEAN_, "False"},
+	{_CUSTOM_, ""}
+};
+
+
+
 class OperandNodeWithConstant : public ExpressionAST{
 	ValueType operand_type;
 	std::string operand_value;
@@ -216,6 +228,11 @@ class OperandNodeWithConstant : public ExpressionAST{
 		OperandNodeWithConstant(ValueType operand_type, std::string operand_value) : ExpressionAST(_OPERAND_NODE_){
 			this->operand_type = operand_type;
 			this->operand_value = operand_value;
+		}
+		
+		OperandNodeWithConstant(ValueType operand_type) : ExpressionAST(_OPERAND_NODE_){
+			this->operand_type = operand_type;
+			this->operand_value = ValueType_to_default_value_mapping.find(operand_type)->second;
 		}
 		
 		void _repr_(){
