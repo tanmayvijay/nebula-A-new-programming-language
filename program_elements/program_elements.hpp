@@ -337,18 +337,60 @@ class IFBlock : public Block{ // sub-elements vector contains all the Conditiona
 		}
 		
 		void _repr_(){
-			std::cout << "------------ IF BLOCK -----------------\n";
+			std::cout << "\n------------ IF BLOCK -----------------\n";
 
 			for(Element* e: this->get_elements()){
 				e->_repr_();
 			}
 			
-			std::cout << "------------ IF BLOCK END -------------\n";
+			std::cout << "\n------------ IF BLOCK END -------------\n";
 		}
 };
 
 
+class FORBlock : public Block{
+	int lower_limit;
+	int higher_limit;
+	int step_size;
+	Symbol* loop_variable;
+	public:
+		FORBlock(Block* super_block, std::string loop_variable_name, int ll, int hl, int ss=1) : Block(super_block){
+			this->lower_limit = ll;
+			this->higher_limit = hl;
+			this->step_size = ss;
+			
+			OperandNodeWithConstant* loop_variable_expression = new OperandNodeWithConstant(_INTEGER_, std::to_string(lower_limit));
+			this->loop_variable = new Symbol(_INTEGER_, loop_variable_name, loop_variable_expression);
+			this->add_symbol(loop_variable);
+		}
+		
+		
+		void run() {
+			std::cout << "Inside for statement" << std::endl;
+		}
+		
+		void _repr_(){
+			std::cout << "\n------------ FOR BLOCK -----------------\n";
+			
+			std::cout << "\nSymbol Table:\n";
+			printf("%5s |%15s |%30s\n", "Type", "Name", "Value Expression");
+			std::cout << "-------------------------------------------------------\n";
+			for(Symbol* sym: this->get_symbol_table() ){
+				printf("%5d |%15s | ", sym->get_value_type(), sym->get_symbol_name().c_str());
+				sym->get_symbol_value()->_repr_();
+				std::cout << "\n";
+			}
+		
+			std::cout << "\n\n";
 
+			for(Element* e: this->get_elements()){
+				e->_repr_();
+			}
+			
+			std::cout << "\n------------ FOR BLOCK END -------------\n";
+		}
+		
+};
 
 
 

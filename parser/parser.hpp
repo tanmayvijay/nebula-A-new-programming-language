@@ -40,7 +40,8 @@ std::basic_regex<char> input_statement_pattern("^(scan ([a-zA-Z_][a-zA-Z_0-9]*)(
 std::basic_regex<char> if_statement_pattern("^(if [a-zA-Z0-9._()+-*/%>=<! ]+\\{)$");
 std::basic_regex<char> else_if_statement_pattern("^(else if [a-zA-Z0-9._()+-*/%>=<! ]+\\{)$");
 std::basic_regex<char> else_statement_pattern("^(else \\{)$");
-std::basic_regex<char> variable_declaration_statement_pattern("^([a-zA-Z_][a-zA-Z_0-9]* [a-zA-Z_][a-zA-Z_0-9]*( = .+)?)$");
+std::basic_regex<char> for_statement_pattern("^(for [a-zA-Z_][a-zA-Z0-9_]* from [0-9]+ to [0-9]+( with [0-9]+)? \\{)$");
+std::basic_regex<char> variable_declaration_statement_pattern("^([a-zA-Z_][a-zA-Z0-9_]* [a-zA-Z_][a-zA-Z_0-9]*( = .+)?)$");
 std::basic_regex<char> variable_assignment_statement_pattern("^([a-zA-Z_][a-zA-Z_0-9]* = .+)$");
 std::basic_regex<char> expression_statement_pattern( "^([a-zA-Z0-9._()+-*/%>=<! ]+)$");
 
@@ -368,6 +369,42 @@ IFBlock* if_block_parser(std::queue<std::vector<Token> >& program_lines, Block* 
 }
 
 
+
+FORBlock* for_block_parser(std::queue<std::vector<Token> >& program_lines, Block* super_block){
+	std::vector<Token> line_tokens = program_lines.front();
+	program_lines.pop();
+	
+	std::string loop_variable_name = line_tokens.at(1).get_token_data();
+	
+	int lower_limit = std::stoi(line_tokens.at(3).get_token_data());
+	int higher_limit = std::stoi(line_tokens.at(5).get_token_data());
+	int step_size = 1;
+	
+	if (line_tokens.size() > 7){
+		step_size = std::stoi(line_tokens.at(7).get_token_data());
+	}
+	
+	FORBlock* for_block = new FORBlock(super_block, loop_variable_name, lower_limit, higher_limit, step_size);
+	
+	while(program_lines.front().at(0).get_token_type() != _CLOSE_PARENTHESIS_LITERAL_){
+		
+		Element* next_element = parse_line(program_lines, for_block);
+		
+		if (next_element)
+			for_block->add_element(next_element);
+	}
+	
+	program_lines.pop();
+	
+	return for_block;
+	
+}
+
+
+
+
+
+
 ////////////////////////////////////////////////////////////////////////////////
 
 
@@ -376,11 +413,6 @@ Element* parse_line(std::queue<std::vector<Token> >& program_lines, Block* super
 	
 	std::vector<Token> line_tokens = program_lines.front();
 	
-	
-//	for(Token& t : line_tokens){
-//		std::cout << t.get_token_data() << " ";
-//	}
-//	std::cout << "\n";
 	
 	if (parsable(line_tokens, comment_statement_pattern)){
 		program_lines.pop();
@@ -403,6 +435,9 @@ Element* parse_line(std::queue<std::vector<Token> >& program_lines, Block* super
 		std::cout << "\n'else' block without if block\n";
 		throw std::exception();
 	}
+	else if (parsable(line_tokens, for_statement_pattern)){
+		return for_block_parser(program_lines, super_block);
+	}
 	else if (parsable(line_tokens, variable_declaration_statement_pattern)){
 		return variable_declaration_statement_parser(program_lines, super_block);
 	}
@@ -414,6 +449,11 @@ Element* parse_line(std::queue<std::vector<Token> >& program_lines, Block* super
 	}
 	else{
 		std::cout << "\nline not parsed\n";	
+		
+		for(Token& t : line_tokens)
+			std::cout << t.get_token_data() << " ";
+		std::cout << "\n";
+		
 		throw std::exception();
 	}
 }

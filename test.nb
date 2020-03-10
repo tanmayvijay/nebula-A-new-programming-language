@@ -48,6 +48,24 @@ display "else block", False
 }
 
 
+
+
+for my_i from 10 to 15 with 2{
+display my_i, x, y
+scan my_i
+my_i = my_i + 1
+}
+
+
+
+
+while x+y*2375 == var{
+decimal n = x + y * True
+display y, x, n
+
+}
+
+
 $ ok so this is a comment
 $ ok so this is a comment
 $ ok so this is a comment
