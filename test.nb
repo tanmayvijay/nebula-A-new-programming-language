@@ -59,7 +59,7 @@ my_i = my_i + 1
 
 
 
-while x+y*2375 == var{
+while x+y*23/var-7 >= var {
 decimal n = x + y * True
 display y, x, n
 

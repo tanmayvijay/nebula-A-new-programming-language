@@ -37,14 +37,14 @@ std::map<std::string, ValueType> string_to_ValueType_mapping {
 std::basic_regex<char> comment_statement_pattern("^(\\$.*)$");
 std::basic_regex<char> output_statement_pattern("^(display ([^,]+)( , [^,]+)*)$");
 std::basic_regex<char> input_statement_pattern("^(scan ([a-zA-Z_][a-zA-Z_0-9]*)( , [a-zA-Z_][a-zA-Z_0-9]*)*)$");
-std::basic_regex<char> if_statement_pattern("^(if [a-zA-Z0-9._()+-*/%>=<! ]+\\{)$");
-std::basic_regex<char> else_if_statement_pattern("^(else if [a-zA-Z0-9._()+-*/%>=<! ]+\\{)$");
+std::basic_regex<char> if_statement_pattern("^(if [a-zA-Z0-9._()+*/%>=<! -]+\\{)$");
+std::basic_regex<char> else_if_statement_pattern("^(else if [a-zA-Z0-9._()+*/%>=<! -]+\\{)$");
 std::basic_regex<char> else_statement_pattern("^(else \\{)$");
 std::basic_regex<char> for_statement_pattern("^(for [a-zA-Z_][a-zA-Z0-9_]* from [0-9]+ to [0-9]+( with [0-9]+)? \\{)$");
-std::basic_regex<char> while_statement_pattern("^(while [a-zA-Z0-9._()+-*/%>=<! ]+\\{)$");
+std::basic_regex<char> while_statement_pattern("^(while [a-zA-Z0-9._()+*/%>=<! -]+\\{)$");
 std::basic_regex<char> variable_declaration_statement_pattern("^([a-zA-Z_][a-zA-Z0-9_]* [a-zA-Z_][a-zA-Z_0-9]*( = .+)?)$");
 std::basic_regex<char> variable_assignment_statement_pattern("^([a-zA-Z_][a-zA-Z_0-9]* = .+)$");
-std::basic_regex<char> expression_statement_pattern( "^([a-zA-Z0-9._()+-*/%>=<! ]+)$");
+std::basic_regex<char> expression_statement_pattern( "^([a-zA-Z0-9._()+*/%>=<! -]+)$");
 
 //  End of Regular Expressions for all code elements
 
@@ -401,6 +401,26 @@ FORBlock* for_block_parser(std::queue<std::vector<Token> >& program_lines, Block
 	
 }
 
+
+
+WHILEBlock* while_block_parser(std::queue<std::vector<Token> >& program_lines, Block* super_block){
+	std::vector<Token> line_tokens = program_lines.front();
+	program_lines.pop();
+	
+	std::vector<Token> expression_in_line = std::vector<Token>(line_tokens.begin()+1, line_tokens.end()-1);
+	ExpressionAST* condition_expression = expression_statement_parser(expression_in_line, super_block)->get_expression();
+	
+	WHILEBlock* while_block = new WHILEBlock(super_block, condition_expression);
+	
+	while(program_lines.front().at(0).get_token_type() != _CLOSE_PARENTHESIS_LITERAL_){
+		Element* next_element = parse_line(program_lines, while_block);
+		if (next_element)
+			while_block->add_element(next_element);
+	}
+	program_lines.pop();
+	
+	return while_block;
+}
 
 
 

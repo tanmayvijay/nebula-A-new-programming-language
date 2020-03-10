@@ -409,7 +409,12 @@ class WHILEBlock : public Block{
 		void _repr_(){
 			std::cout << "\n------------ WHILE BLOCK -----------------\n";
 			
-			std::cout << "\nSymbol Table:\n";
+			if (this->condition_expression){
+				std::cout << "Condition: ";
+				this->condition_expression->_repr_();
+			}
+			
+			std::cout << "\n\nSymbol Table:\n";
 			printf("%5s |%15s |%30s\n", "Type", "Name", "Value Expression");
 			std::cout << "-------------------------------------------------------\n";
 			for(Symbol* sym: this->get_symbol_table() ){
