@@ -394,6 +394,43 @@ class FORBlock : public Block{
 
 
 
+class WHILEBlock : public Block{
+	ExpressionAST* condition_expression;
+	
+	public:
+		WHILEBlock(Block* super_block, ExpressionAST* condition_expression) : Block(super_block){
+			this->condition_expression = condition_expression;
+		}
+		
+		void run() {
+			std::cout << "Inside for statement" << std::endl;
+		}
+		
+		void _repr_(){
+			std::cout << "\n------------ WHILE BLOCK -----------------\n";
+			
+			std::cout << "\nSymbol Table:\n";
+			printf("%5s |%15s |%30s\n", "Type", "Name", "Value Expression");
+			std::cout << "-------------------------------------------------------\n";
+			for(Symbol* sym: this->get_symbol_table() ){
+				printf("%5d |%15s | ", sym->get_value_type(), sym->get_symbol_name().c_str());
+				sym->get_symbol_value()->_repr_();
+				std::cout << "\n";
+			}
+		
+			std::cout << "\n\n";
+
+			for(Element* e: this->get_elements()){
+				e->_repr_();
+			}
+			
+			std::cout << "\n------------ WHILE BLOCK END -------------\n";
+		}
+		
+		
+};
+
+
 
 
 #endif

@@ -41,6 +41,7 @@ std::basic_regex<char> if_statement_pattern("^(if [a-zA-Z0-9._()+-*/%>=<! ]+\\{)
 std::basic_regex<char> else_if_statement_pattern("^(else if [a-zA-Z0-9._()+-*/%>=<! ]+\\{)$");
 std::basic_regex<char> else_statement_pattern("^(else \\{)$");
 std::basic_regex<char> for_statement_pattern("^(for [a-zA-Z_][a-zA-Z0-9_]* from [0-9]+ to [0-9]+( with [0-9]+)? \\{)$");
+std::basic_regex<char> while_statement_pattern("^(while [a-zA-Z0-9._()+-*/%>=<! ]+\\{)$");
 std::basic_regex<char> variable_declaration_statement_pattern("^([a-zA-Z_][a-zA-Z0-9_]* [a-zA-Z_][a-zA-Z_0-9]*( = .+)?)$");
 std::basic_regex<char> variable_assignment_statement_pattern("^([a-zA-Z_][a-zA-Z_0-9]* = .+)$");
 std::basic_regex<char> expression_statement_pattern( "^([a-zA-Z0-9._()+-*/%>=<! ]+)$");
@@ -437,6 +438,9 @@ Element* parse_line(std::queue<std::vector<Token> >& program_lines, Block* super
 	}
 	else if (parsable(line_tokens, for_statement_pattern)){
 		return for_block_parser(program_lines, super_block);
+	}
+	else if (parsable(line_tokens, while_statement_pattern)){
+		return while_block_parser(program_lines, super_block);
 	}
 	else if (parsable(line_tokens, variable_declaration_statement_pattern)){
 		return variable_declaration_statement_parser(program_lines, super_block);
