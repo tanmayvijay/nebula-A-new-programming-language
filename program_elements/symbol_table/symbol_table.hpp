@@ -58,10 +58,6 @@ class Function : public Symbol{
 			this->function_block = function_block;
 		}
 		
-		std::string get_function_name(){
-			return this->get_symbol_name();
-		}
-		
 		std::vector<Symbol*> get_parameters(){
 			return this->parameters;
 		}

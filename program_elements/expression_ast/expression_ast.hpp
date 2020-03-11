@@ -244,11 +244,24 @@ class OperandNodeWithConstant : public ExpressionAST{
 
 
 
-class FunctionCallNode : public ExpressionAST{
+class OpeandNodeWithFunctionCall : public ExpressionAST{
+	Symbol* function_to_call;
 	std::vector<ExpressionAST*> param_expressions;
 	
 	public:
-		FunctionCallNode() : ExpressionAST(_OPERAND_NODE_){
+		OpeandNodeWithFunctionCall(Symbol* func_to_call, std::vector<ExpressionAST*> param_expressions) : ExpressionAST(_OPERAND_NODE_){
+			this->function_to_call = func_to_call;
+			this->param_expressions = param_expressions;
+		}
+		
+		void _repr_(){
+			std::cout << " [ Function Call: " << this->function_to_call->get_symbol_name() << " : ( ";
+			for(ExpressionAST* exp : param_expressions){
+				exp->_repr_();
+				std::cout << ", ";
+			}
+			
+			std::cout << ") ]";
 			
 		}
 };

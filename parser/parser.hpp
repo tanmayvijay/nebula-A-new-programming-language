@@ -20,7 +20,7 @@
 
 
 Element* parse_line(std::queue<std::vector<Token> >& program_lines, Block* super_block);
-
+ExpressionStatement* expression_statement_parser(std::vector<Token>& line_tokens, Block* super_block);
 
 
 std::map<std::string, ValueType> string_to_ValueType_mapping {
@@ -94,6 +94,7 @@ ExpressionStatement* expression_statement_parser(std::queue<std::vector<Token> >
 //	OperandNodeFinal* operand_final;
 	OperandNodeWithSymbol* operand_w_exp;
 	OperandNodeWithConstant* operand_final;
+	OpeandNodeWithFunctionCall* operand_w_func;
 	
 //	for (Token& token : line_tokens){
 	for (int i=0; i<line_tokens.size(); i++){
@@ -110,12 +111,46 @@ ExpressionStatement* expression_statement_parser(std::queue<std::vector<Token> >
 		
 		else if (token_type == _IDENTIFIER_OR_KEYWORD_LITERAL_){
 			if (line_tokens.at(i+1).get_token_type() == _OPEN_BRACKET_LITERAL_){
+				Symbol* function_to_call = super_block->find_symbol(line_tokens.at(i).get_token_data());
+				i+=2; // i at ) or expression's first token
+				std::vector<ExpressionAST*> parameters;
 				std::vector<Token> param_expression_tokens;
-				while()
+				
+				int no_of_open_brackets = 1;
+				while( no_of_open_brackets > 0){
+					Token& lt = line_tokens.at(i);
+					if (lt.get_token_data() == "," && no_of_open_brackets <= 1){
+						ExpressionAST* next_param = expression_statement_parser(param_expression_tokens, super_block)->get_expression();
+						parameters.push_back(next_param);
+						param_expression_tokens.clear();
+					}
+					else{
+						param_expression_tokens.push_back(lt);
+						if (lt.get_token_type() == _OPEN_BRACKET_LITERAL_) no_of_open_brackets++;
+						if (lt.get_token_type() == _CLOSE_BRACKET_LITERAL_) no_of_open_brackets--;
+						
+					}
+						
+						
+					i++; // i at token after )
+				}
+				i--; // i brought back at ) to let for loop increment it.
+				if (param_expression_tokens.size() > 1){
+					param_expression_tokens = std::vector<Token>(param_expression_tokens.begin(), param_expression_tokens.end()-1 );
+					ExpressionAST* next_param = expression_statement_parser(param_expression_tokens, super_block)->get_expression();
+					parameters.push_back(next_param);
+				}
+				
+				operand_w_func = new OpeandNodeWithFunctionCall(function_to_call, parameters);
+				expression_stack.push(operand_w_func);
+				
 			}
-			Symbol* symbol = super_block->find_symbol(token.get_token_data());
-			operand_w_exp = new OperandNodeWithSymbol(symbol);
-			expression_stack.push( operand_w_exp );
+			else{
+				Symbol* symbol = super_block->find_symbol(token.get_token_data());
+				operand_w_exp = new OperandNodeWithSymbol(symbol);
+				expression_stack.push( operand_w_exp );
+			}
+			
 		}
 		
 		else if (token_type == _INTEGER_LITERAL_ ||
