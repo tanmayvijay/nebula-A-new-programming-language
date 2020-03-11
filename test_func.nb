@@ -49,7 +49,7 @@ addiii(x+y/var, addi(x, addi(var, n)))
 
 
 
-
+decimal some_var = addiv( x+y/var, addi(x, addi(var, n)) )
 
 
 
