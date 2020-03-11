@@ -23,3 +23,17 @@ At this point, when I start, I have no idea how compilers or interpreters work. 
 * Each block has its own symbol table.
 * Symbol Table is now updated everytime a Variable Declaration Statement or Variable Assignment Statement is encountered.
 * Variables are searched in the most closely nested block.
+
+
+### Edit-5: Implemented if, if-else, if-else_if, if-else_if-else
+
+### Edit-6: For and While loops parser implemented
+
+### Edit-7: Function Definition parser implementaton done:
+Each block stores its own functions in the symbol table itself. In case of name-clash between functions (or Symbols in general), one closest in the nesting is used.
+
+
+### Edit-8: Function calling parser is now implemented. This is a big one!
+* Function calls and Expressions can be recursively nested. Yay!.
+* Like this: decimal some_var = addiv( x+y/var, addi(x, addi(var, n)) )
+* *Still need a better regular expression for recognizing correct expression*.
