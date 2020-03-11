@@ -36,4 +36,4 @@ Each block stores its own functions in the symbol table itself. In case of name-
 ### Edit-8: Function calling parser is now implemented. This is a big one!
 * Function calls and Expressions can be recursively nested. Yay!.
 * Like this: decimal some_var = addiv( x+y/var, addi(x, addi(var, n)) )
-* *Still need a better regular expression for recognizing correct expression*.
+* *Still need a better regular expression for recognizing correct expression, but this is a small one*.
