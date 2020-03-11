@@ -18,7 +18,8 @@ std::queue<std::vector<Token> > tokenizing_helper(std::ifstream& input_file){
 	while(std::getline(input_file, line)){
 		if (_trim_(line).length()){ // to handle empty tokens
 			std::vector<Token> line_tokens = tokenizer.tokenize(line);
-			program_tokens.push(line_tokens);
+			if (line_tokens.size() > 0)
+				program_tokens.push(line_tokens);
 		}
 	}
 	

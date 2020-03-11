@@ -10,7 +10,7 @@
 #include "../exceptions/nebula_exceptions.hpp"
 
 enum TokenType {
-	_COMMENT_LINE_,
+	_COMMENT_LITERAL_,
 	_INTEGER_LITERAL_,
 	_DECIMAL_LITERAL_,
 	_BOOLEAN_LITERAL_,
@@ -79,7 +79,7 @@ class Tokenizer{
 		Tokenizer(){
 			
 			this->patterns.push_back(
-				TokenPattern(_COMMENT_LINE_, "^(\\$.*)")
+				TokenPattern(_COMMENT_LITERAL_, "^(\\$.*)")
 			);
 			
 			this->patterns.push_back(
@@ -106,11 +106,11 @@ class Tokenizer{
 			}
 			
 			
-			std::string logical_operators[] = {"and\\b", "or\\b", "not\\b"};
+			std::string logical_operators[] = {"and", "or", "not"};
 			
 			for (std::string op: logical_operators){
 				this->patterns.push_back(
-					TokenPattern(_LOGICAL_OPERATOR_LITERAL_, "^(" + op + ")")
+					TokenPattern(_LOGICAL_OPERATOR_LITERAL_, "^(" + op + ")\\b")
 				);
 			}
 
@@ -202,12 +202,11 @@ class Tokenizer{
 				if (!matched_flag)
 					throw std::exception(); // change this
 				
-				
-				Token new_token = Token(temp_token_type, temp_token_data);
+				if (temp_token_type != _COMMENT_LITERAL_){
+					Token new_token = Token(temp_token_type, temp_token_data);
 			
-				tokens_vector.push_back(new_token);
-				
-				
+					tokens_vector.push_back(new_token);
+				}
 				
 			}
 

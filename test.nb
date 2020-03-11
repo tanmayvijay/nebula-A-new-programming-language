@@ -6,12 +6,12 @@ $ ok so this is a comment
 bool y
 
 $ ok so this is a comment
-y = True
+y = True $ this is a comment on same line
            
 
      display var, "some string"
 
-decimal n = x + y * True
+decimal n = x + y * True$ this is a comment on same line
 
 
 display y, x
@@ -25,8 +25,8 @@ scan x, y, var, n
 
 if x > y {
 string some
-display y, x
-display var, "awesome"
+display y, x $ this is a comment on same line
+display var, "awesome"$ this is a comment on same line
 
 $ nested if statement
 if some == x{
