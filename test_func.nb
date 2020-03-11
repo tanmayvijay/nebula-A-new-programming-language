@@ -1,0 +1,57 @@
+string var = "some thing"
+integer x = 0
+bool y
+y = True
+           
+
+     display var, "some string"
+
+decimal n = x + y * True
+
+
+display y, x
+
+
+scan x
+
+
+scan x, y, var, n
+
+
+fun addi(integer a, integer b) returns integer c{
+c = a + b
+}
+
+
+fun addii() returns integer c{
+c = x + y
+}
+
+
+
+fun addiii(integer a, integer b){
+integer c = x + y
+}
+
+
+fun addiv(){
+integer c = x + y
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

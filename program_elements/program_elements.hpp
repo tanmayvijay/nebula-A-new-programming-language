@@ -265,11 +265,12 @@ class InputStatement : public Statement{
 		}
 		
 		void _repr_(){
-			std::cout << "scan: ";
+			std::cout << "scan:\n";
 			
 			for(Symbol* sym : variables){
-				std::cout << sym->get_value_type() << " : " << sym->get_symbol_name() << "\n";
+				std::cout << sym->get_value_type() << " : " << sym->get_symbol_name() << " \t";
 			}
+			std::cout << "\n";
 		}
 };
 

@@ -31,7 +31,7 @@ class Symbol{
 			return this->type;
 		}
 		
-		ExpressionAST* get_symbol_value(){
+		virtual ExpressionAST* get_symbol_value(){
 			return this->value_expression;
 		}
 		
@@ -76,6 +76,10 @@ class Function : public Symbol{
 		
 		Block* get_function_block(){
 			return this->function_block;
+		}
+		
+		ExpressionAST* get_symbol_value(){ // returns return variable value expression
+			return this->return_variable->get_symbol_value();
 		}
 		
 };

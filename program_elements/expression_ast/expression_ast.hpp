@@ -243,4 +243,15 @@ class OperandNodeWithConstant : public ExpressionAST{
 };
 
 
+
+class FunctionCallNode : public ExpressionAST{
+	std::vector<ExpressionAST*> param_expressions;
+	
+	public:
+		FunctionCallNode() : ExpressionAST(_OPERAND_NODE_){
+			
+		}
+};
+
+
 #endif
