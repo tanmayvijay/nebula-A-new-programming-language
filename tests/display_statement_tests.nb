@@ -1,0 +1,26 @@
+string var = "some thing"
+integer x = 0
+bool y
+y = True
+
+$integer xab = 1thing $ tokenizer error test
+
+$ display parser tests
+$ display 123	$ valid
+$ display x	$ valid
+$ display x, y, var, True, "Great", x+y-10, 123+876-92, 12.43/var+False	$valid
+
+$ display	$ invalid	$empty expression
+
+$display , $empty expression
+
+$display x,	$invalid	$empty expression
+
+$display x, ,y 	$invalid	$empty expression
+
+$display x y	$invalid	$invalid expression
+
+
+
+
+

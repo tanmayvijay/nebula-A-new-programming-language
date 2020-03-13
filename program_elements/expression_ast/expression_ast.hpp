@@ -46,7 +46,7 @@ enum OperatorPrecedence{
 	_GT_GTE_LT_LTE_,
 	_PLUS_MINUS_,
 	_MULTIPLY_DIVIDE_MODULUS_,
-	_NOT_,
+	_UNARY_MINUS_NOT_,
 	_SQUARE_BRACKET_,
 	_BRACKET_,
 };
@@ -65,7 +65,7 @@ std::map<std::string, OperatorPrecedence> operator_precendence_mapping {
 	{"*", _MULTIPLY_DIVIDE_MODULUS_},
 	{"/", _MULTIPLY_DIVIDE_MODULUS_},
 	{"%", _MULTIPLY_DIVIDE_MODULUS_},
-	{"not", _NOT_},
+	{"not", _UNARY_MINUS_NOT_},
 	{"[", _SQUARE_BRACKET_},
 	{"(", _BRACKET_}
 	
@@ -74,7 +74,8 @@ std::map<std::string, OperatorPrecedence> operator_precendence_mapping {
 
 enum OperatorType{
 	_UNARY_OP_,
-	_BINARY_OP_
+	_BINARY_OP_, 
+	_BRACKET_OP_
 };
 
 
@@ -121,14 +122,13 @@ class OperatorNode : public ExpressionAST{
 //	OperatorType operator_type; // binary or unary
 	
 	public:
-		OperatorNode(std::string op_string) : ExpressionAST(_OPERATOR_NODE_){
+		OperatorNode(std::string op_string, OperatorType op_type) : ExpressionAST(_OPERATOR_NODE_){
 			this->op = string_to_operator_mapping.find(op_string)->second;
+			this->operator_type = op_type;
 			this->precedence = operator_precendence_mapping.find(op_string)->second;
-			
-			if (op == _NOT_OP_)
-				this->operator_type = _UNARY_OP_;
-			else
-				this->operator_type = _BINARY_OP_;
+			std::cout << this->precedence;
+			if (this->operator_type == _UNARY_OP_) this->precedence = _UNARY_MINUS_NOT_;
+			std::cout<< this->precedence;
 		}
 		
 		Operator get_operator(){
@@ -179,14 +179,9 @@ class OperatorNode : public ExpressionAST{
 #include "../symbol_table/symbol_table.hpp"
 
 class OperandNodeWithSymbol : public ExpressionAST{
-//	ValueType operand_type;
-//	ExpressionAST* operand_value_expression;
 	Symbol* symbol;
+	
 	public:
-//		OperandNodeWithExpression(ValueType operand_type, ExpressionAST* operand_value) : ExpressionAST(_OPERAND_NODE_){
-//			this->operand_type = operand_type;
-//			this->operand_value_expression = operand_value;
-//		}
 
 		OperandNodeWithSymbol(Symbol* symbol) : ExpressionAST(_OPERAND_NODE_){
 			this->symbol = symbol;
@@ -198,8 +193,7 @@ class OperandNodeWithSymbol : public ExpressionAST{
 			std::cout << " ] ";
 		}
 		
-		
-		// evaluate frther calls the expression's evaluate;
+	
 	
 };
 
@@ -219,11 +213,8 @@ std::map<ValueType, std::string> ValueType_to_default_value_mapping {
 class OperandNodeWithConstant : public ExpressionAST{
 	ValueType operand_type;
 	std::string operand_value;
+
 	public:
-//		OperandNodeFinal(ValueType operand_type, std::string operand_value) : ExpressionAST(_OPERAND_NODE_){
-//			this->operand_type = operand_type;
-//			this->operand_value = operand_value;
-//		}
 
 		OperandNodeWithConstant(ValueType operand_type, std::string operand_value) : ExpressionAST(_OPERAND_NODE_){
 			this->operand_type = operand_type;
@@ -244,12 +235,12 @@ class OperandNodeWithConstant : public ExpressionAST{
 
 
 
-class OpeandNodeWithFunctionCall : public ExpressionAST{
+class OperandNodeWithFunctionCall : public ExpressionAST{
 	Symbol* function_to_call;
 	std::vector<ExpressionAST*> param_expressions;
 	
 	public:
-		OpeandNodeWithFunctionCall(Symbol* func_to_call, std::vector<ExpressionAST*> param_expressions) : ExpressionAST(_OPERAND_NODE_){
+		OperandNodeWithFunctionCall(Symbol* func_to_call, std::vector<ExpressionAST*> param_expressions) : ExpressionAST(_OPERAND_NODE_){
 			this->function_to_call = func_to_call;
 			this->param_expressions = param_expressions;
 		}

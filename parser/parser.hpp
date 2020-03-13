@@ -93,18 +93,19 @@ ExpressionStatement* expression_statement_parser(std::queue<std::vector<Token> >
 //	OperandNodeFinal* operand_final;
 	OperandNodeWithSymbol* operand_w_exp;
 	OperandNodeWithConstant* operand_final;
-	OpeandNodeWithFunctionCall* operand_w_func;
+	OperandNodeWithFunctionCall* operand_w_func;
 	
 //	for (Token& token : line_tokens){
 	for (int i=0; i<line_tokens.size(); i++){
-//		std::cout << token.get_token_data() << std::endl;
 //		size--;
 		Token& token = line_tokens.at(i);
 		TokenType token_type = token.get_token_type();
+		
+		std::cout << token.get_token_data() << std::endl;
 
 		if (token_type == _OPEN_BRACKET_LITERAL_){
 //			std::cout << "(\n";
-			op_node = new OperatorNode(token.get_token_data());
+			op_node = new OperatorNode(token.get_token_data(), _BRACKET_OP_);
 			operator_stack.push( op_node );
 		}
 		
@@ -140,7 +141,7 @@ ExpressionStatement* expression_statement_parser(std::queue<std::vector<Token> >
 					parameters.push_back(next_param);
 				}
 				
-				operand_w_func = new OpeandNodeWithFunctionCall(function_to_call, parameters);
+				operand_w_func = new OperandNodeWithFunctionCall(function_to_call, parameters);
 				expression_stack.push(operand_w_func);
 				
 			}
@@ -167,8 +168,27 @@ ExpressionStatement* expression_statement_parser(std::queue<std::vector<Token> >
 				 token_type == _RELATIONAL_OPERATOR_LITERAL_ ||
 				 token_type == _LOGICAL_OPERATOR_LITERAL_
 				 ){
+			
+			std::string op_string = token.get_token_data();
+			OperatorType op_type = _BINARY_OP_;
+			OperatorPrecedence op_precedence = operator_precendence_mapping.find(op_string)->second;
+			
+			if (op_string == "not") op_type = _UNARY_OP_;
+			else if (op_string == "-"){
+				if (i == 0) op_type = _UNARY_OP_;
+				else{
+					TokenType t_type = line_tokens.at(i-1).get_token_type();
+					if (t_type == _ARITHMETIC_OPERATOR_LITERAL_ ||
+						t_type == _RELATIONAL_OPERATOR_LITERAL_ ||
+						t_type == _LOGICAL_OPERATOR_LITERAL_ ||
+						t_type == _OPEN_BRACKET_LITERAL_)
+						op_type = _UNARY_OP_;
+				}
+			}
+			
+			if (op_type == _UNARY_OP_) op_precedence = _UNARY_MINUS_NOT_;
 //			std::cout << token.get_token_data() << ":operator\n";
-			OperatorPrecedence op_precedence = operator_precendence_mapping.find(token.get_token_data())->second;
+			
 			while( operator_stack.size() > 1 && operator_stack.top()->get_operator_precedence() >= op_precedence && operator_stack.top()->get_operator() != _OPEN_ROUND_BRACKET_OP_){
 				op_node = operator_stack.top();
 				operator_stack.pop();
@@ -188,7 +208,7 @@ ExpressionStatement* expression_statement_parser(std::queue<std::vector<Token> >
 				expression_stack.push( op_node );
 			}
 			
-			op_node = new OperatorNode(token.get_token_data());
+			op_node = new OperatorNode(op_string, op_type);
 			operator_stack.push( op_node);
 		}
 		
