@@ -1,86 +1,19 @@
 string var = "some thing"
 integer x = 0
-$ok so this is a comment
-$ ok so this is a comment
-
 bool y
-
-$ ok so this is a comment
-y = True $ this is a comment on same line
-           
-
-     display var, "some string"
-
-decimal n = x + y * True$ this is a comment on same line
+y = True
 
 
-display y, x
+$integer xab = 1thing $ tokenizer error test
 
+$ display parser tests
+display 123	$ valid
+display x	$ valid
+display x, y, var, True, "Great", x+y-10, 123+876-92, 12.43/var+False	$valid
+display		$ invalid
+$diaplay x,	$invalid
+$display x y	$invalid
 
-scan x
-
-
-scan x, y, var, n
-
-
-if x > y {
-string some
-display y, x $ this is a comment on same line
-display var, "awesome"$ this is a comment on same line
-
-$ nested if statement
-if some == x{
-display "nested"
-}
-else {
-scan var
-}
-
-some = "I love coding"
-display some
-scan y
-}
-else if var == 124652 {
-display "equal"
-}
-else {
-display "else block", False
-}
-
-
-
-
-for my_i from 10 to 15 with 2{
-display my_i, x, y
-scan my_i
-my_i = my_i + 1
-}
-
-
-
-
-while x+y*23/var-7 >= var {
-decimal n = x + y * True
-display y, x, n
-
-}
-
-
-
-
-$ ok so this is a comment
-$ ok so this is a comment
-$ ok so this is a comment
-$ ok so this is a comment
-
-$ ok so this is a comment
-$ ok so this is a comment
-$ ok so this is a comment$ ok so this is a comment$ ok so this is a comment$ ok so this is a comment
-$ ok so this is a comment $ ok so this is a comment $ ok so this is a comment
-
-
-
-integer xab = 1thing
 
 
 

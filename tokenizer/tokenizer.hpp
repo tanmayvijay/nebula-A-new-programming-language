@@ -8,59 +8,7 @@
 
 #include "../utils/utils.hpp"
 #include "../exceptions/nebula_exceptions.hpp"
-
-enum TokenType {
-	_COMMENT_LITERAL_,
-	_INTEGER_LITERAL_,
-	_DECIMAL_LITERAL_,
-	_BOOLEAN_LITERAL_,
-	_STRING_LITERAL_,
-	_IDENTIFIER_OR_KEYWORD_LITERAL_,
-	_ARITHMETIC_OPERATOR_LITERAL_,
-	_RELATIONAL_OPERATOR_LITERAL_,
-	_LOGICAL_OPERATOR_LITERAL_,
-	_OPEN_BRACKET_LITERAL_,
-	_CLOSE_BRACKET_LITERAL_,
-	_OPEN_PARENTHESIS_LITERAL_,
-	_CLOSE_PARENTHESIS_LITERAL_,
-	_OTHER_TOKEN_LITERAL_
-};
-
-
-class Token{
-	TokenType token_type;
-	std::string token_data;
-	
-	int line_no;
-	int position;
-	
-	public:
-		Token(TokenType token_type, std::string token_data, int line_no, int position){
-			this->token_type = token_type;
-			this->token_data = token_data;
-			this->line_no = line_no;
-			this->position = position;
-		}
-		
-		
-		// Methods
-		TokenType get_token_type(){
-			return this->token_type;
-		}
-		
-		std::string get_token_data(){
-			return this->token_data;
-		}
-		
-		int get_line_no(){
-			return this->line_no;
-		}
-		
-		int get_position(){
-			return this->position;
-		}
-};
-
+#include "token.hpp"
 
 class TokenPattern{
 	TokenType pattern_type;
@@ -207,22 +155,21 @@ class Tokenizer{
 
 						line = line.substr(temp_token_data.length());
 						
-						pos += temp_token_data.length();
 						matched_flag = true;
 						break;
 					}
 				}
 				
 				if (!matched_flag){
-					int error_position = pos - temp_token_data.length() + 1;
+					int error_position = pos + 1;
 					throw InvalidCharacterError(original_line, line_no, error_position);	
 				}
 				
 				if (temp_token_type != _COMMENT_LITERAL_){
 					Token new_token = Token(temp_token_type, temp_token_data, line_no, pos);
-			
 					tokens_vector.push_back(new_token);
 				}
+				pos += temp_token_data.length();
 				
 			}
 
