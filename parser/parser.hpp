@@ -300,25 +300,33 @@ OutputStatement* output_statement_parser(std::queue<std::vector<Token> >& progra
 	std::vector<Token> line_tokens = program_lines.front();
 	program_lines.pop();
 	
-//	for (Token& t : line_tokens){
-//		std::cout << "'" << t.get_token_data() << "' ";
-//	}
-//	std::cout << "\n";
-	
+	int i=0;
 	std::vector<ExpressionAST*> expressions;
 		
 	std::vector<Token> expression_tokens;
-	for(int i=1; i<line_tokens.size(); i++){
+	for(i=1; i<line_tokens.size(); i++){
 		Token& lt = line_tokens.at(i);
 		if (lt.get_token_data() != ","){
 			expression_tokens.push_back(lt);
 		}
 		else{
+			if (expression_tokens.size() < 1){
+				int pos = lt.get_position() + 1;
+				throw MissingExpressionError(line_tokens, lt.get_line_no(), pos);
+			}
 			ExpressionAST* expression = expression_statement_parser(expression_tokens, super_block)->get_expression();
 			expressions.push_back(expression);
 			expression_tokens.clear();
 		}
 	}
+	
+	
+	if (expression_tokens.size() < 1){
+		Token& lt = line_tokens.at(i-1);
+		int pos = lt.get_position() + lt.get_token_data().length() + 1;
+		throw MissingExpressionError(line_tokens, lt.get_line_no(), pos);
+	}
+		
 	ExpressionAST* expression = expression_statement_parser(expression_tokens, super_block)->get_expression();
 	expressions.push_back(expression);
 	

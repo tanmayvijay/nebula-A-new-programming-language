@@ -23,7 +23,7 @@ class NebulaException : public std::exception{
 			this->line_text = line_text;
 		}
 		
-		NebulaException(std::vector<Token> line_tokens, int line_no, int position){
+		NebulaException(std::vector<Token>& line_tokens, int line_no, int position){
 			this->line_no = line_no;
 			this->position = position;
 			
@@ -31,7 +31,10 @@ class NebulaException : public std::exception{
 			
 			int pos = 0;
 			for(Token& t: line_tokens){
-				while(pos < t.get_position()) line_text += " ";
+				while(pos < t.get_position()){
+					 line_text += " ";
+					 pos++;
+				}
 				line_text += t.get_token_data();
 				pos += t.get_token_data().length();
 			}
@@ -73,6 +76,25 @@ class InvalidCharacterError : public NebulaException{
 };
 
 
+class MissingExpressionError : public NebulaException{
+	
+	public:
+		MissingExpressionError(std::vector<Token>& line_tokens, int line_no, int position) : NebulaException(line_tokens, line_no, position){
+		}
+		
+		const char* what() const throw(){
+			
+			std::cerr << this->get_line_text() << "\n";
+			for(int i=1; i<this->get_position(); i++)
+				std::cerr << " ";
+			std::cerr << "^\n";
+			
+			const char* error_message = ("at position: " + std::to_string(this->get_position()) + " on line: " + std::to_string(this->get_line_no()) + "\n").c_str();
+			return error_message;
+		}
+};
+
+
 
 
 void terminate_handler(){
@@ -83,6 +105,9 @@ void terminate_handler(){
 	}
 	catch(InvalidCharacterError &e){
 		std::cerr << "InvalidCharacterError: " << e.what() << "\n";
+	}
+	catch(MissingExpressionError &e){
+		std::cerr << "MissingExpressionError: " << e.what() << "\n";
 	}
 	abort();
 }
