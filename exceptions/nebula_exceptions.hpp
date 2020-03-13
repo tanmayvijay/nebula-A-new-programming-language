@@ -6,28 +6,68 @@
 
 #include<exception>
 #include<string>
+#include<vector>
+
+#include "../tokenizer/token.hpp"
 
 
-class InvalidCharacterError : public std::exception{
+class NebulaException : public std::exception{
 	int position;
 	int line_no;
 	std::string line_text;
 	
 	public:
-		InvalidCharacterError(std::string line, int line_no, int position){
+		NebulaException(std::string line_text, int line_no, int position){
 			this->position = position;
 			this->line_no = line_no;
-			this->line_text = line;
+			this->line_text = line_text;
+		}
+		
+		NebulaException(std::vector<Token> line_tokens, int line_no, int position){
+			this->line_no = line_no;
+			this->position = position;
+			
+			std::string line_text = "";
+			
+			int pos = 0;
+			for(Token& t: line_tokens){
+				while(pos < t.get_position()) line_text += " ";
+				line_text += t.get_token_data();
+				pos += t.get_token_data().length();
+			}
+			
+			this->line_text = line_text;
+		}
+		
+		int get_position() const{
+			return this->position;
+		}
+		
+		int get_line_no() const{
+			return this->line_no;
+		}
+		
+		std::string get_line_text() const{
+			return this->line_text;
+		}
+};
+
+
+class InvalidCharacterError : public NebulaException{
+	
+	
+	public:
+		InvalidCharacterError(std::string line_text, int line_no, int position) : NebulaException(line_text, line_no, position){
 		}
 		
 		const char* what() const throw(){
 			
-			std::cerr << line_text << "\n";
-			for(int i=1; i<position; i++)
+			std::cerr << this->get_line_text() << "\n";
+			for(int i=1; i<this->get_position(); i++)
 				std::cerr << " ";
 			std::cerr << "^\n";
 			
-			const char* error_message = ("at position: " + std::to_string(this->position) + " on line: " + std::to_string(this->line_no) + "\n").c_str();
+			const char* error_message = ("at position: " + std::to_string(this->get_position()) + " on line: " + std::to_string(this->get_line_no()) + "\n").c_str();
 			return error_message;
 		}
 };

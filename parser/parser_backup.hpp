@@ -36,7 +36,7 @@ std::map<std::string, ValueType> string_to_ValueType_mapping {
 //  Regular Expressions for all code elements
 
 std::basic_regex<char> comment_statement_pattern("^(\\$.*)$");
-std::basic_regex<char> output_statement_pattern("^(display.*)$");
+std::basic_regex<char> output_statement_pattern("^(display ([^,]+)( , [^,]+)*)$");
 std::basic_regex<char> input_statement_pattern("^(scan ([a-zA-Z_][a-zA-Z_0-9]*)( , [a-zA-Z_][a-zA-Z_0-9]*)*)$");
 std::basic_regex<char> if_statement_pattern("^(if [a-zA-Z0-9._()+*/%>=<! -]+\\{)$");
 std::basic_regex<char> else_if_statement_pattern("^(else if [a-zA-Z0-9._()+*/%>=<! -]+\\{)$");
@@ -78,8 +78,8 @@ ExpressionStatement* expression_statement_parser(std::queue<std::vector<Token> >
 	std::vector<Token> line_tokens = program_lines.front();
 	program_lines.pop();
 	
-	Token open_bracket_token(_OPEN_BRACKET_LITERAL_, "(", 0,0);
-	Token close_bracket_token(_CLOSE_BRACKET_LITERAL_, ")", 0, 0);
+	Token open_bracket_token(_OPEN_BRACKET_LITERAL_, "(");
+	Token close_bracket_token(_CLOSE_BRACKET_LITERAL_, ")");
 	line_tokens.insert(line_tokens.begin(), open_bracket_token);
 	line_tokens.push_back(close_bracket_token);
 	
