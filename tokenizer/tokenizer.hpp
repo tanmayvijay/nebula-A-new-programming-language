@@ -31,10 +31,15 @@ class Token{
 	TokenType token_type;
 	std::string token_data;
 	
+	int line_no;
+	int position;
+	
 	public:
-		Token(TokenType token_type, std::string token_data){
+		Token(TokenType token_type, std::string token_data, int line_no, int position){
 			this->token_type = token_type;
 			this->token_data = token_data;
+			this->line_no = line_no;
+			this->position = position;
 		}
 		
 		
@@ -45,6 +50,14 @@ class Token{
 		
 		std::string get_token_data(){
 			return this->token_data;
+		}
+		
+		int get_line_no(){
+			return this->line_no;
+		}
+		
+		int get_position(){
+			return this->position;
 		}
 };
 
@@ -163,8 +176,9 @@ class Tokenizer{
 		}
 		
 		// Methods
-		std::vector<Token> tokenize (std::string line){
+		std::vector<Token> tokenize (std::string& line, int& line_no){
 			// line is the original string with original whitespaces
+			std::string original_line = line;
 			
 			std::vector<Token> tokens_vector;
 			int pos = 0;
@@ -199,11 +213,13 @@ class Tokenizer{
 					}
 				}
 				
-				if (!matched_flag)
-					throw std::exception(); // change this
+				if (!matched_flag){
+					int error_position = pos - temp_token_data.length() + 1;
+					throw InvalidCharacterError(original_line, line_no, error_position);	
+				}
 				
 				if (temp_token_type != _COMMENT_LITERAL_){
-					Token new_token = Token(temp_token_type, temp_token_data);
+					Token new_token = Token(temp_token_type, temp_token_data, line_no, pos);
 			
 					tokens_vector.push_back(new_token);
 				}

@@ -5,12 +5,19 @@
 #include<vector>
 #include<queue>
 
+#include "exceptions/nebula_exceptions.hpp"
 #include "tokenizing_helper.hpp"
 #include "program_elements/program_elements.hpp"
 #include "tokenizer/tokenizer.hpp"
 #include "parser/parser.hpp"
 
+
+
 int main(int argc, char* argv[]){
+	
+	std::set_terminate(terminate_handler);
+	
+	
 	if (argc < 1) throw std::exception(); // change this
 	std::string file_name = argv[1];
 	

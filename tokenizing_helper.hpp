@@ -15,9 +15,13 @@ std::queue<std::vector<Token> > tokenizing_helper(std::ifstream& input_file){
 
 	Tokenizer tokenizer;
 	
+	int line_no = 0;
+	
 	while(std::getline(input_file, line)){
+		line_no++;
+		
 		if (_trim_(line).length()){ // to handle empty tokens
-			std::vector<Token> line_tokens = tokenizer.tokenize(line);
+			std::vector<Token> line_tokens = tokenizer.tokenize(line, line_no);
 			if (line_tokens.size() > 0)
 				program_tokens.push(line_tokens);
 		}
