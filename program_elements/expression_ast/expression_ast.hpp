@@ -126,9 +126,9 @@ class OperatorNode : public ExpressionAST{
 			this->op = string_to_operator_mapping.find(op_string)->second;
 			this->operator_type = op_type;
 			this->precedence = operator_precendence_mapping.find(op_string)->second;
-			std::cout << this->precedence;
+//			std::cout << this->precedence;
 			if (this->operator_type == _UNARY_OP_) this->precedence = _UNARY_MINUS_NOT_;
-			std::cout<< this->precedence;
+//			std::cout<< this->precedence;
 		}
 		
 		Operator get_operator(){

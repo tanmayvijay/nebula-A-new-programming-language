@@ -97,6 +97,25 @@ class MissingExpressionError : public NebulaException{
 
 
 
+class InvalidSyntaxError : public NebulaException{
+	
+	public:
+		InvalidSyntaxError(std::vector<Token>& line_tokens, int line_no, int position) : NebulaException(line_tokens, line_no, position){
+		}
+		
+		const char* what() const throw(){
+			std::cerr << this->get_line_text() << "\n";
+			for(int i=1; i<this->get_position(); i++)
+				std::cerr << " ";
+			std::cerr << "^\n";
+			
+			const char* error_message = ("at position: " + std::to_string(this->get_position()) + " on line: " + std::to_string(this->get_line_no()) + "\n").c_str();
+			return error_message;
+		}
+};
+
+
+
 void terminate_handler(){
 	std::cerr << "Execution terminated!\n\n";
 	std::exception_ptr cur_exp = std::current_exception();
@@ -108,6 +127,9 @@ void terminate_handler(){
 	}
 	catch(MissingExpressionError &e){
 		std::cerr << "MissingExpressionError: " << e.what() << "\n";
+	}
+	catch(InvalidSyntaxError &e){
+		std::cerr << "InvalidSyntaxError: " << e.what() << "\n";
 	}
 	abort();
 }

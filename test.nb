@@ -16,4 +16,10 @@ x-(-x+ - 1)
 
 -x + -addi(x, -y)
 
+not x not
 
+-12*-x+y-10 or -123+876-92 and -12.43/var+False
+
+
+$Errors in expressions:
+$x y $ missing operator

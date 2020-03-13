@@ -16,7 +16,7 @@
 #include "../program_elements/value_type.hpp"
 #include "../program_elements/expression_ast/expression_ast.hpp"
 #include "../program_elements/symbol_table/symbol_table.hpp"
-
+#include "../exceptions/nebula_exceptions.hpp"
 
 
 Element* parse_line(std::queue<std::vector<Token> >& program_lines, Block* super_block);
@@ -100,8 +100,6 @@ ExpressionStatement* expression_statement_parser(std::queue<std::vector<Token> >
 //		size--;
 		Token& token = line_tokens.at(i);
 		TokenType token_type = token.get_token_type();
-		
-		std::cout << token.get_token_data() << std::endl;
 
 		if (token_type == _OPEN_BRACKET_LITERAL_){
 //			std::cout << "(\n";
@@ -130,7 +128,7 @@ ExpressionStatement* expression_statement_parser(std::queue<std::vector<Token> >
 						if (lt.get_token_type() == _CLOSE_BRACKET_LITERAL_) no_of_open_brackets--;
 						
 					}
-						
+
 						
 					i++; // i at token after )
 				}
@@ -173,8 +171,8 @@ ExpressionStatement* expression_statement_parser(std::queue<std::vector<Token> >
 			OperatorType op_type = _BINARY_OP_;
 			OperatorPrecedence op_precedence = operator_precendence_mapping.find(op_string)->second;
 			
-			if (op_string == "not") op_type = _UNARY_OP_;
-			else if (op_string == "-"){
+//			if (op_string == "not") op_type = _UNARY_OP_;
+			if (op_string == "-" || op_string == "not"){
 				if (i == 0) op_type = _UNARY_OP_;
 				else{
 					TokenType t_type = line_tokens.at(i-1).get_token_type();
@@ -184,6 +182,11 @@ ExpressionStatement* expression_statement_parser(std::queue<std::vector<Token> >
 						t_type == _OPEN_BRACKET_LITERAL_)
 						op_type = _UNARY_OP_;
 				}
+			}
+			
+			if (op_string == "not" && op_type == _BINARY_OP_){
+				line_tokens = std::vector<Token> (line_tokens.begin()+1, line_tokens.end()-1);
+				throw InvalidSyntaxError(line_tokens, token.get_line_no(), token.get_position()+1);
 			}
 			
 			if (op_type == _UNARY_OP_) op_precedence = _UNARY_MINUS_NOT_;
