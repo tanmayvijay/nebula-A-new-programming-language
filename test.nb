@@ -3,6 +3,7 @@ integer x = 0
 bool y
 y = True
 
+$test this
 
 
 fun addi(integer a, integer b) returns integer c{
@@ -21,29 +22,31 @@ $ not x not	$ not operator on right
 -12*-x+y-10 or -123+876-92 and -12.43/var+False
 
 
-x(7, 2)		$ variable called like a function
+$ x(7, 2)		$ variable called like a function
+
+
+$ addi + 1
 
 
 $ Errors in expressions:
 
-x y 		$ missing operator
+$ x y 		$ missing operator -- right now it evaluates to just "y"
 
-((x-2)*7	$ incomplete brackets
+$ (((x-2))*7	$ incomplete brackets
+
+$ (x-1)+2)	$ incomplete brackets
 
 x + * 4		$ missing operand or double operators except unary ones
 
-x (y+7)		$ missing operator
+$x (y+7)		$ missing operator
 
-()		$ missing operands or empty bracket except for function calls
+$()		$ missing operands or empty bracket except for function calls
 
-addi(x,)	$ missing operand
+$addi(x,)	$ missing operand
 
-addi(, y)	$ missing operand
+$addi(, y)	$ missing operand
 
-addi(x y)	$ missing ,
-
-
-
+$addi(x y)	$ missing ,
 
 
 

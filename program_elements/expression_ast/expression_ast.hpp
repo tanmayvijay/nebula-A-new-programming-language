@@ -178,18 +178,18 @@ class OperatorNode : public ExpressionAST{
 
 #include "../symbol_table/symbol_table.hpp"
 
-class OperandNodeWithSymbol : public ExpressionAST{
-	Symbol* symbol;
+class OperandNodeWithVariable : public ExpressionAST{
+	Variable* variable;
 	
 	public:
 
-		OperandNodeWithSymbol(Symbol* symbol) : ExpressionAST(_OPERAND_NODE_){
-			this->symbol = symbol;
+		OperandNodeWithVariable(Variable* variable) : ExpressionAST(_OPERAND_NODE_){
+			this->variable = variable;
 		}
 		
 		void _repr_(){
 			std::cout << " [ ";
-			std::cout << symbol->get_symbol_name();
+			std::cout << variable->get_symbol_name();
 			std::cout << " ] ";
 		}
 		
@@ -200,7 +200,7 @@ class OperandNodeWithSymbol : public ExpressionAST{
 
 
 std::map<ValueType, std::string> ValueType_to_default_value_mapping {
-	{_NONE_, "N/A"},
+	{_VOID_, "N/A"},
 	{_INTEGER_, "0"},
 	{_DECIMAL_, "0.0"},
 	{_STRING_, ""},
@@ -236,11 +236,11 @@ class OperandNodeWithConstant : public ExpressionAST{
 
 
 class OperandNodeWithFunctionCall : public ExpressionAST{
-	Symbol* function_to_call;
+	Function* function_to_call;
 	std::vector<ExpressionAST*> param_expressions;
 	
 	public:
-		OperandNodeWithFunctionCall(Symbol* func_to_call, std::vector<ExpressionAST*> param_expressions) : ExpressionAST(_OPERAND_NODE_){
+		OperandNodeWithFunctionCall(Function* func_to_call, std::vector<ExpressionAST*> param_expressions) : ExpressionAST(_OPERAND_NODE_){
 			this->function_to_call = func_to_call;
 			this->param_expressions = param_expressions;
 		}

@@ -24,7 +24,7 @@ ExpressionStatement* expression_statement_parser(std::vector<Token>& line_tokens
 
 
 std::map<std::string, ValueType> string_to_ValueType_mapping {
-	{"none", _NONE_},
+	{"void", _VOID_},
 	{"string", _STRING_},
 	{"integer", _INTEGER_},
 	{"decimal", _DECIMAL_},
@@ -44,7 +44,8 @@ std::basic_regex<char> else_statement_pattern("^(else \\{)$");
 std::basic_regex<char> for_statement_pattern("^(for [a-zA-Z_][a-zA-Z0-9_]* from [0-9]+ to [0-9]+( with [0-9]+)? \\{)$");
 std::basic_regex<char> while_statement_pattern("^(while [a-zA-Z0-9._()+*/%>=<! -]+\\{)$");
 std::basic_regex<char> function_statement_pattern("^(fun [a-zA-Z_][a-zA-Z0-9_]* \\( ([a-zA-Z0-9._()+*/%>=<! -]+ (, [a-zA-Z0-9._()+*/%>=<! -]+)* )?\\) (returns [a-zA-Z_][a-zA-Z0-9_]* [a-zA-Z_][a-zA-Z0-9_]* )?\\{)$");
-std::basic_regex<char> variable_declaration_statement_pattern("^([a-zA-Z_][a-zA-Z0-9_]* [a-zA-Z_][a-zA-Z_0-9]*( = .+)?)$");
+//std::basic_regex<char> variable_declaration_statement_pattern("^([a-zA-Z_][a-zA-Z0-9_]* [a-zA-Z_][a-zA-Z_0-9]*( = .+)?)$");
+std::basic_regex<char> variable_declaration_statement_pattern("^((string|integer|decimal|bool) [a-zA-Z_][a-zA-Z0-9_]*( = .+)?)$");
 std::basic_regex<char> variable_assignment_statement_pattern("^([a-zA-Z_][a-zA-Z_0-9]* = .+)$");
 std::basic_regex<char> expression_statement_pattern( "^([a-zA-Z0-9.,\"_()+*/%>=<! -]+)$");
 
@@ -91,7 +92,7 @@ ExpressionStatement* expression_statement_parser(std::queue<std::vector<Token> >
 	OperatorNode* op_node;
 //	OperandNodeWithExpression* operand_w_exp;
 //	OperandNodeFinal* operand_final;
-	OperandNodeWithSymbol* operand_w_exp;
+	OperandNodeWithVariable* operand_w_exp;
 	OperandNodeWithConstant* operand_final;
 	OperandNodeWithFunctionCall* operand_w_func;
 	
@@ -110,6 +111,12 @@ ExpressionStatement* expression_statement_parser(std::queue<std::vector<Token> >
 		else if (token_type == _IDENTIFIER_OR_KEYWORD_LITERAL_){
 			if (line_tokens.at(i+1).get_token_type() == _OPEN_BRACKET_LITERAL_){
 				Function* function_to_call = (Function*) super_block->find_symbol(line_tokens.at(i).get_token_data());
+				if(function_to_call->get_symbol_type() != _FUNCTION_){
+					int pos = token.get_position()+token.get_token_data().length();
+					line_tokens = std::vector<Token>(line_tokens.begin()+1, line_tokens.end()-1);
+					throw InvalidSyntaxError(line_tokens, token.get_line_no(), pos);
+				}
+				
 				i+=2; // i at ) or expression's first token
 				std::vector<ExpressionAST*> parameters;
 				std::vector<Token> param_expression_tokens;
@@ -144,8 +151,13 @@ ExpressionStatement* expression_statement_parser(std::queue<std::vector<Token> >
 				
 			}
 			else{
-				Variable* symbol = (Variable*) super_block->find_symbol(token.get_token_data());
-				operand_w_exp = new OperandNodeWithSymbol(symbol);
+				Variable* variable = (Variable*) super_block->find_symbol(token.get_token_data());
+				if (variable->get_symbol_type() != _VARIABLE_){
+					line_tokens = std::vector<Token>(line_tokens.begin()+1, line_tokens.end()-1);
+					throw InvalidSyntaxError(line_tokens, token.get_line_no(), token.get_position());
+				}
+				
+				operand_w_exp = new OperandNodeWithVariable(variable);
 				expression_stack.push( operand_w_exp );
 			}
 			
@@ -257,6 +269,12 @@ ExpressionStatement* expression_statement_parser(std::queue<std::vector<Token> >
 	
 	ExpressionAST* expression_ast = expression_stack.top();
 	expression_stack.pop();
+	
+	if (expression_stack.size() != 0 || operator_stack.size() != 0){
+		line_tokens = std::vector<Token>(line_tokens.begin()+1, line_tokens.end()-1);
+		throw InvalidSyntaxError(line_tokens, line_tokens.at(0).get_line_no(), line_tokens.at(0).get_position());
+	}
+	
 //	expression_ast->_repr_();
 	return new ExpressionStatement(super_block, expression_ast);
 }
@@ -280,9 +298,13 @@ VariableDeclarationStatement* variable_declaration_statement_parser(std::queue<s
 	std::string type_string = line_tokens.at(0).get_token_data();
 	ValueType type = string_to_ValueType_mapping.find(type_string)->second;
 	
+	if (type == _VOID_ && type_string != "void"){
+		throw InvalidSyntaxError(line_tokens, line_tokens.at(0).get_line_no(), line_tokens.at(0).get_position() );
+	}
+	
 	std::string name = line_tokens.at(1).get_token_data();
 	
-	ExpressionAST* expression = NULL;
+	ExpressionAST* expression = new OperandNodeWithConstant(type);
 	
 	if (line_tokens.size() > 2){
 		std::vector<Token> expression_tokens(line_tokens.begin()+3, line_tokens.end()); // "=" skipped
@@ -294,8 +316,8 @@ VariableDeclarationStatement* variable_declaration_statement_parser(std::queue<s
 		throw std::exception();
 	}
 	
-	Variable* symbol = new Variable(type, name, expression);
-	super_block->add_symbol(symbol);
+	Variable* variable = new Variable(type, name, expression);
+	super_block->add_symbol(variable);
 	
 	return new VariableDeclarationStatement (super_block, type, name, expression);
 }
@@ -525,7 +547,7 @@ Element* function_block_parser(std::queue<std::vector<Token> >& program_lines, B
 	i++; // i at returns or {
 	
 	
-	ValueType return_type = _NONE_;
+	ValueType return_type = _VOID_;
 	std::string return_variable_name = "";
 	if (line_tokens.at(i).get_token_type() != _OPEN_PARENTHESIS_LITERAL_){// i at return type
 		i++;

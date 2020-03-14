@@ -3,7 +3,7 @@
 
 
 enum ValueType{
-	_NONE_,
+	_VOID_,
 	_INTEGER_,
 	_DECIMAL_,
 	_STRING_,
