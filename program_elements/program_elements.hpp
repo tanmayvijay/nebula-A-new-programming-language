@@ -105,8 +105,8 @@ class Block : public Element{
 			printf("%5s |%15s |%30s\n", "Type", "Name", "Value Expression");
 			std::cout << "-------------------------------------------------------\n";
 			for(Symbol* sym: symbol_table){
-				printf("%5d |%15s | ", sym->get_value_type(), sym->get_symbol_name().c_str());
-				sym->get_symbol_value()->_repr_();
+				printf("%5d |%15s | ", sym->get_data_type(), sym->get_symbol_name().c_str());
+				sym->get_symbol_value_expression()->_repr_();
 				std::cout << "\n";
 			}
 		
@@ -268,7 +268,7 @@ class InputStatement : public Statement{
 			std::cout << "scan:\t";
 			
 			for(Symbol* sym : variables){
-				std::cout << sym->get_value_type() << " : " << sym->get_symbol_name() << " \t";
+				std::cout << sym->get_data_type() << " : " << sym->get_symbol_name() << " \t";
 			}
 			std::cout << "\n";
 		}
@@ -304,8 +304,8 @@ class ConditionalBlock : public Block{ // for if, else if, else
 			printf("%5s |%15s |%30s\n", "Type", "Name", "Value Expression");
 			std::cout << "-------------------------------------------------------\n";
 			for(Symbol* sym: this->get_symbol_table() ){
-				printf("%5d |%15s | ", sym->get_value_type(), sym->get_symbol_name().c_str());
-				sym->get_symbol_value()->_repr_();
+				printf("%5d |%15s | ", sym->get_data_type(), sym->get_symbol_name().c_str());
+				sym->get_symbol_value_expression()->_repr_();
 				std::cout << "\n";
 			}
 			
@@ -363,7 +363,7 @@ class ForBlock : public Block{
 			this->step_size = ss;
 			
 			OperandNodeWithConstant* loop_variable_expression = new OperandNodeWithConstant(_INTEGER_, std::to_string(lower_limit));
-			this->loop_variable = new Symbol(_INTEGER_, loop_variable_name, loop_variable_expression);
+			this->loop_variable = new Variable(_INTEGER_, loop_variable_name, loop_variable_expression);
 			this->add_symbol(loop_variable);
 		}
 		
@@ -379,8 +379,8 @@ class ForBlock : public Block{
 			printf("%5s |%15s |%30s\n", "Type", "Name", "Value Expression");
 			std::cout << "-------------------------------------------------------\n";
 			for(Symbol* sym: this->get_symbol_table() ){
-				printf("%5d |%15s | ", sym->get_value_type(), sym->get_symbol_name().c_str());
-				sym->get_symbol_value()->_repr_();
+				printf("%5d |%15s | ", sym->get_data_type(), sym->get_symbol_name().c_str());
+				sym->get_symbol_value_expression()->_repr_();
 				std::cout << "\n";
 			}
 			
@@ -428,8 +428,8 @@ class WhileBlock : public Block{
 			printf("%5s |%15s |%30s\n", "Type", "Name", "Value Expression");
 			std::cout << "-------------------------------------------------------\n";
 			for(Symbol* sym: this->get_symbol_table() ){
-				printf("%5d |%15s | ", sym->get_value_type(), sym->get_symbol_name().c_str());
-				sym->get_symbol_value()->_repr_();
+				printf("%5d |%15s | ", sym->get_data_type(), sym->get_symbol_name().c_str());
+				sym->get_symbol_value_expression()->_repr_();
 				std::cout << "\n";
 			}
 			

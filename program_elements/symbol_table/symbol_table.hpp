@@ -10,28 +10,54 @@
 //#include "../expression_ast/expression_ast.hpp"
 class ExpressionAST;
 
+enum SymbolType{
+	_VARIABLE_,
+	_FUNCTION_
+};
+
+
 class Symbol{
-	ValueType type;
-	std::string id_name;
-	ExpressionAST* value_expression = NULL;
+	SymbolType symbol_type;
 	
+	ValueType data_type;
+	std::string id_name;
 	
 	public:
-		Symbol(ValueType type, std::string id_name, ExpressionAST* value){
-			this->type = type;
+		Symbol(SymbolType s_type, ValueType data_type, std::string id_name){
+			this->symbol_type = s_type;
+			this->data_type = data_type;
 			this->id_name = id_name;
-			this->value_expression = value;
+		}
+		
+		SymbolType get_symbol_type(){
+			return this->symbol_type;
 		}
 		
 		std::string get_symbol_name(){
 			return this->id_name;
 		}
 		
-		ValueType get_value_type(){
-			return this->type;
+		ValueType get_data_type(){
+			return this->data_type;
 		}
 		
-		virtual ExpressionAST* get_symbol_value(){
+		virtual ExpressionAST* get_symbol_value_expression() = 0;
+};
+
+
+
+class Variable : public Symbol{
+	
+	ExpressionAST* value_expression = NULL;
+	
+	
+	public:
+		Variable(ValueType data_type, std::string id_name, ExpressionAST* value) : Symbol(_VARIABLE_, data_type, id_name){
+			this->value_expression = value;
+		}
+
+		
+		ExpressionAST* get_symbol_value_expression(){
 			return this->value_expression;
 		}
 		
@@ -47,23 +73,23 @@ class Symbol{
 class Block;
 
 class Function : public Symbol{
-	std::vector<Symbol*> parameters;
-	Symbol* return_variable;
+	std::vector<Variable*> parameters;
+	Variable* return_variable;
 	Block* function_block;
 	
 	public:
-		Function(std::string func_name, std::vector<Symbol*> parameters, ValueType return_type, Symbol* return_variable, Block* function_block) : Symbol(return_type, func_name, NULL){
+		Function(std::string func_name, std::vector<Variable*> parameters, ValueType return_type, Variable* return_variable, Block* function_block) : Symbol(_FUNCTION_, return_type, func_name){
 			this->parameters = parameters;
 			this->return_variable = return_variable;
 			this->function_block = function_block;
 		}
 		
-		std::vector<Symbol*> get_parameters(){
+		std::vector<Variable*> get_parameters(){
 			return this->parameters;
 		}
 		
 		ValueType get_return_type(){
-			return this->get_value_type();
+			return this->get_data_type();
 		}
 		
 		Symbol* get_return_variable(){
@@ -74,8 +100,8 @@ class Function : public Symbol{
 			return this->function_block;
 		}
 		
-		ExpressionAST* get_symbol_value(){ // returns return variable value expression
-			return this->return_variable->get_symbol_value();
+		ExpressionAST* get_symbol_value_expression(){
+			return this->return_variable->get_symbol_value_expression();
 		}
 		
 };

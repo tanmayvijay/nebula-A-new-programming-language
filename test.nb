@@ -16,10 +16,38 @@ x-(-x+ - 1)
 
 -x + -addi(x, -y)
 
-not x not
+$ not x not	$ not operator on right
 
 -12*-x+y-10 or -123+876-92 and -12.43/var+False
 
 
-$Errors in expressions:
-$x y $ missing operator
+x(7, 2)		$ variable called like a function
+
+
+$ Errors in expressions:
+
+x y 		$ missing operator
+
+((x-2)*7	$ incomplete brackets
+
+x + * 4		$ missing operand or double operators except unary ones
+
+x (y+7)		$ missing operator
+
+()		$ missing operands or empty bracket except for function calls
+
+addi(x,)	$ missing operand
+
+addi(, y)	$ missing operand
+
+addi(x y)	$ missing ,
+
+
+
+
+
+
+
+
+
+

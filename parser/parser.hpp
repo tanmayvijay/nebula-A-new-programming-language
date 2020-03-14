@@ -109,7 +109,7 @@ ExpressionStatement* expression_statement_parser(std::queue<std::vector<Token> >
 		
 		else if (token_type == _IDENTIFIER_OR_KEYWORD_LITERAL_){
 			if (line_tokens.at(i+1).get_token_type() == _OPEN_BRACKET_LITERAL_){
-				Symbol* function_to_call = super_block->find_symbol(line_tokens.at(i).get_token_data());
+				Function* function_to_call = (Function*) super_block->find_symbol(line_tokens.at(i).get_token_data());
 				i+=2; // i at ) or expression's first token
 				std::vector<ExpressionAST*> parameters;
 				std::vector<Token> param_expression_tokens;
@@ -144,7 +144,7 @@ ExpressionStatement* expression_statement_parser(std::queue<std::vector<Token> >
 				
 			}
 			else{
-				Symbol* symbol = super_block->find_symbol(token.get_token_data());
+				Variable* symbol = (Variable*) super_block->find_symbol(token.get_token_data());
 				operand_w_exp = new OperandNodeWithSymbol(symbol);
 				expression_stack.push( operand_w_exp );
 			}
@@ -294,7 +294,7 @@ VariableDeclarationStatement* variable_declaration_statement_parser(std::queue<s
 		throw std::exception();
 	}
 	
-	Symbol* symbol = new Symbol(type, name, expression);
+	Variable* symbol = new Variable(type, name, expression);
 	super_block->add_symbol(symbol);
 	
 	return new VariableDeclarationStatement (super_block, type, name, expression);
@@ -312,7 +312,7 @@ VariableAssignmentStatement* variable_assignment_statement_parser(std::queue<std
 	std::vector<Token> expression_tokens(line_tokens.begin()+2, line_tokens.end());
 	ExpressionAST* expression = expression_statement_parser(expression_tokens, super_block)->get_expression();
 	
-	Symbol* symbol = super_block->find_symbol(name);
+	Variable* symbol = (Variable*) super_block->find_symbol(name);
 	symbol->set_value(expression);
 	
 	return new VariableAssignmentStatement(super_block, name, expression);
@@ -365,7 +365,7 @@ InputStatement* input_statement_parser(std::queue<std::vector<Token> >& program_
 	
 	for(int i=1; i<line_tokens.size(); i+=2 ){ // skip 'scan' token and then skip alternate ',' tokens
 		Token& var = line_tokens.at(i);
-		Symbol* symbol = super_block->find_symbol(var.get_token_data());
+		Variable* symbol = (Variable*) super_block->find_symbol(var.get_token_data());
 		if (!symbol){
 			std::cout << "\nSymbol '" << var.get_token_data() << "' does not exist or accessed before declaration!\n";
 			throw std::exception();
@@ -504,7 +504,7 @@ Element* function_block_parser(std::queue<std::vector<Token> >& program_lines, B
 	
 	std::string func_name = line_tokens.at(1).get_token_data();
 	
-	std::vector<Symbol*> parameters;
+	std::vector<Variable*> parameters;
 	
 	int i=3; // i at first param-type
 	while(line_tokens.at(i).get_token_type() != _CLOSE_BRACKET_LITERAL_){
@@ -514,7 +514,7 @@ Element* function_block_parser(std::queue<std::vector<Token> >& program_lines, B
 		std::string param_name = line_tokens.at(i).get_token_data();
 		OperandNodeWithConstant* param_default_value = new OperandNodeWithConstant(param_type);
 		
-		Symbol* param = new Symbol(param_type, param_name, param_default_value);
+		Variable* param = new Variable(param_type, param_name, param_default_value);
 		
 		parameters.push_back(param);
 		
@@ -533,12 +533,12 @@ Element* function_block_parser(std::queue<std::vector<Token> >& program_lines, B
 		return_variable_name = line_tokens.at(++i).get_token_data();
 	}
 	OperandNodeWithConstant* return_var_default_value = new OperandNodeWithConstant(return_type);
-	Symbol* return_variable = new Symbol(return_type, return_variable_name, return_var_default_value);
+	Variable* return_variable = new Variable(return_type, return_variable_name, return_var_default_value);
 	
 	
 	
 	Block* function_block = new Block(super_block);
-	for(Symbol* param : parameters){
+	for(Variable* param : parameters){
 		function_block->add_symbol(param);
 	}
 	if (return_variable)
@@ -612,14 +612,8 @@ Element* parse_line(std::queue<std::vector<Token> >& program_lines, Block* super
 	else if (parsable(line_tokens, expression_statement_pattern)){
 		return expression_statement_parser(program_lines, super_block);
 	}
-	else{
-		std::cout << "\nline not parsed\n";	
-		
-		for(Token& t : line_tokens)
-			std::cout << t.get_token_data() << " ";
-		std::cout << "\n";
-		
-		throw std::exception();
+	else{		
+		throw InvalidSyntaxError(line_tokens, line_tokens.at(0).get_line_no(), line_tokens.at(0).get_position());
 	}
 }
 

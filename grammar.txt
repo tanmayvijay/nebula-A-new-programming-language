@@ -83,7 +83,6 @@ var_name = func_name(params?)
 
 # unary_operators:
 not - NOT
-~ - NOT
 - - minus
 
 # binary_operators:
@@ -102,17 +101,6 @@ x - y
 x * y
 x / y
 x ^ y
-x++
-++x
-x--
---x
-
-x += y
-x -= y
-x *= y
-x /= y
-x %= y
-x ^= y
 
 
 
@@ -127,11 +115,6 @@ Equivalent Intermediate code:
 [ [ [x == y]  or  [ [ [z + 1]  != 0]  and  [ not  [ [x + y]  >= 10] ] ] ]  or  [ not a] ]
 
 # Operator Precedence: -- keep it like C
-()
-/   *
-%
-+   -
-
 
 
 # input methods:
