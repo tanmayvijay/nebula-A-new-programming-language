@@ -115,7 +115,7 @@ class InvalidSyntaxError : public NebulaException{
 };
 
 
-class InconsistentTypeError : public std::exception{
+class InconsistentTypesError : public std::exception{
 		
 };
 
@@ -136,8 +136,11 @@ void terminate_handler(){
 	catch(InvalidSyntaxError &e){
 		std::cerr << "InvalidSyntaxError: " << e.what() << "\n";
 	}
-	catch(InconsistentTypeError &e){
-		std::cerr << "InconsistentTypeError: " <<  "\n";
+	catch(InconsistentTypesError &e){
+		std::cerr << "InconsistentTypesError: " <<  "\n";
+	}
+	catch(...){
+		std::cerr << "Error: " <<  "\n";
 	}
 	
 	abort();
