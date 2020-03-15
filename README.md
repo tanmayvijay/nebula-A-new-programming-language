@@ -37,3 +37,15 @@ Each block stores its own functions in the symbol table itself. In case of name-
 * Function calls and Expressions can be recursively nested. Yay!.
 * Like this: decimal some_var = addiv( x+y/var, addi(x, addi(var, n)) )
 * *Still need a better regular expression for recognizing correct expression, but this is a small one*.
+
+
+### Edit-9: Implemented Error Reporting in various parsing elements.
+* Still has scope of improvement in error reporting
+
+
+### Edit-10: Semantic Analyzer Implemented:
+* Each program element has its own semanticc checker.
+* Type checking.
+* Type checking rules: integer and decimal can be used with any operator
+* strings are supported by +, == and !=
+* booleans are supported by and, or, not, == and !=.
