@@ -7,6 +7,7 @@
 
 #include "../../tokenizer/tokenizer.hpp"
 #include "../value_type.hpp"
+#include "../../exceptions/nebula_exceptions.hpp"
 
 
 
@@ -18,12 +19,10 @@ enum NodeType{
 
 class ExpressionAST {
 	NodeType type;
-//	Token node_data = Token(_OTHER_TOKEN_LITERAL_, "");
 	
 	public:
 		ExpressionAST(NodeType type){
 			this->type = type;
-//			this->node_data = node_data;
 		}
 		
 		NodeType get_node_type(){
@@ -35,6 +34,8 @@ class ExpressionAST {
 //		}
 		
 		virtual void _repr_() = 0;
+		
+		virtual ValueType determine_final_type() = 0;
 		
 };
 
@@ -160,9 +161,45 @@ class OperatorNode : public ExpressionAST{
 			this->right_node = node;
 		}
 		
+		ValueType determine_final_type(){
+			for(Operator op : {_AND_OP_, _OR_OP_, _NOT_OP_, _EQUAL_OP_, _NOT_EQUAL_OP_, _GT_OP_, _GTE_OP_, _LT_OP_, _LTE_OP_}){
+				if (this->op == op) return _BOOLEAN_;
+			}
+			
+			ValueType r_type = this->right_node->determine_final_type();
+			
+			if (op == _MINUS_OP_){
+				if (r_type == _INTEGER_ || r_type == _DECIMAL_) return r_type;
+			}
+			
+			ValueType l_type = this->left_node->determine_final_type();
+			
+			if (op == _PLUS_OP_){
+				if (l_type == _STRING_ && r_type == _STRING_){
+					return _STRING_;
+				}
+			}
+			
+			if (l_type == _INTEGER_ && r_type == _INTEGER_) return _INTEGER_;
+			
+			if ((l_type == _DECIMAL_ && (r_type == _DECIMAL_ || r_type == _INTEGER_)))
+				return _DECIMAL_;
+				
+			if ((r_type == _DECIMAL_ && (l_type == _DECIMAL_ || l_type == _INTEGER_)))
+				return _DECIMAL_;
+				
+			throw InconsistentTypeError();
+			
+			
+		}
+		
+//		void check_semantic(){
+//			
+//		}
+		
 		
 		void _repr_(){
-			std::cout << " [ ";
+			std::cout << "{" << this->determine_final_type() <<"} [ ";
 			
 			if (this->left_node)
 				this->left_node->_repr_();
@@ -185,6 +222,10 @@ class OperandNodeWithVariable : public ExpressionAST{
 
 		OperandNodeWithVariable(Variable* variable) : ExpressionAST(_OPERAND_NODE_){
 			this->variable = variable;
+		}
+		
+		ValueType determine_final_type(){
+			return this->variable->get_data_type();
 		}
 		
 		void _repr_(){
@@ -226,6 +267,10 @@ class OperandNodeWithConstant : public ExpressionAST{
 			this->operand_value = ValueType_to_default_value_mapping.find(operand_type)->second;
 		}
 		
+		ValueType determine_final_type(){
+			return this->operand_type;
+		}
+		
 		void _repr_(){
 			std::cout << operand_value;
 		}
@@ -243,6 +288,10 @@ class OperandNodeWithFunctionCall : public ExpressionAST{
 		OperandNodeWithFunctionCall(Function* func_to_call, std::vector<ExpressionAST*> param_expressions) : ExpressionAST(_OPERAND_NODE_){
 			this->function_to_call = func_to_call;
 			this->param_expressions = param_expressions;
+		}
+		
+		ValueType determine_final_type(){
+			return this->function_to_call->get_return_type();
 		}
 		
 		void _repr_(){
