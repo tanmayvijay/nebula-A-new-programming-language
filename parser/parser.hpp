@@ -334,9 +334,6 @@ VariableDeclarationStatement* variable_declaration_statement_parser(std::queue<s
 		std::vector<Token> expression_tokens(line_tokens.begin()+3, line_tokens.end()); // "=" skipped
 		expression = expression_statement_parser(expression_tokens, super_block)->get_expression();
 	}
-	else{
-		expression = new OperandNodeWithConstant(type);
-	}
 	
 	if (super_block->check_symbol_already_exists_in_this_block(name)){
 		std::cout << "\nSymbol '" << name << "' already declared before!\n";
@@ -361,12 +358,8 @@ VariableAssignmentStatement* variable_assignment_statement_parser(std::queue<std
 	std::vector<Token> expression_tokens(line_tokens.begin()+2, line_tokens.end());
 	ExpressionAST* expression = expression_statement_parser(expression_tokens, super_block)->get_expression();
 	
-	Variable* variable = (Variable*) super_block->find_symbol(name);
-	
-	if (variable->get_symbol_type() != _VARIABLE_)
-		throw InvalidSyntaxError(line_tokens, line_tokens.at(0).get_line_no(), line_tokens.at(0).get_position());
-	
-	variable->set_value(expression);
+	Variable* symbol = (Variable*) super_block->find_symbol(name);
+	symbol->set_value(expression);
 	
 	return new VariableAssignmentStatement(super_block, name, expression);
 }

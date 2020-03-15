@@ -28,8 +28,6 @@ int main(int argc, char* argv[]){
 	
 	Block* program_block = program_parser(program_tokens);
 	
-	program_block->check_semantic();
-	
 //	parser tests - 2 
 //	if(!program_block->get_elements()->at(0)) std::cout << "Empty block\n";
 	program_block->_repr_();
