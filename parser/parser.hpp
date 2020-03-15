@@ -79,6 +79,11 @@ ExpressionStatement* expression_statement_parser(std::queue<std::vector<Token> >
 	std::vector<Token> line_tokens = program_lines.front();
 	program_lines.pop();
 	
+//	if (line_tokens.empty()){
+//		throw InvalidSyntaxError(line_tokens, 0,0);
+//	}
+	
+	
 	Token open_bracket_token(_OPEN_BRACKET_LITERAL_, "(", -1,-1);
 	Token close_bracket_token(_CLOSE_BRACKET_LITERAL_, ")", -1, -1);
 	line_tokens.insert(line_tokens.begin(), open_bracket_token);
@@ -125,6 +130,11 @@ ExpressionStatement* expression_statement_parser(std::queue<std::vector<Token> >
 				while( no_of_open_brackets > 0){
 					Token& lt = line_tokens.at(i);
 					if (lt.get_token_data() == "," && no_of_open_brackets <= 1){
+						if (param_expression_tokens.empty()){
+							line_tokens = std::vector<Token>(line_tokens.begin()+1, line_tokens.end()-1);
+							throw InvalidSyntaxError(line_tokens, line_tokens.at(i-1).get_line_no(), line_tokens.at(i-1).get_position()+1);
+						}
+						
 						ExpressionAST* next_param = expression_statement_parser(param_expression_tokens, super_block)->get_expression();
 						parameters.push_back(next_param);
 						param_expression_tokens.clear();
@@ -137,7 +147,7 @@ ExpressionStatement* expression_statement_parser(std::queue<std::vector<Token> >
 					}
 
 						
-					i++; // i at token after )
+					i++; // i at token after ) at the end
 				}
 				i--; // i brought back at ) to let for loop increment it.
 				if (param_expression_tokens.size() > 1){
