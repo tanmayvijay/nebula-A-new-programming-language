@@ -3,6 +3,7 @@ integer x = 0
 bool y
 y = True
 
+
 $test this
 
 
@@ -36,13 +37,13 @@ $ (((x-2))*7	$ incomplete brackets
 
 $ (x-1)+2)	$ incomplete brackets
 
-x + * 4		$ missing operand or double operators except unary ones
+$ x + * 4		$ missing operand or double operators except unary ones
 
-$x (y+7)		$ missing operator
+$ x (y+7)		$ missing operator || variable called like a function
 
-$()		$ missing operands or empty bracket except for function calls
+$ ()		$ missing operands or empty bracket except for function calls
 
-$addi(x,)	$ missing operand
+addi(x,)	$ missing operand
 
 $addi(, y)	$ missing operand
 

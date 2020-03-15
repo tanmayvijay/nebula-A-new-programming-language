@@ -79,8 +79,8 @@ ExpressionStatement* expression_statement_parser(std::queue<std::vector<Token> >
 	std::vector<Token> line_tokens = program_lines.front();
 	program_lines.pop();
 	
-	Token open_bracket_token(_OPEN_BRACKET_LITERAL_, "(", 0,0);
-	Token close_bracket_token(_CLOSE_BRACKET_LITERAL_, ")", 0, 0);
+	Token open_bracket_token(_OPEN_BRACKET_LITERAL_, "(", -1,-1);
+	Token close_bracket_token(_CLOSE_BRACKET_LITERAL_, ")", -1, -1);
 	line_tokens.insert(line_tokens.begin(), open_bracket_token);
 	line_tokens.push_back(close_bracket_token);
 	
@@ -213,6 +213,11 @@ ExpressionStatement* expression_statement_parser(std::queue<std::vector<Token> >
 				
 				ExpressionAST* left_expr = NULL;
 				if (op_node->get_operator_type() == _BINARY_OP_){
+					if (expression_stack.empty()){
+						line_tokens = std::vector<Token>(line_tokens.begin()+1, line_tokens.end()-1);
+						throw InvalidSyntaxError(line_tokens, line_tokens.at(0).get_line_no(), line_tokens.at(0).get_position());
+					}
+					
 					left_expr = expression_stack.top();
 					expression_stack.pop();
 				}
@@ -244,6 +249,10 @@ ExpressionStatement* expression_statement_parser(std::queue<std::vector<Token> >
 				ExpressionAST* left_expr = NULL;
 
 				if (op_node->get_operator_type() == _BINARY_OP_){
+					if (expression_stack.empty()){
+						line_tokens = std::vector<Token>(line_tokens.begin()+1, line_tokens.end()-1);
+						throw InvalidSyntaxError(line_tokens, line_tokens.at(0).get_line_no(), line_tokens.at(0).get_position());
+					}
 					left_expr = expression_stack.top();
 					expression_stack.pop();
 				}
@@ -265,6 +274,11 @@ ExpressionStatement* expression_statement_parser(std::queue<std::vector<Token> >
 			std::cout << "Expression cannot be parse at token: '" << token.get_token_data() << "'\n";
 			throw std::exception();
 		}
+	}
+	
+	if (expression_stack.size() == 0){
+		line_tokens = std::vector<Token>(line_tokens.begin()+1, line_tokens.end()-1);
+		throw InvalidSyntaxError(line_tokens, line_tokens.at(0).get_line_no(), line_tokens.at(0).get_position());
 	}
 	
 	ExpressionAST* expression_ast = expression_stack.top();
