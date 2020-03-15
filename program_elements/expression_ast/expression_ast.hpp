@@ -161,18 +161,37 @@ class OperatorNode : public ExpressionAST{
 			this->right_node = node;
 		}
 		
-		ValueType determine_final_type(){
-			for(Operator op : {_AND_OP_, _OR_OP_, _NOT_OP_, _EQUAL_OP_, _NOT_EQUAL_OP_, _GT_OP_, _GTE_OP_, _LT_OP_, _LTE_OP_}){
-				if (this->op == op) return _BOOLEAN_;
-			}
+		ValueType determine_final_type(){ // this automatically does check semantic of the expression
 			
 			ValueType r_type = this->right_node->determine_final_type();
 			
-			if (op == _MINUS_OP_){
+			if ( !this->left_node && this->op == _MINUS_OP_){
 				if (r_type == _INTEGER_ || r_type == _DECIMAL_) return r_type;
 			}
+			if (this->op == _NOT_OP_) return _BOOLEAN_;
 			
 			ValueType l_type = this->left_node->determine_final_type();
+			
+			for(Operator op : {_AND_OP_, _OR_OP_}){
+				if (this->op == op){
+					if (l_type == _STRING_ || r_type == _STRING_)
+						throw InconsistentTypesError();
+					return _BOOLEAN_;
+				}
+			}
+			
+			for(Operator op : {_EQUAL_OP_, _NOT_EQUAL_OP_}){
+				if (this->op == op)
+					return _BOOLEAN_;
+			}
+			
+			for(Operator op : {_GT_OP_, _GTE_OP_, _LT_OP_, _LTE_OP_}){
+				if (this->op == op){
+					if (l_type == _STRING_ || l_type == _BOOLEAN_ || r_type == _STRING_ || r_type == _BOOLEAN_)
+						throw InconsistentTypesError();
+					return _BOOLEAN_;
+				}
+			}
 			
 			if (op == _PLUS_OP_){
 				if (l_type == _STRING_ && r_type == _STRING_){
@@ -187,8 +206,9 @@ class OperatorNode : public ExpressionAST{
 				
 			if ((r_type == _DECIMAL_ && (l_type == _DECIMAL_ || l_type == _INTEGER_)))
 				return _DECIMAL_;
+			
 				
-			throw InconsistentTypeError();
+			throw InconsistentTypesError();
 			
 			
 		}
@@ -199,7 +219,8 @@ class OperatorNode : public ExpressionAST{
 		
 		
 		void _repr_(){
-			std::cout << "{" << this->determine_final_type() <<"} [ ";
+//			std::cout << "{" << this->determine_final_type() <<"} [ ";
+			std::cout << " [ ";
 			
 			if (this->left_node)
 				this->left_node->_repr_();
@@ -290,8 +311,20 @@ class OperandNodeWithFunctionCall : public ExpressionAST{
 			this->param_expressions = param_expressions;
 		}
 		
-		ValueType determine_final_type(){
+		ValueType determine_final_type(){ // check_semantic()
+			if(param_expressions.size() != function_to_call->get_parameters().size())
+				throw std::exception();
+				
+			for(int i=0; i< param_expressions.size(); i++){
+				ValueType param_expr_type = param_expressions.at(i)->determine_final_type();
+				ValueType param_type = function_to_call->get_parameters().at(i)->get_data_type();
+				
+				if (param_expr_type != param_type)
+					throw InconsistentTypesError();
+			}
+			
 			return this->function_to_call->get_return_type();
+			
 		}
 		
 		void _repr_(){
