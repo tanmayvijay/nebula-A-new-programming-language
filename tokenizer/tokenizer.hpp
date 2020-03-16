@@ -149,6 +149,8 @@ class Tokenizer{
 						temp_token_data = matched_value[1].str();
 						temp_token_type = pattern.get_pattern_type();
 						
+						
+//						std::cout << "here\n";
 //						std::string temp_line;
 //						std::regex_replace(std::back_inserter(temp_line), line.begin(), line.end(), std::basic_regex<char>(temp_token_data), "", std::regex_constants::format_first_only);
 //						line = temp_line;
@@ -161,15 +163,32 @@ class Tokenizer{
 				}
 				
 				if (!matched_flag){
+//					std::cout << "here"<< "\n";
 					int error_position = pos + 1;
 					throw InvalidCharacterError(original_line, line_no, error_position);	
 				}
 				
+				
+//				if (temp_token_type == _STRING_LITERAL_){
+////					std::cout << "'" << temp_token_data << "'\n";
+//					Token new_token = Token(temp_token_type, temp_token_data.substr(1, temp_token_data.length()-2), line_no, pos);
+//					tokens_vector.push_back(new_token);
+////					std::cout << "'" << new_token.get_token_data() << "'\n";
+//					
+//				}
+
+				pos += temp_token_data.length();
+
+				
+				if (temp_token_type == _STRING_LITERAL_)
+					temp_token_data = temp_token_data.substr(1, temp_token_data.length()-2);
+				
 				if (temp_token_type != _COMMENT_LITERAL_){
+					
 					Token new_token = Token(temp_token_type, temp_token_data, line_no, pos);
 					tokens_vector.push_back(new_token);
 				}
-				pos += temp_token_data.length();
+				
 				
 			}
 
