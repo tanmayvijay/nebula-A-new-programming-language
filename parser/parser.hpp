@@ -414,17 +414,17 @@ InputStatement* input_statement_parser(std::queue<std::vector<Token> >& program_
 	std::vector<Token> line_tokens = program_lines.front();
 	program_lines.pop();
 	
-	std::vector<Symbol*> variables;
+	std::vector<Variable*> variables;
 	
 	for(int i=1; i<line_tokens.size(); i+=2 ){ // skip 'scan' token and then skip alternate ',' tokens
 		Token& var = line_tokens.at(i);
-		Variable* symbol = (Variable*) super_block->find_symbol(var.get_token_data());
-		if (!symbol){
+		Variable* variable = (Variable*) super_block->find_symbol(var.get_token_data());
+		if (!variable){
 			std::cout << "\nSymbol '" << var.get_token_data() << "' does not exist or accessed before declaration!\n";
 			throw std::exception();
 		}
 		
-		variables.push_back(symbol);
+		variables.push_back(variable);
 	}
 	
 	return new InputStatement(super_block, variables);

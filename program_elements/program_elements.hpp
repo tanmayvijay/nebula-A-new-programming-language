@@ -318,10 +318,10 @@ class OutputStatement : public Statement{
 
 // scan statement
 class InputStatement : public Statement{
-	std::vector<Symbol*> variables;
+	std::vector<Variable*> variables;
 	
 	public:
-		InputStatement(Block* super_block, std::vector<Symbol*> variables) : Statement(super_block){
+		InputStatement(Block* super_block, std::vector<Variable*> variables) : Statement(super_block){
 			this->variables = variables;
 		}
 		
@@ -332,7 +332,30 @@ class InputStatement : public Statement{
 		
 		
 		void run() {
-			std::cout << "Inside scan statement" << std::endl;
+			for (int i=0; i<this->variables.size(); i++){
+				Variable* var = variables.at(i);
+				std::string input;
+				getline(input);
+				
+				if (var->get_data_type() == _STRING_){
+					OperandNodeWithConstant val_expr = new OperandNodeWithConstant(_STRING_, input);
+					var->set_value(val_expr);
+				}
+				else if (var->get_data_type() == _INTEGER_){
+					
+				}
+				else if (var->get_data_type() == _DECIMAL_){
+					
+				}
+				else if (var->get_data_type() == _BOOLEAN_){
+					
+				}
+				else{
+					throw InconsistentTypesError();
+				}
+				
+				
+			}
 		}
 		
 		void _repr_(){
