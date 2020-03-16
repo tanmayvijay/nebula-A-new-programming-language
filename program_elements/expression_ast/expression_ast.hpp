@@ -37,6 +37,8 @@ class ExpressionAST {
 		
 		virtual ValueType determine_final_type() = 0;
 		
+		virtual std::string evaluate() = 0;
+		
 };
 
 
@@ -161,43 +163,72 @@ class OperatorNode : public ExpressionAST{
 			this->right_node = node;
 		}
 		
+		
 		ValueType determine_final_type(){ // this automatically does check semantic of the expression
-			
+			std::cout << this->op << "\n";
 			ValueType r_type = this->right_node->determine_final_type();
 			
-			if ( !this->left_node && this->op == _MINUS_OP_){
+			
+			if ( !this->left_node && this->op == _MINUS_OP_)
 				if (r_type == _INTEGER_ || r_type == _DECIMAL_) return r_type;
+			
+			
+			if (!this->left_node && this->op == _NOT_OP_){
+				if (r_type == _STRING_)
+					throw InconsistentTypesError();
+				return _BOOLEAN_;
 			}
-			if (this->op == _NOT_OP_) return _BOOLEAN_;
 			
 			ValueType l_type = this->left_node->determine_final_type();
 			
-			for(Operator op : {_AND_OP_, _OR_OP_}){
+			std::cout << "L: " << l_type << " | R: " << r_type << "\n";
+			
+			for(Operator op : {_AND_OP_, _OR_OP_})
 				if (this->op == op){
+					
 					if (l_type == _STRING_ || r_type == _STRING_)
 						throw InconsistentTypesError();
 					return _BOOLEAN_;
 				}
-			}
 			
-			for(Operator op : {_EQUAL_OP_, _NOT_EQUAL_OP_}){
-				if (this->op == op)
-					return _BOOLEAN_;
-			}
 			
-			for(Operator op : {_GT_OP_, _GTE_OP_, _LT_OP_, _LTE_OP_}){
+			for(Operator op : {_EQUAL_OP_, _NOT_EQUAL_OP_})
+				if (this->op == op){
+					if ( (l_type == _INTEGER_ || l_type == _DECIMAL_) && 
+						(r_type == _INTEGER_ || r_type == _DECIMAL_) ) return _BOOLEAN_;
+					
+					else if (l_type  == r_type) return _BOOLEAN_;
+					
+					else
+						throw InconsistentTypesError();
+				}
+					
+			
+			
+			for(Operator op : {_GT_OP_, _GTE_OP_, _LT_OP_, _LTE_OP_})
 				if (this->op == op){
 					if (l_type == _STRING_ || l_type == _BOOLEAN_ || r_type == _STRING_ || r_type == _BOOLEAN_)
 						throw InconsistentTypesError();
 					return _BOOLEAN_;
 				}
-			}
 			
-			if (op == _PLUS_OP_){
-				if (l_type == _STRING_ && r_type == _STRING_){
-					return _STRING_;
-				}
+			
+			if (this->op == _MODULUS_OP_){
+				
+				if (l_type == _INTEGER_ && r_type == _INTEGER_) return _INTEGER_;
+				throw InconsistentTypesError();
 			}
+				
+			
+			
+			if (this->op == _PLUS_OP_){
+				std::cout << "here\n";
+				if (l_type == _STRING_ && r_type == _STRING_)
+					return _STRING_;
+			}
+				
+				
+			
 			
 			if (l_type == _INTEGER_ && r_type == _INTEGER_) return _INTEGER_;
 			
@@ -213,9 +244,287 @@ class OperatorNode : public ExpressionAST{
 			
 		}
 		
-//		void check_semantic(){
-//			
-//		}
+		
+		
+		std::string evaluate(){
+			
+			std::string r_value = this->right_node->evaluate();
+			ValueType r_type = this->right_node->determine_final_type();
+			if (this->operator_type == _UNARY_OP_){
+				
+				if (this->op == _MINUS_OP_){
+					if (r_type == _INTEGER_){
+						int r_value_temp = std::stoi(r_value);
+						r_value_temp = -r_value_temp;
+						return std::to_string(r_value_temp);
+					}
+					else{ // if r_type is _DECIMAL_
+						double r_value_temp = std::stod(r_value);
+						r_value_temp = -r_value_temp;
+						return std::to_string(r_value_temp);
+					}
+				}
+				else{ //if(this->op == _NOT_OP_)
+					if (r_type == _INTEGER_){
+						int r_value_temp = std::stoi(r_value);
+						if (r_value_temp) return "False";
+						return "True";
+					}
+					if (r_type == _DECIMAL_){
+						double r_value_temp = std::stod(r_value);
+						if(r_value_temp) return "False";
+						return "True";
+					}
+					else{ // in case of _BOOLEAN_
+						if (r_value == "True") return "False";
+						else return "True";
+					}
+					
+				} 
+			}
+			else{ // in case of binary operator
+				std::string l_value = this->left_node->evaluate();
+				ValueType l_type = this->left_node->determine_final_type();
+			
+				if (this->op == _PLUS_OP_){
+					if (l_type == _STRING_ && r_type == _STRING_) return l_value + r_value;
+					if (l_type == _DECIMAL_ || r_type == _DECIMAL_){
+						double l_value_temp = std::stod(l_value);
+						double r_value_temp = std::stod(r_value);
+						double ans = l_value_temp + r_value_temp;
+						return std::to_string(ans);
+					}
+					
+					int l_value_temp = std::stoi(l_value);
+					int r_value_temp = std::stoi(r_value);
+					int ans = l_value_temp + r_value_temp;
+					return std::to_string(ans);
+				}
+				
+				if (this->op == _MINUS_OP_){
+					
+					if (l_type == _DECIMAL_ || r_type == _DECIMAL_){
+						double l_value_temp = std::stod(l_value);
+						double r_value_temp = std::stod(r_value);
+						double ans = l_value_temp - r_value_temp;
+						return std::to_string(ans);
+					}
+					
+					int l_value_temp = std::stoi(l_value);
+					int r_value_temp = std::stoi(r_value);
+					int ans = l_value_temp - r_value_temp;
+					return std::to_string(ans);
+				}
+				
+				if (this->op == _MULTIPLY_OP_){
+					
+					if (l_type == _DECIMAL_ || r_type == _DECIMAL_){
+						double l_value_temp = std::stod(l_value);
+						double r_value_temp = std::stod(r_value);
+						double ans = l_value_temp * r_value_temp;
+						return std::to_string(ans);
+					}
+					
+					int l_value_temp = std::stoi(l_value);
+					int r_value_temp = std::stoi(r_value);
+					int ans = l_value_temp * r_value_temp;
+					return std::to_string(ans);
+				}
+				
+				if (this->op == _DIVIDE_OP_){
+					if (l_type == _DECIMAL_ || r_type == _DECIMAL_){
+						double l_value_temp = std::stod(l_value);
+						double r_value_temp = std::stod(r_value);
+						double ans = l_value_temp / r_value_temp;
+						return std::to_string(ans);
+					}
+					
+					int l_value_temp = std::stoi(l_value);
+					int r_value_temp = std::stoi(r_value);
+					int ans = l_value_temp / r_value_temp;
+					return std::to_string(ans);
+				}
+				
+				if (this->op == _MODULUS_OP_){
+					int l_value_temp = std::stoi(l_value);
+					int r_value_temp = std::stoi(r_value);
+					int ans = l_value_temp % r_value_temp;
+					return std::to_string(ans);
+				}
+				
+				if (this->op == _EQUAL_OP_){
+					if (l_type == _STRING_ && r_type == _STRING_){
+						if (l_value == r_value) return "True";
+						else return "False";
+					}
+					if (l_type == _BOOLEAN_ && r_type == _BOOLEAN_){
+						if (l_value == r_value) return "True";
+						else return "False";
+					}
+					else{
+						double l_value_temp = std::stod(l_value);
+						double r_value_temp = std::stod(r_value);
+						
+						if (l_value_temp == r_value_temp) return "True";
+						return "False";
+					}
+				}
+				if (this->op == _NOT_EQUAL_OP_){
+					if (l_type == _STRING_ && r_type == _STRING_){
+						if (l_value != r_value) return "True";
+						else return "False";
+					}
+					if (l_type == _BOOLEAN_ && r_type == _BOOLEAN_){
+						if (l_value != r_value) return "True";
+						else return "False";
+					}
+					else{
+						double l_value_temp = std::stod(l_value);
+						double r_value_temp = std::stod(r_value);
+						
+						if (l_value_temp != r_value_temp) return "True";
+						return "False";
+					}
+				}
+				
+				if (this->op == _GTE_OP_){
+					if (l_type == _DECIMAL_ || r_type == _DECIMAL_){
+						double l_value_temp = std::stod(l_value);
+						double r_value_temp = std::stod(r_value);
+						bool ans = l_value_temp >= r_value_temp;
+						if (ans) return "True";
+						return "False";
+					}
+					
+					int l_value_temp = std::stoi(l_value);
+					int r_value_temp = std::stoi(r_value);
+					bool ans = l_value_temp >= r_value_temp;
+					if (ans) return "True";
+					return "False";
+				}
+				
+				if (this->op == _GT_OP_){
+					if (l_type == _DECIMAL_ || r_type == _DECIMAL_){
+						double l_value_temp = std::stod(l_value);
+						double r_value_temp = std::stod(r_value);
+						bool ans = l_value_temp > r_value_temp;
+						if (ans) return "True";
+						return "False";
+					}
+					
+					int l_value_temp = std::stoi(l_value);
+					int r_value_temp = std::stoi(r_value);
+					bool ans = l_value_temp > r_value_temp;
+					if (ans) return "True";
+					return "False";
+				}
+				
+				if (this->op == _LTE_OP_){
+					if (l_type == _DECIMAL_ || r_type == _DECIMAL_){
+						double l_value_temp = std::stod(l_value);
+						double r_value_temp = std::stod(r_value);
+						bool ans = l_value_temp <= r_value_temp;
+						if (ans) return "True";
+						return "False";
+					}
+					
+					int l_value_temp = std::stoi(l_value);
+					int r_value_temp = std::stoi(r_value);
+					bool ans = l_value_temp <= r_value_temp;
+					if (ans) return "True";
+					return "False";
+				}
+				
+				if (this->op == _LT_OP_){
+					if (l_type == _DECIMAL_ || r_type == _DECIMAL_){
+						double l_value_temp = std::stod(l_value);
+						double r_value_temp = std::stod(r_value);
+						bool ans = l_value_temp < r_value_temp;
+						if (ans) return "True";
+						return "False";
+					}
+					
+					int l_value_temp = std::stoi(l_value);
+					int r_value_temp = std::stoi(r_value);
+					bool ans = l_value_temp < r_value_temp;
+					if (ans) return "True";
+					return "False";
+				}
+				
+				if (this->op == _AND_OP_){
+					bool l_value_temp;
+					bool r_value_temp;
+					
+					if (l_type == _BOOLEAN_){
+						if (l_value == "True") l_value_temp = true;
+						else l_value_temp = true;
+					}
+					else if (l_type == _INTEGER_){
+						if (std::stoi(l_value) ) l_value_temp = true;
+						else l_value_temp = false;
+					}
+					else { // l_type is _decimal_
+						if (std::stod(l_value) ) l_value_temp = true;
+						else l_value_temp = false;
+					}
+					
+					if (r_type == _BOOLEAN_){
+						if (r_value == "True") r_value_temp = true;
+						else r_value_temp = true;
+					}
+					else if (r_type == _INTEGER_){
+						if (std::stoi(r_value) ) r_value_temp = true;
+						else r_value_temp = false;
+					}
+					else { // r_type is _decimal_
+						if (std::stod(r_value) ) r_value_temp = true;
+						else r_value_temp = false;
+					}
+					
+					if (l_value_temp && r_value_temp) return "True";
+					return "False";
+					
+				}
+				if (this->op == _OR_OP_){
+					bool l_value_temp;
+					bool r_value_temp;
+					
+					if (l_type == _BOOLEAN_){
+						if (l_value == "True") l_value_temp = true;
+						else l_value_temp = true;
+					}
+					else if (l_type == _INTEGER_){
+						if (std::stoi(l_value) ) l_value_temp = true;
+						else l_value_temp = false;
+					}
+					else { // l_type is _decimal_
+						if (std::stod(l_value) ) l_value_temp = true;
+						else l_value_temp = false;
+					}
+					
+					if (r_type == _BOOLEAN_){
+						if (r_value == "True") r_value_temp = true;
+						else r_value_temp = true;
+					}
+					else if (r_type == _INTEGER_){
+						if (std::stoi(r_value) ) r_value_temp = true;
+						else r_value_temp = false;
+					}
+					else { // r_type is _decimal_
+						if (std::stod(r_value) ) r_value_temp = true;
+						else r_value_temp = false;
+					}
+					
+					if (l_value_temp || r_value_temp) return "True";
+					return "False";
+				}
+			}
+			
+			
+			
+			
+		}
+
 		
 		
 		void _repr_(){
@@ -247,6 +556,10 @@ class OperandNodeWithVariable : public ExpressionAST{
 		
 		ValueType determine_final_type(){
 			return this->variable->get_data_type();
+		}
+		
+		std::string evaluate(){
+			return this->variable->get_value();
 		}
 		
 		void _repr_(){
@@ -292,6 +605,10 @@ class OperandNodeWithConstant : public ExpressionAST{
 			return this->operand_type;
 		}
 		
+		std::string evaluate(){
+			return this->operand_value;
+		}
+		
 		void _repr_(){
 			std::cout << operand_value;
 		}
@@ -325,6 +642,10 @@ class OperandNodeWithFunctionCall : public ExpressionAST{
 			
 			return this->function_to_call->get_return_type();
 			
+		}
+		
+		std::string evaluate(){
+			std::cout << "implemeent me!";
 		}
 		
 		void _repr_(){

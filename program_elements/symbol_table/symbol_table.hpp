@@ -50,10 +50,13 @@ class Variable : public Symbol{
 	
 	ExpressionAST* value_expression = NULL;
 	
+	std::string value;
+	
 	
 	public:
-		Variable(ValueType data_type, std::string id_name, ExpressionAST* value) : Symbol(_VARIABLE_, data_type, id_name){
-			this->value_expression = value;
+		Variable(ValueType data_type, std::string id_name, ExpressionAST* value_expression) : Symbol(_VARIABLE_, data_type, id_name){
+			this->value_expression = value_expression;
+			this->value = value_expression->evaluate();
 		}
 
 		
@@ -63,6 +66,11 @@ class Variable : public Symbol{
 		
 		void set_value(ExpressionAST* expression){
 			this->value_expression = expression;
+			this->value = value_expression->evaluate();
+		}
+		
+		std::string get_value(){
+			return this->value;
 		}
 	
 };

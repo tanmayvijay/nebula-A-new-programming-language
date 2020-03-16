@@ -112,7 +112,8 @@ class Block : public Element{
 		
 		
 		void run(){
-			std::cout << "Inside block" << std::endl;
+//			std::cout << "Inside block" << std::endl;
+			for(Element* elem : this->sub_elements) elem->run();
 		}
 		
 		void _repr_(){
@@ -167,8 +168,8 @@ class ExpressionStatement : public Statement{
 			this->expression_ast = expression_ast;
 		}
 		
-		virtual void run(){ // implement this
-			std::cout << "Inside Expression Statement run" << std::endl;
+		void run(){ // implement this
+			std::cout << this->expression_ast->evaluate();
 		}
 		
 		ExpressionAST* get_expression(){
@@ -215,7 +216,7 @@ class VariableDeclarationStatement : public Statement{
 		}
 		
 		void run(){
-			std::cout << "Inside var decln" << std::endl;
+			
 		}
 		
 		void _repr_(){
@@ -265,7 +266,8 @@ class VariableAssignmentStatement : public Statement{
 		}
 		
 		void run() {
-			std::cout << "Inside var assi" << std::endl;
+			Variable* var = (Variable*) this->get_super_block()->find_symbol(this->variable_name);
+			if (var->get_symbol_type() != _VARIABLE_) throw std::exception();
 		}
 		
 		void _repr_(){
@@ -295,7 +297,10 @@ class OutputStatement : public Statement{
 		}
 		
 		void run() {
-			std::cout << "Inside display statement" << std::endl;
+			for (ExpressionAST* expr : this->expressions){
+				std::cout << expr->evaluate() << " ";
+			}
+			std::cout << "\n";
 		}
 		
 		void _repr_(){

@@ -1,27 +1,17 @@
-string var = "some thing"
-integer x = 0
-bool y
-y = True
-
-
-fun addi(integer a, integer b) returns integer c{
-c=a+b
-}
-
+$string var = "some thing"
+integer x = 10
+$bool y
+$y = True
 
 display 123+x
 
--x + x
+$-x + x
 
-$ x-(-x+ - not 1)		$ InconsistentTypeError for "not 1"
-x-(-x+ - 1)
+$x-(-x+ - 1)
+ 
+$-x + -(x/ 12)
 
-$ -x + -addi(x, -y)		$ InconsistentTypeError for "-y" due to -
-$-x + -addi(x, y)		$ InconsistentTypeError for "y" due to func call 
--x + -addi(x, 12)
-
-$ -12*-x+y-10 or -123+876-92 and -12.43/var+False	$ InconsistentTypeError for (+y), (/var), (+False)
--12*-x-10 or -123+876-92 and -12.43/123+x or False
+$-12*-x-10 or -123+876-92 and -12.43/123+x or False
 
 
 
