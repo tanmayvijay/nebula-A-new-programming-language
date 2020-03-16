@@ -1,21 +1,28 @@
-$string var = "some thing"
+string var = "some thing"
 integer x = 10
-$bool y
-$y = True
+bool y
+y = True
 
 display 123+x
 
-$-x + x
+-x + x
 
-$x-(-x+ - 1)
+x-(-x+ - 1)
  
-$-x + -(x/ 12)
+-x + -(x/ 12)
 
-$-12*-x-10 or -123+876-92 and -12.43/123+x or False
-
-
+-12*-x-10 or -123+876-92 and -12.43/123+x or False
 
 
+5%2
+
+12.43/123+x 
+
+
+20/7
+
+
+"abc" + var
 
 
 

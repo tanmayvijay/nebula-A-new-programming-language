@@ -169,7 +169,7 @@ class ExpressionStatement : public Statement{
 		}
 		
 		void run(){ // implement this
-			std::cout << this->expression_ast->evaluate();
+			std::cout << this->expression_ast->evaluate() << "\n";
 		}
 		
 		ExpressionAST* get_expression(){
@@ -266,8 +266,8 @@ class VariableAssignmentStatement : public Statement{
 		}
 		
 		void run() {
-			Variable* var = (Variable*) this->get_super_block()->find_symbol(this->variable_name);
-			if (var->get_symbol_type() != _VARIABLE_) throw std::exception();
+//			Variable* var = (Variable*) this->get_super_block()->find_symbol(this->variable_name);
+//			if (var->get_symbol_type() != _VARIABLE_) throw std::exception();
 		}
 		
 		void _repr_(){

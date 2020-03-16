@@ -165,7 +165,7 @@ class OperatorNode : public ExpressionAST{
 		
 		
 		ValueType determine_final_type(){ // this automatically does check semantic of the expression
-			std::cout << this->op << "\n";
+//			std::cout << this->op << "\n";
 			ValueType r_type = this->right_node->determine_final_type();
 			
 			
@@ -181,7 +181,7 @@ class OperatorNode : public ExpressionAST{
 			
 			ValueType l_type = this->left_node->determine_final_type();
 			
-			std::cout << "L: " << l_type << " | R: " << r_type << "\n";
+//			std::cout << "L: " << l_type << " | R: " << r_type << "\n";
 			
 			for(Operator op : {_AND_OP_, _OR_OP_})
 				if (this->op == op){
@@ -222,7 +222,7 @@ class OperatorNode : public ExpressionAST{
 			
 			
 			if (this->op == _PLUS_OP_){
-				std::cout << "here\n";
+//				std::cout << "here\n";
 				if (l_type == _STRING_ && r_type == _STRING_)
 					return _STRING_;
 			}
