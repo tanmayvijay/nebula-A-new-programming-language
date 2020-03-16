@@ -3,6 +3,13 @@ integer x = 10
 bool y
 y = True
 
+
+
+string l = "love "
+string u = "you!"
+string s = "i" + l + u
+string p = " x"
+
 display 123+x
 
 -x + x
@@ -22,7 +29,7 @@ x-(-x+ - 1)
 20/7
 
 
-"abc" + var
+"abc" + var + s + p
 
 
 
