@@ -1,50 +1,17 @@
 string s = "some thing"
 integer i = 10
 bool b
-b = True
 double d
 
-display b
 
-if (not b and i) == True{
-display b, "in if"
-}
-else if -i == -10{
-display -10, " in else if"
-}
-else{
-display not b, "in else"
-}
-
-
-if 0{
-display "Yay!"
-}
-
-
-0 and True $ F
-0 and False $ F
-
-0 or True $ T
-0 or False $ F
-
-1 and True $ T
-1 and False $ F
-
-1 or True $ T
-1 or False $ T
+b = True
 
 
 
-$display s
-
-$scan s
-
-$display s
+display s, i, b, d
 
 
+scan s, i, b, d
 
 
-
-
-
+display s, i, b, d

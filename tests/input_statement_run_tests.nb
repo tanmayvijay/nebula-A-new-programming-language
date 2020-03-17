@@ -1,0 +1,27 @@
+string s = "some thing"
+integer i = 10
+bool b
+b = True
+double d
+
+
+
+$display s
+$scan s
+$display s
+
+
+$display i
+$scan i
+$display i
+
+
+$display b
+$scan b
+$display b
+
+
+$display d
+$scan d
+$display d
+

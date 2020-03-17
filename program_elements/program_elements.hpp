@@ -353,7 +353,14 @@ class InputStatement : public Statement{
 				}
 				else if (var->get_data_type() == _BOOLEAN_){
 					ExpressionAST* val_expr;
-					if (input == "False" || input == "")
+					double numeric_input = 1;
+					try{
+						numeric_input = std::stod(input);
+					}
+					catch(...){
+						
+					}
+					if (input == "False" || input == "" || numeric_input == 0)
 						val_expr = new OperandNodeWithConstant(_BOOLEAN_, "False");
 					else
 						val_expr = new OperandNodeWithConstant(_BOOLEAN_, "True");
@@ -388,13 +395,13 @@ class ConditionalBlock : public Block{ // for if, else if, else
 	ExpressionAST* condition_expression;
 	public:
 		ConditionalBlock(Block* super_block, ExpressionAST* condition_expression) : Block(super_block){
-//			if (condition_expression){
-//				OperandNodeWithConstant* or_False = new OperandNodeWithConstant(_BOOLEAN_);
-//				OperatorNode* or_node = new OperatorNode("or", _BINARY_OP_);
-//				or_node->set_left_node(condition_expression);
-//				or_node->set_right_node(or_False);
-//				condition_expression = or_node;
-//			}
+			if (condition_expression){
+				OperandNodeWithConstant* or_False = new OperandNodeWithConstant(_BOOLEAN_);
+				OperatorNode* or_node = new OperatorNode("or", _BINARY_OP_);
+				or_node->set_left_node(condition_expression);
+				or_node->set_right_node(or_False);
+				condition_expression = or_node;
+			}
 			
 			this->condition_expression = condition_expression;
 		}
