@@ -54,8 +54,3 @@ while i > 5{
 x = i*30
 display x
 }
-
-
-
-
-id = (operator)? ((id|number) (operator))+
