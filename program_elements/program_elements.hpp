@@ -207,9 +207,9 @@ class VariableDeclarationStatement : public Statement{
 			ValueType expression_type = value_expression->determine_final_type();
 //			std::cout << "vds semantic checking\n";
 			if (expression_type == this->type) return;
-			if (this->type == _DECIMAL_ && expression_type == _INTEGER_) return;
-			if(this->type == _INTEGER_ && expression_type == _DECIMAL_) return;
-			if(this->type == _BOOLEAN_ && (expression_type == _INTEGER_ || expression_type == _DECIMAL_) )
+			if (this->type == _DOUBLE_ && expression_type == _INTEGER_) return;
+			if(this->type == _INTEGER_ && expression_type == _DOUBLE_) return;
+			if(this->type == _BOOLEAN_ && (expression_type == _INTEGER_ || expression_type == _DOUBLE_) )
 				return;
 				
 			throw InconsistentTypesError();
@@ -257,9 +257,9 @@ class VariableAssignmentStatement : public Statement{
 //			std::cout << var_type << "\t" << expression_type
 			
 			if (expression_type == var_type) return;
-			if (var_type == _DECIMAL_ && expression_type == _INTEGER_) return;
-			if(var_type == _INTEGER_ && expression_type == _DECIMAL_) return;
-			if(var_type == _BOOLEAN_ && (expression_type == _INTEGER_ || expression_type == _DECIMAL_) )
+			if (var_type == _DOUBLE_ && expression_type == _INTEGER_) return;
+			if(var_type == _INTEGER_ && expression_type == _DOUBLE_) return;
+			if(var_type == _BOOLEAN_ && (expression_type == _INTEGER_ || expression_type == _DOUBLE_) )
 				return;
 				
 			throw InconsistentTypesError();
@@ -335,20 +335,30 @@ class InputStatement : public Statement{
 			for (int i=0; i<this->variables.size(); i++){
 				Variable* var = variables.at(i);
 				std::string input;
-				getline(input);
+				getline(std::cin, input);
 				
 				if (var->get_data_type() == _STRING_){
-					OperandNodeWithConstant val_expr = new OperandNodeWithConstant(_STRING_, input);
+					ExpressionAST* val_expr = new OperandNodeWithConstant(_STRING_, input);
 					var->set_value(val_expr);
 				}
 				else if (var->get_data_type() == _INTEGER_){
-					
+					long data = std::stol(input);
+					ExpressionAST* val_expr = new OperandNodeWithConstant(_INTEGER_, std::to_string(data));
+					var->set_value(val_expr);
 				}
-				else if (var->get_data_type() == _DECIMAL_){
-					
+				else if (var->get_data_type() == _DOUBLE_){
+					double data = std::stod(input);
+					ExpressionAST* val_expr = new OperandNodeWithConstant(_DOUBLE_, std::to_string(data));
+					var->set_value(val_expr);
 				}
 				else if (var->get_data_type() == _BOOLEAN_){
-					
+					ExpressionAST* val_expr;
+					if (input == "False" || input == "")
+						val_expr = new OperandNodeWithConstant(_BOOLEAN_, "False");
+					else
+						val_expr = new OperandNodeWithConstant(_BOOLEAN_, "True");
+						
+					var->set_value(val_expr);
 				}
 				else{
 					throw InconsistentTypesError();
@@ -378,7 +388,19 @@ class ConditionalBlock : public Block{ // for if, else if, else
 	ExpressionAST* condition_expression;
 	public:
 		ConditionalBlock(Block* super_block, ExpressionAST* condition_expression) : Block(super_block){
+//			if (condition_expression){
+//				OperandNodeWithConstant* or_False = new OperandNodeWithConstant(_BOOLEAN_);
+//				OperatorNode* or_node = new OperatorNode("or", _BINARY_OP_);
+//				or_node->set_left_node(condition_expression);
+//				or_node->set_right_node(or_False);
+//				condition_expression = or_node;
+//			}
+			
 			this->condition_expression = condition_expression;
+		}
+		
+		ExpressionAST* get_condition_expression(){
+			return this->condition_expression;
 		}
 		
 		void check_semantic(){
@@ -403,7 +425,9 @@ class ConditionalBlock : public Block{ // for if, else if, else
 		
 		
 		void run() {
-			std::cout << "Inside conditional statement" << std::endl;
+			for(Element* elem : this->get_elements()){
+				elem->run();
+			}
 		}
 		
 		void _repr_(){
@@ -465,7 +489,26 @@ class IfBlock : public Block{ // sub-elements vector contains all the Conditiona
 		}
 		
 		void run() {
-			std::cout << "Inside if statement" << std::endl;
+			std::vector<Element*> conditional_blocks = this->get_elements();
+			for(int i=0; i<conditional_blocks.size(); i++){
+				ConditionalBlock* cond_block = (ConditionalBlock*) conditional_blocks.at(i);
+				
+				if (cond_block->get_condition_expression()){
+					std::string cond_state = cond_block->get_condition_expression()->evaluate();
+					if (cond_state == "True"){
+						cond_block->run();
+						break;
+					}
+//					else{
+//						continue;
+//					}
+				}
+				else{
+					cond_block->run();
+					break;
+				}
+				
+			}
 		}
 		
 		void _repr_(){
