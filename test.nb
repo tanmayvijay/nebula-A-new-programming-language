@@ -7,18 +7,14 @@ b = True
 
 i=7
 
-if i < 20{
-i = i+1
+
+
+
+for i from 1 to 30{
 display i
-
-i%5
-
-if i%5 != 0{
+if i < 20 and i%5 == 0{
 i = i+3
+
+
 }
-
 }
-
-
-
-display i

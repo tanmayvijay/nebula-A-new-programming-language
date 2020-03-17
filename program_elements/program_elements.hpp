@@ -533,7 +533,9 @@ class ForBlock : public Block{
 //	int lower_limit;
 //	int higher_limit;
 //	int step_size;
-	Symbol* loop_variable;
+	ExpressionAST* condition_expr;
+	VariableAssignmentStatement* loop_var_update;
+	Variable* loop_variable;
 	public:
 		ForBlock(Block* super_block, std::string loop_variable_name, int lower_limit, int upper_limit, int step_size=1) : Block(super_block){
 //			this->lower_limit = ll;
@@ -548,7 +550,34 @@ class ForBlock : public Block{
 			
 			this->loop_variable = new Variable(_INTEGER_, loop_variable_name, lower_limit_expression);
 			this->add_symbol(loop_variable);
+			OperandNodeWithVariable* loop_var_node = new OperandNodeWithVariable(loop_variable);
 			
+			OperatorNode* plus_op = new OperatorNode("+", _BINARY_OP_);
+			plus_op->set_left_node(loop_var_node);
+			plus_op->set_right_node(step_size_expression);
+			
+			this->loop_var_update = new VariableAssignmentStatement(this, this->loop_variable, plus_op);
+			
+//			this->add_element(loop_var_update);
+			
+			
+			if (lower_limit <= upper_limit){
+				if (step_size < 0)
+					throw std::invalid_argument("Step size must be positive\n");
+				OperatorNode* lte_op = new OperatorNode("<=", _BINARY_OP_);
+				lte_op->set_left_node(loop_var_node);
+				lte_op->set_right_node(upper_limit_expression);
+				
+				this->condition_expr = lte_op;
+			}
+			else{
+				if (step_size > 0)
+					throw std::invalid_argument("Step size must be negetive\n");
+				OperatorNode* gte_op = new OperatorNode(">=", _BINARY_OP_);
+				gte_op->set_left_node(loop_var_node);
+				gte_op->set_right_node(upper_limit_expression);
+				this->condition_expr = gte_op;
+			}
 			
 			
 		}
@@ -569,6 +598,13 @@ class ForBlock : public Block{
 		
 		
 		void run() {
+			while(this->condition_expr->evaluate() == "True"){
+				for(Element* elem : this->get_elements()){
+					elem->run();
+				}
+				
+				this->loop_var_update->run();
+			}
 			
 		}
 		
@@ -584,12 +620,6 @@ class ForBlock : public Block{
 				std::cout << "\n";
 			}
 			
-//			std::cout << "\n\nFunction - Function Table:\n";
-//			printf("%5s |%15s |\n", "Ret. Type", "Func Name");
-//			std::cout << "-------------------------------------------------------\n";
-//			for(FunctionBlock* func : this->get_function_table()){
-//				printf("%5d |%15s |\n", func->get_return_type(), func->get_function_name().c_str());
-//			}
 		
 			std::cout << "\n\n";
 
