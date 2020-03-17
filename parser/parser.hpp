@@ -27,7 +27,7 @@ std::map<std::string, ValueType> string_to_ValueType_mapping {
 	{"void", _VOID_},
 	{"string", _STRING_},
 	{"integer", _INTEGER_},
-	{"decimal", _DECIMAL_},
+	{"double", _DOUBLE_},
 	{"bool", _BOOLEAN_}
 };
 
@@ -45,7 +45,7 @@ std::basic_regex<char> for_statement_pattern("^(for [a-zA-Z_][a-zA-Z0-9_]* from 
 std::basic_regex<char> while_statement_pattern("^(while [a-zA-Z0-9._()+*/%>=<! -]+\\{)$");
 std::basic_regex<char> function_statement_pattern("^(fun [a-zA-Z_][a-zA-Z0-9_]* \\( ([a-zA-Z0-9._()+*/%>=<! -]+ (, [a-zA-Z0-9._()+*/%>=<! -]+)* )?\\) (returns [a-zA-Z_][a-zA-Z0-9_]* [a-zA-Z_][a-zA-Z0-9_]* )?\\{)$");
 //std::basic_regex<char> variable_declaration_statement_pattern("^([a-zA-Z_][a-zA-Z0-9_]* [a-zA-Z_][a-zA-Z_0-9]*( = .+)?)$");
-std::basic_regex<char> variable_declaration_statement_pattern("^((string|integer|decimal|bool) [a-zA-Z_][a-zA-Z0-9_]*( = .+)?)$");
+std::basic_regex<char> variable_declaration_statement_pattern("^((string|integer|double|bool) [a-zA-Z_][a-zA-Z0-9_]*( = .+)?)$");
 std::basic_regex<char> variable_assignment_statement_pattern("^([a-zA-Z_][a-zA-Z_0-9]* = .+)$");
 std::basic_regex<char> expression_statement_pattern( "^([a-zA-Z0-9.,\"_()+*/%>=<! -]+)$");
 
@@ -68,7 +68,7 @@ bool parsable(std::vector<Token> line_tokens, std::basic_regex<char> pattern){
 
 std::map<TokenType, ValueType> TokenType_to_ValueType_mapping{
 	{_INTEGER_LITERAL_, _INTEGER_},
-	{_DECIMAL_LITERAL_, _DECIMAL_},
+	{_DOUBLE_LITERAL_, _DOUBLE_},
 	{_STRING_LITERAL_, _STRING_},
 	{_BOOLEAN_LITERAL_, _BOOLEAN_}
 };
@@ -174,7 +174,7 @@ ExpressionStatement* expression_statement_parser(std::queue<std::vector<Token> >
 		}
 		
 		else if (token_type == _INTEGER_LITERAL_ ||
-				 token_type == _DECIMAL_LITERAL_ ||
+				 token_type == _DOUBLE_LITERAL_ ||
 				 token_type == _STRING_LITERAL_ ||
 				 token_type == _BOOLEAN_LITERAL_
 				 ){
@@ -417,10 +417,13 @@ InputStatement* input_statement_parser(std::queue<std::vector<Token> >& program_
 	std::vector<Variable*> variables;
 	
 	for(int i=1; i<line_tokens.size(); i+=2 ){ // skip 'scan' token and then skip alternate ',' tokens
-		Token& var = line_tokens.at(i);
-		Variable* variable = (Variable*) super_block->find_symbol(var.get_token_data());
+		Token& var_token = line_tokens.at(i);
+		Variable* variable = (Variable*) super_block->find_symbol(var_token.get_token_data());
+		if (variable->get_symbol_type() != _VARIABLE_)
+			throw InvalidSyntaxError(line_tokens, var_token.get_line_no(), var_token.get_position());
+		
 		if (!variable){
-			std::cout << "\nSymbol '" << var.get_token_data() << "' does not exist or accessed before declaration!\n";
+			std::cout << "\nSymbol '" << var_token.get_token_data() << "' does not exist or accessed before declaration!\n";
 			throw std::exception();
 		}
 		
