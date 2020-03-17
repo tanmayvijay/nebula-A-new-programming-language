@@ -170,7 +170,7 @@ class OperatorNode : public ExpressionAST{
 			
 			
 			if ( !this->left_node && this->op == _MINUS_OP_)
-				if (r_type == _INTEGER_ || r_type == _DECIMAL_) return r_type;
+				if (r_type == _INTEGER_ || r_type == _DOUBLE_) return r_type;
 			
 			
 			if (!this->left_node && this->op == _NOT_OP_){
@@ -194,8 +194,8 @@ class OperatorNode : public ExpressionAST{
 			
 			for(Operator op : {_EQUAL_OP_, _NOT_EQUAL_OP_})
 				if (this->op == op){
-					if ( (l_type == _INTEGER_ || l_type == _DECIMAL_) && 
-						(r_type == _INTEGER_ || r_type == _DECIMAL_) ) return _BOOLEAN_;
+					if ( (l_type == _BOOLEAN_ || l_type == _INTEGER_ || l_type == _DOUBLE_) && 
+						(r_type == _BOOLEAN_ || r_type == _INTEGER_ || r_type == _DOUBLE_) ) return _BOOLEAN_;
 					
 					else if (l_type  == r_type) return _BOOLEAN_;
 					
@@ -232,11 +232,11 @@ class OperatorNode : public ExpressionAST{
 			
 			if (l_type == _INTEGER_ && r_type == _INTEGER_) return _INTEGER_;
 			
-			if ((l_type == _DECIMAL_ && (r_type == _DECIMAL_ || r_type == _INTEGER_)))
-				return _DECIMAL_;
+			if ((l_type == _DOUBLE_ && (r_type == _DOUBLE_ || r_type == _INTEGER_)))
+				return _DOUBLE_;
 				
-			if ((r_type == _DECIMAL_ && (l_type == _DECIMAL_ || l_type == _INTEGER_)))
-				return _DECIMAL_;
+			if ((r_type == _DOUBLE_ && (l_type == _DOUBLE_ || l_type == _INTEGER_)))
+				return _DOUBLE_;
 			
 				
 			throw InconsistentTypesError();
@@ -258,7 +258,7 @@ class OperatorNode : public ExpressionAST{
 						r_value_temp = -r_value_temp;
 						return std::to_string(r_value_temp);
 					}
-					else{ // if r_type is _DECIMAL_
+					else{ // if r_type is _DOUBLE_
 						double r_value_temp = std::stod(r_value);
 						r_value_temp = -r_value_temp;
 						return std::to_string(r_value_temp);
@@ -270,7 +270,7 @@ class OperatorNode : public ExpressionAST{
 						if (r_value_temp) return "False";
 						return "True";
 					}
-					if (r_type == _DECIMAL_){
+					if (r_type == _DOUBLE_){
 						double r_value_temp = std::stod(r_value);
 						if(r_value_temp) return "False";
 						return "True";
@@ -288,7 +288,7 @@ class OperatorNode : public ExpressionAST{
 			
 				if (this->op == _PLUS_OP_){
 					if (l_type == _STRING_ && r_type == _STRING_) return l_value + r_value;
-					if (l_type == _DECIMAL_ || r_type == _DECIMAL_){
+					if (l_type == _DOUBLE_ || r_type == _DOUBLE_){
 						double l_value_temp = std::stod(l_value);
 						double r_value_temp = std::stod(r_value);
 						double ans = l_value_temp + r_value_temp;
@@ -303,7 +303,7 @@ class OperatorNode : public ExpressionAST{
 				
 				if (this->op == _MINUS_OP_){
 					
-					if (l_type == _DECIMAL_ || r_type == _DECIMAL_){
+					if (l_type == _DOUBLE_ || r_type == _DOUBLE_){
 						double l_value_temp = std::stod(l_value);
 						double r_value_temp = std::stod(r_value);
 						double ans = l_value_temp - r_value_temp;
@@ -318,7 +318,7 @@ class OperatorNode : public ExpressionAST{
 				
 				if (this->op == _MULTIPLY_OP_){
 					
-					if (l_type == _DECIMAL_ || r_type == _DECIMAL_){
+					if (l_type == _DOUBLE_ || r_type == _DOUBLE_){
 						double l_value_temp = std::stod(l_value);
 						double r_value_temp = std::stod(r_value);
 						double ans = l_value_temp * r_value_temp;
@@ -332,7 +332,7 @@ class OperatorNode : public ExpressionAST{
 				}
 				
 				if (this->op == _DIVIDE_OP_){
-					if (l_type == _DECIMAL_ || r_type == _DECIMAL_){
+					if (l_type == _DOUBLE_ || r_type == _DOUBLE_){
 						double l_value_temp = std::stod(l_value);
 						double r_value_temp = std::stod(r_value);
 						double ans = l_value_temp / r_value_temp;
@@ -361,6 +361,20 @@ class OperatorNode : public ExpressionAST{
 						if (l_value == r_value) return "True";
 						else return "False";
 					}
+					else if (l_type == _BOOLEAN_){
+						std::string r_value_temp = "False";
+						if (std::stod(r_value) != 0) r_value_temp = "True"; 
+						
+						if (l_value == r_value_temp ) return "True";
+						return "False";
+					}
+					else if (r_type == _BOOLEAN_){
+						std::string l_value_temp = "False";
+						if (std::stod(l_value) != 0) l_value_temp = "True"; 
+						
+						if (l_value_temp == r_value ) return "True";
+						return "False";
+					}
 					else{
 						double l_value_temp = std::stod(l_value);
 						double r_value_temp = std::stod(r_value);
@@ -378,6 +392,20 @@ class OperatorNode : public ExpressionAST{
 						if (l_value != r_value) return "True";
 						else return "False";
 					}
+					else if (l_type == _BOOLEAN_){
+						std::string r_value_temp = "False";
+						if (std::stod(r_value) != 0) r_value_temp = "True"; 
+						
+						if (l_value != r_value_temp ) return "True";
+						return "False";
+					}
+					else if (r_type == _BOOLEAN_){
+						std::string l_value_temp = "False";
+						if (std::stod(l_value) != 0) l_value_temp = "True"; 
+						
+						if (l_value_temp != r_value ) return "True";
+						return "False";
+					}
 					else{
 						double l_value_temp = std::stod(l_value);
 						double r_value_temp = std::stod(r_value);
@@ -388,7 +416,7 @@ class OperatorNode : public ExpressionAST{
 				}
 				
 				if (this->op == _GTE_OP_){
-					if (l_type == _DECIMAL_ || r_type == _DECIMAL_){
+					if (l_type == _DOUBLE_ || r_type == _DOUBLE_){
 						double l_value_temp = std::stod(l_value);
 						double r_value_temp = std::stod(r_value);
 						bool ans = l_value_temp >= r_value_temp;
@@ -404,7 +432,7 @@ class OperatorNode : public ExpressionAST{
 				}
 				
 				if (this->op == _GT_OP_){
-					if (l_type == _DECIMAL_ || r_type == _DECIMAL_){
+					if (l_type == _DOUBLE_ || r_type == _DOUBLE_){
 						double l_value_temp = std::stod(l_value);
 						double r_value_temp = std::stod(r_value);
 						bool ans = l_value_temp > r_value_temp;
@@ -420,7 +448,7 @@ class OperatorNode : public ExpressionAST{
 				}
 				
 				if (this->op == _LTE_OP_){
-					if (l_type == _DECIMAL_ || r_type == _DECIMAL_){
+					if (l_type == _DOUBLE_ || r_type == _DOUBLE_){
 						double l_value_temp = std::stod(l_value);
 						double r_value_temp = std::stod(r_value);
 						bool ans = l_value_temp <= r_value_temp;
@@ -436,7 +464,7 @@ class OperatorNode : public ExpressionAST{
 				}
 				
 				if (this->op == _LT_OP_){
-					if (l_type == _DECIMAL_ || r_type == _DECIMAL_){
+					if (l_type == _DOUBLE_ || r_type == _DOUBLE_){
 						double l_value_temp = std::stod(l_value);
 						double r_value_temp = std::stod(r_value);
 						bool ans = l_value_temp < r_value_temp;
@@ -457,29 +485,30 @@ class OperatorNode : public ExpressionAST{
 					
 					if (l_type == _BOOLEAN_){
 						if (l_value == "True") l_value_temp = true;
-						else l_value_temp = true;
+						else l_value_temp = false;
 					}
 					else if (l_type == _INTEGER_){
 						if (std::stoi(l_value) ) l_value_temp = true;
 						else l_value_temp = false;
 					}
-					else { // l_type is _decimal_
+					else { // l_type is _DOUBLE_
 						if (std::stod(l_value) ) l_value_temp = true;
 						else l_value_temp = false;
 					}
 					
 					if (r_type == _BOOLEAN_){
 						if (r_value == "True") r_value_temp = true;
-						else r_value_temp = true;
+						else r_value_temp = false;
 					}
 					else if (r_type == _INTEGER_){
 						if (std::stoi(r_value) ) r_value_temp = true;
 						else r_value_temp = false;
 					}
-					else { // r_type is _decimal_
+					else { // r_type is _DOUBLE_
 						if (std::stod(r_value) ) r_value_temp = true;
 						else r_value_temp = false;
 					}
+//					std::cout << l_value_temp << r_value_temp;
 					
 					if (l_value_temp && r_value_temp) return "True";
 					return "False";
@@ -497,7 +526,7 @@ class OperatorNode : public ExpressionAST{
 						if (std::stoi(l_value) ) l_value_temp = true;
 						else l_value_temp = false;
 					}
-					else { // l_type is _decimal_
+					else { // l_type is _DOUBLE_
 						if (std::stod(l_value) ) l_value_temp = true;
 						else l_value_temp = false;
 					}
@@ -510,7 +539,7 @@ class OperatorNode : public ExpressionAST{
 						if (std::stoi(r_value) ) r_value_temp = true;
 						else r_value_temp = false;
 					}
-					else { // r_type is _decimal_
+					else { // r_type is _DOUBLE_
 						if (std::stod(r_value) ) r_value_temp = true;
 						else r_value_temp = false;
 					}
@@ -577,7 +606,7 @@ class OperandNodeWithVariable : public ExpressionAST{
 std::map<ValueType, std::string> ValueType_to_default_value_mapping {
 	{_VOID_, "N/A"},
 	{_INTEGER_, "0"},
-	{_DECIMAL_, "0.0"},
+	{_DOUBLE_, "0.0"},
 	{_STRING_, ""},
 	{_BOOLEAN_, "False"},
 	{_CUSTOM_, ""}
