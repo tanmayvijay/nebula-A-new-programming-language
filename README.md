@@ -6,9 +6,9 @@ At this point, when I start, I have no idea how compilers or interpreters work. 
 <b>
  
  ### Edit-11: Expressions evaluate correctly. 🎉🤩
- * **evaluate()** method implemented for all sub types of ExpressionAST.
- * ExpressionSatatement, VariableDeclarationStatement, VariableAssignmentStatement, OutputStatament and IfBlock **run()** method implemented.
- * ***Simple programs can be executed now!!*** Yay! ***:)***
+ * *evaluate()* method implemented for all sub types of ExpressionAST.
+ * ExpressionSatatement, VariableDeclarationStatement, VariableAssignmentStatement, OutputStatament and IfBlock *run()* method implemented.
+ * *Simple programs can be executed now!!* Yay! *:)*
  * ForBlock, WhileBlock, InputStatement and Function Calls implementation to go.
  
  ### Edit-10: Semantic Analyzer Implemented:
