@@ -5,6 +5,10 @@
 At this point, when I start, I have no idea how compilers or interpreters work. But, let's just hit it.**
 <b>
  
+ ### Edit-12: For loops *run()* implemented:
+ * Changed ForBlock structure and constructor to maintain conditional expression, loop variable update statement
+ * Implemented run() method, which checks for condition being true --> executes all atatements in the block --> updates the loop variable and repeats.
+ 
  ### Edit-11: Expressions evaluate correctly. 🎉🤩
  * *evaluate()* method implemented for all sub types of ExpressionAST.
  * ExpressionSatatement, VariableDeclarationStatement, VariableAssignmentStatement, OutputStatament and IfBlock *run()* method implemented.
