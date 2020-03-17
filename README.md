@@ -9,15 +9,15 @@ At this point, when I start, I have no idea how compilers or interpreters work. 
  * Changed ForBlock structure and constructor to maintain conditional expression, loop variable update statement
  * Implemented run() method, which checks for condition being true --> executes all atatements in the block --> updates the loop variable and repeats.
  
- ### Edit-11: Expressions evaluate correctly:
+ ### Edit-11: Expressions *evaluate()* implemented to calculate final value of the expressions:
  * *evaluate()* method implemented for all sub types of ExpressionAST.
  * ExpressionSatatement, VariableDeclarationStatement, VariableAssignmentStatement, OutputStatament and IfBlock *run()* method implemented.
  * *Simple programs can be executed now!!* Yay! *:)* 🎉🤩
  * ForBlock, WhileBlock, InputStatement and Function Calls implementation to go.
  
  ### Edit-10: Semantic Analyzer Implemented:
-* Each program element has its own semanticc checker.
-* Type checking.
+* Each program element has its own semantic checker.
+* Type checking based on variable type, operator type and possible conversions between them.
 * Type checking rules: integer and decimal can be used with any operator
 * strings are supported by +, == and !=
 * booleans are supported by and, or, not, == and !=.
