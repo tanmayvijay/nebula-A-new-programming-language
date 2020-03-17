@@ -86,7 +86,7 @@ class Tokenizer{
 			);
 			
 			this->patterns.push_back(
-				TokenPattern(_DECIMAL_LITERAL_, "^([0-9]+\\.[0-9]+)\\b")
+				TokenPattern(_DOUBLE_LITERAL_, "^([0-9]+\\.[0-9]+)\\b")
 			);
 //			std::cout << "\nhere\n";
 			this->patterns.push_back(
