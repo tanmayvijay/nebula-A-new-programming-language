@@ -5,7 +5,7 @@
 enum ValueType{
 	_VOID_,
 	_INTEGER_,
-	_DECIMAL_,
+	_DOUBLE_,
 	_STRING_,
 	_BOOLEAN_,
 	_CUSTOM_
