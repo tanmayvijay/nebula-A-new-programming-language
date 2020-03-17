@@ -520,7 +520,7 @@ class OperatorNode : public ExpressionAST{
 					
 					if (l_type == _BOOLEAN_){
 						if (l_value == "True") l_value_temp = true;
-						else l_value_temp = true;
+						else l_value_temp = false;
 					}
 					else if (l_type == _INTEGER_){
 						if (std::stoi(l_value) ) l_value_temp = true;
@@ -533,7 +533,7 @@ class OperatorNode : public ExpressionAST{
 					
 					if (r_type == _BOOLEAN_){
 						if (r_value == "True") r_value_temp = true;
-						else r_value_temp = true;
+						else r_value_temp = false;
 					}
 					else if (r_type == _INTEGER_){
 						if (std::stoi(r_value) ) r_value_temp = true;

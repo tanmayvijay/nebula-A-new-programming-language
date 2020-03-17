@@ -1,17 +1,48 @@
-string var = "some thing"
-integer x = 10
-bool y
-y = True
+string s = "some thing"
+integer i = 10
+bool b
+b = True
+double d
 
+display b
 
-display y
-
-if (not y and x) == True {
-display y, "in if"
+if (not b and i) == True{
+display b, "in if"
+}
+else if -i == -10{
+display -10, " in else if"
 }
 else{
-display not y, "in else"
+display not b, "in else"
 }
+
+
+if 0{
+display "Yay!"
+}
+
+
+0 and True $ F
+0 and False $ F
+
+0 or True $ T
+0 or False $ F
+
+1 and True $ T
+1 and False $ F
+
+1 or True $ T
+1 or False $ T
+
+
+
+$display s
+
+$scan s
+
+$display s
+
+
 
 
 
