@@ -5,20 +5,12 @@ double d
 
 b = True
 
-i=7
-
-if i < 20{
-i = i+1
-display i
-
-i%5
-
-if i%5 != 0{
-i = i+3
-}
-
-}
 
 
+display s, i, b, d
 
-display i
+
+scan s, i, b, d
+
+
+display s, i, b, d

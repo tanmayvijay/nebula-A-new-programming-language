@@ -366,9 +366,7 @@ VariableAssignmentStatement* variable_assignment_statement_parser(std::queue<std
 	if (variable->get_symbol_type() != _VARIABLE_)
 		throw InvalidSyntaxError(line_tokens, line_tokens.at(0).get_line_no(), line_tokens.at(0).get_position());
 	
-	variable->set_value(expression);
-	
-	return new VariableAssignmentStatement(super_block, name, expression);
+	return new VariableAssignmentStatement(super_block, variable, expression);
 }
 
 

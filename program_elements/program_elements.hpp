@@ -234,24 +234,24 @@ class VariableDeclarationStatement : public Statement{
 
 
 class VariableAssignmentStatement : public Statement{
-	std::string variable_name;
+	Variable* variable;
 	ExpressionAST* expression;
 	
 	public:
-		VariableAssignmentStatement(Block* super_block, std::string variable_name, ExpressionAST* expression) : Statement(super_block){
-			this->variable_name = variable_name;
+		VariableAssignmentStatement(Block* super_block, Variable* variable, ExpressionAST* expression) : Statement(super_block){
 			this->expression = expression;
+			this->variable = variable;
+			
 		}
 		
 		void check_semantic(){
-			Variable* variable = (Variable*) this->get_super_block()->find_symbol(variable_name);
-			if (variable->get_symbol_type() != _VARIABLE_){
+			if (this->variable->get_symbol_type() != _VARIABLE_){
 				throw std::exception();
 			}
 			
 //			std::cout << "vas semantic checking\n";
 			
-			ValueType var_type = variable->get_data_type();
+			ValueType var_type = this->variable->get_data_type();
 			ValueType expression_type = expression->determine_final_type();
 			
 //			std::cout << var_type << "\t" << expression_type
@@ -266,12 +266,11 @@ class VariableAssignmentStatement : public Statement{
 		}
 		
 		void run() {
-//			Variable* var = (Variable*) this->get_super_block()->find_symbol(this->variable_name);
-//			if (var->get_symbol_type() != _VARIABLE_) throw std::exception();
+			this->variable->set_value(this->expression);
 		}
 		
 		void _repr_(){
-			std::cout << "VAS ~ " << this->variable_name << " :: ";
+			std::cout << "VAS ~ " << this->variable->get_symbol_name() << " :: ";
 			expression->_repr_();
 			
 			std::cout << std::endl;
@@ -531,19 +530,27 @@ class IfBlock : public Block{ // sub-elements vector contains all the Conditiona
 
 
 class ForBlock : public Block{
-	int lower_limit;
-	int higher_limit;
-	int step_size;
+//	int lower_limit;
+//	int higher_limit;
+//	int step_size;
 	Symbol* loop_variable;
 	public:
-		ForBlock(Block* super_block, std::string loop_variable_name, int ll, int hl, int ss=1) : Block(super_block){
-			this->lower_limit = ll;
-			this->higher_limit = hl;
-			this->step_size = ss;
+		ForBlock(Block* super_block, std::string loop_variable_name, int lower_limit, int upper_limit, int step_size=1) : Block(super_block){
+//			this->lower_limit = ll;
+//			this->higher_limit = hl;
+//			this->step_size = ss;
 			
-			OperandNodeWithConstant* loop_variable_expression = new OperandNodeWithConstant(_INTEGER_, std::to_string(lower_limit));
-			this->loop_variable = new Variable(_INTEGER_, loop_variable_name, loop_variable_expression);
+			OperandNodeWithConstant* lower_limit_expression = new OperandNodeWithConstant(_INTEGER_, std::to_string(lower_limit));
+			
+			OperandNodeWithConstant* upper_limit_expression = new OperandNodeWithConstant(_INTEGER_, std::to_string(upper_limit));
+			
+			OperandNodeWithConstant* step_size_expression = new OperandNodeWithConstant(_INTEGER_, std::to_string(step_size));
+			
+			this->loop_variable = new Variable(_INTEGER_, loop_variable_name, lower_limit_expression);
 			this->add_symbol(loop_variable);
+			
+			
+			
 		}
 		
 		void check_semantic(){
@@ -562,7 +569,7 @@ class ForBlock : public Block{
 		
 		
 		void run() {
-			std::cout << "Inside for statement" << std::endl;
+			
 		}
 		
 		void _repr_(){
