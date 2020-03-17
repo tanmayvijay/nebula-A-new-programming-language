@@ -1,0 +1,43 @@
+string var = "some thing"
+integer x = 10
+bool y
+y = True
+
+
+
+string l = "love "
+string u = "you!"
+string s = " i " + l + u
+string p = " pie"
+
+display 123+x, -x + -(x/ 12), "i " + l+ p
+
+-x + x
+
+x-(-x+ - 1)
+ 
+
+
+-12*-x-10 or -123+876-92 and -12.43/123+x or False
+
+
+5%2
+
+double d_var = 12.43/123+x 
+
+
+20/7
+
+
+"abc" + var + s + p
+
+
+d_var
+
+
+
+
+
+
+
+
