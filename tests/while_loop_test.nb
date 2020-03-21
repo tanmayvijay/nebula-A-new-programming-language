@@ -1,0 +1,14 @@
+string s = "some thing"
+integer i = 10
+bool b
+double d
+
+b = True
+
+i=7
+
+
+while i<=20{
+display i, i-1
+i = i+1
+}

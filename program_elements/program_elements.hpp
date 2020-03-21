@@ -661,7 +661,11 @@ class WhileBlock : public Block{
 		}
 		
 		void run() {
-			std::cout << "Inside for statement" << std::endl;
+			while(this->condition_expression->evaluate() == "True"){
+				for(Element* elem : this->get_elements()){
+					elem->run();
+				}
+			}
 		}
 		
 		void _repr_(){

@@ -7,14 +7,9 @@ b = True
 
 i=7
 
-
-
-
-for i from 1 to 30{
-display i
-if i < 20 and i%5 == 0{
-i = i+3
-
-
+fun add(integer a, integer b) returns integer c{
+c = a+b
+display c
 }
-}
+
+integer x = add(i, 3)
