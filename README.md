@@ -5,9 +5,14 @@
 At this point, when I start, I have no idea how compilers or interpreters work. But, let's just hit it.**
 <b>
  
+ ### Edit-13: Implemented last remaining *run()* methods:
+ * Implmented while blocks run() method.
+ * Function calls implemented, had to modularize a lot of code in order to resolve dependencies.
+ * Further - need to modularize code and implement error reporting/traceback.
+ 
  ### Edit-12: For loops *run()* implemented:
  * Changed ForBlock structure and constructor to maintain conditional expression, loop variable update statement
- * Implemented run() method, which checks for condition being true --> executes all atatements in the block --> updates the loop variable and repeats.
+ * Implemented *run()* method, which checks for condition being true --> executes all atatements in the block --> updates the loop variable and repeats.
  
  ### Edit-11: Expressions *evaluate()* implemented to calculate final value of the expressions:
  * *evaluate()* method implemented for all sub types of ExpressionAST.
