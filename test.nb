@@ -7,9 +7,17 @@ b = True
 
 i=7
 
-fun add(integer a, integer b) returns integer c{
-c = a+b
+$fun add(double a, integer b) returns integer c{
+$c = a+b
+$display c
+$}
+$integer x = add(1.11, 8)
+
+
+fun add(double a, integer b){
+integer c = a+b
 display c
 }
 
-integer x = add(i, 3)
+add(1,3)
+

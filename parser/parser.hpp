@@ -15,7 +15,9 @@
 #include "../utils/utils.hpp"
 #include "../program_elements/value_type.hpp"
 #include "../program_elements/expression_ast/expression_ast.hpp"
+#include "../program_elements/expression_ast/OperandNodeWithFunctionCall.hpp"
 #include "../program_elements/symbol_table/symbol_table.hpp"
+#include "../program_elements/symbol_table/function.hpp"
 #include "../exceptions/nebula_exceptions.hpp"
 
 
@@ -115,7 +117,7 @@ ExpressionStatement* expression_statement_parser(std::queue<std::vector<Token> >
 		
 		else if (token_type == _IDENTIFIER_OR_KEYWORD_LITERAL_){
 			if (line_tokens.at(i+1).get_token_type() == _OPEN_BRACKET_LITERAL_){
-				Function* function_to_call = (Function*) super_block->find_symbol(line_tokens.at(i).get_token_data());
+				Symbol* function_to_call =  super_block->find_symbol(line_tokens.at(i).get_token_data());
 				if(function_to_call->get_symbol_type() != _FUNCTION_){
 					int pos = token.get_position()+token.get_token_data().length();
 					line_tokens = std::vector<Token>(line_tokens.begin()+1, line_tokens.end()-1);
@@ -346,7 +348,7 @@ VariableDeclarationStatement* variable_declaration_statement_parser(std::queue<s
 	Variable* variable = new Variable(type, name, expression);
 	super_block->add_symbol(variable);
 	
-	return new VariableDeclarationStatement (super_block, type, name, expression);
+	return new VariableDeclarationStatement (super_block, type, variable, expression);
 }
 
 

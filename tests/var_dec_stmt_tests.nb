@@ -1,0 +1,20 @@
+string s = "some thing"
+integer i = 10
+bool b
+double d
+
+b = True
+
+i=7
+
+fun add(integer a, integer b) returns integer c{
+c = a+b
+display c
+}
+
+integer y = 0979 + i
+
+integer x = add(1, 3)
+
+
+display i, s, b, d

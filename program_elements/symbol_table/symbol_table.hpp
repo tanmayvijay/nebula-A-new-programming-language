@@ -6,7 +6,6 @@
 
 #include "../value_type.hpp"
 
-
 //#include "../expression_ast/expression_ast.hpp"
 class ExpressionAST;
 
@@ -42,6 +41,7 @@ class Symbol{
 		}
 		
 		virtual ExpressionAST* get_symbol_value_expression() = 0;
+		virtual void check_semantic_in_symbol() = 0;
 };
 
 
@@ -56,7 +56,7 @@ class Variable : public Symbol{
 	public:
 		Variable(ValueType data_type, std::string id_name, ExpressionAST* value_expression) : Symbol(_VARIABLE_, data_type, id_name){
 			this->value_expression = value_expression;
-			this->value = value_expression->evaluate();
+//			this->value = value_expression->evaluate();
 		}
 
 		
@@ -72,47 +72,19 @@ class Variable : public Symbol{
 		std::string get_value(){
 			return this->value;
 		}
+		
+		void check_semantic_in_symbol(){
+			return;
+		}
 	
 };
 
 
 
 
-class Block;
+//class Block;
 
-class Function : public Symbol{
-	std::vector<Variable*> parameters;
-	Variable* return_variable;
-	Block* function_block;
-	
-	public:
-		Function(std::string func_name, std::vector<Variable*> parameters, ValueType return_type, Variable* return_variable, Block* function_block) : Symbol(_FUNCTION_, return_type, func_name){
-			this->parameters = parameters;
-			this->return_variable = return_variable;
-			this->function_block = function_block;
-		}
-		
-		std::vector<Variable*> get_parameters(){
-			return this->parameters;
-		}
-		
-		ValueType get_return_type(){
-			return this->get_data_type();
-		}
-		
-		Symbol* get_return_variable(){
-			return this->return_variable;
-		}
-		
-		Block* get_function_block(){
-			return this->function_block;
-		}
-		
-		ExpressionAST* get_symbol_value_expression(){
-			return this->return_variable->get_symbol_value_expression();
-		}
-		
-};
+
 
 
 #endif

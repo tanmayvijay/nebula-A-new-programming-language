@@ -96,6 +96,7 @@ class Block : public Element{
 		}
 		
 		void check_semantic(){
+
 			for(Element* elem : this->sub_elements){
 				elem->check_semantic();
 			}
@@ -103,11 +104,13 @@ class Block : public Element{
 			for(Symbol* symb : this->symbol_table){
 				if (symb->get_symbol_type() == _FUNCTION_){
 					
-					((Function*)symb)->get_function_block()->check_semantic();
+//					((Function*)symb)->get_function_block()->check_semantic();
+					symb->check_semantic_in_symbol();
 				}
 			}
 			
 //			std::cout << "block check pass\n";
+			
 		}
 		
 		
@@ -193,13 +196,13 @@ class ExpressionStatement : public Statement{
 
 class VariableDeclarationStatement : public Statement{
 	ValueType type;
-	std::string name;
+	Variable* var;
 	ExpressionAST* value_expression = NULL;
 	
 	public:
-		VariableDeclarationStatement(Block* super_block, ValueType type, std::string name, ExpressionAST* value_expression) : Statement(super_block){
+		VariableDeclarationStatement(Block* super_block, ValueType type, Variable* var, ExpressionAST* value_expression) : Statement(super_block){
 			this->type = type;
-			this->name = name;
+			this->var = var;
 			this->value_expression = value_expression;
 		}
 		
@@ -216,11 +219,11 @@ class VariableDeclarationStatement : public Statement{
 		}
 		
 		void run(){
-			
+			this->var->set_value(this->value_expression);
 		}
 		
 		void _repr_(){
-			std::cout << "VDS ~ " << this->type << " :: " << this->name;
+			std::cout << "VDS ~ " << this->type << " :: " << this->var->get_symbol_name();
 			
 			if (value_expression){
 				std::cout << " :: ";
@@ -422,7 +425,8 @@ class ConditionalBlock : public Block{ // for if, else if, else
 			
 			for(Symbol* symb : this->get_symbol_table()){
 				if (symb->get_symbol_type() == _FUNCTION_){
-					((Function*)symb)->get_function_block()->check_semantic();
+//					((Function*)symb)->get_function_block()->check_semantic();
+					symb->check_semantic_in_symbol();
 				}
 			}
 			
@@ -487,7 +491,8 @@ class IfBlock : public Block{ // sub-elements vector contains all the Conditiona
 			
 			for(Symbol* symb : this->get_symbol_table()){
 				if (symb->get_symbol_type() == _FUNCTION_){
-					((Function*)symb)->get_function_block()->check_semantic();
+//					((Function*)symb)->get_function_block()->check_semantic();
+					symb->check_semantic_in_symbol();
 				}
 			}
 			
@@ -589,7 +594,8 @@ class ForBlock : public Block{
 			
 			for(Symbol* symb : this->get_symbol_table()){
 				if (symb->get_symbol_type() == _FUNCTION_){
-					((Function*)symb)->get_function_block()->check_semantic();
+//					((Function*)symb)->get_function_block()->check_semantic();
+					symb->check_semantic_in_symbol();
 				}
 			}
 			
@@ -653,7 +659,8 @@ class WhileBlock : public Block{
 			
 			for(Symbol* symb : this->get_symbol_table()){
 				if (symb->get_symbol_type() == _FUNCTION_){
-					((Function*)symb)->get_function_block()->check_semantic();
+//					((Function*)symb)->get_function_block()->check_semantic();
+					symb->check_semantic_in_symbol();
 				}
 			}
 			

@@ -28,7 +28,9 @@ int main(int argc, char* argv[]){
 	
 	Block* program_block = program_parser(program_tokens);
 	
+//	std::cout << "before\n";
 	program_block->check_semantic();
+//	std::cout << "after\n";
 	
 	program_block->run();
 	
