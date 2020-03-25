@@ -1,0 +1,30 @@
+string s = "some thing"
+integer i = 10
+bool b
+double d
+
+b = True
+
+i=7
+
+$fun add(double a, integer b) returns integer c{
+$c = a+b
+$display c
+$}
+$integer x = add(1.11, 8)
+
+
+fun add(double a, integer b){
+integer c = a+b
+display c
+}
+
+add(1,3)
+
+
+$correct this
+$for i from 1 to 10{
+$integer n = i+10
+$display n
+$}
+

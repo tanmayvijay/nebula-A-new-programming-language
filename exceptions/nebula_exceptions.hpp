@@ -120,31 +120,31 @@ class InconsistentTypesError : public std::exception{
 };
 
 
-
-void terminate_handler(){
-	std::cerr << "Execution terminated!\n\n";
-	std::exception_ptr cur_exp = std::current_exception();
-	try{
-		std::rethrow_exception(cur_exp);
-	}
-	catch(InvalidCharacterError &e){
-		std::cerr << "InvalidCharacterError: " << e.what() << "\n";
-	}
-	catch(MissingExpressionError &e){
-		std::cerr << "MissingExpressionError: " << e.what() << "\n";
-	}
-	catch(InvalidSyntaxError &e){
-		std::cerr << "InvalidSyntaxError: " << e.what() << "\n";
-	}
-	catch(InconsistentTypesError &e){
-		std::cerr << "InconsistentTypesError: " <<  "\n";
-	}
-	catch(...){
-		std::cerr << "Error: " <<  "\n";
-	}
-	
-	abort();
-}
+//
+//void terminate_handler(){
+//	std::cerr << "Execution terminated!\n\n";
+//	std::exception_ptr cur_exp = std::current_exception();
+//	try{
+//		std::rethrow_exception(cur_exp);
+//	}
+//	catch(InvalidCharacterError &e){
+//		std::cerr << "InvalidCharacterError: " << e.what() << "\n";
+//	}
+//	catch(MissingExpressionError &e){
+//		std::cerr << "MissingExpressionError: " << e.what() << "\n";
+//	}
+//	catch(InvalidSyntaxError &e){
+//		std::cerr << "InvalidSyntaxError: " << e.what() << "\n";
+//	}
+//	catch(InconsistentTypesError &e){
+//		std::cerr << "InconsistentTypesError: " <<  "\n";
+//	}
+//	catch(...){
+//		std::cerr << "Error: " <<  "\n";
+//	}
+//	
+//	abort();
+//}
 
 #endif
 

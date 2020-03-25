@@ -7,17 +7,20 @@ b = True
 
 i=7
 
-$fun add(double a, integer b) returns integer c{
-$c = a+b
-$display c
-$}
-$integer x = add(1.11, 8)
 
+display i
 
-fun add(double a, integer b){
-integer c = a+b
-display c
+while i<10{
+display i
+i = i+1
 }
 
-add(1,3)
+
+if i<20{
+display "if"
+}
+
+
+display i
+
 

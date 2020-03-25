@@ -1,27 +1,9 @@
 #ifndef TOKEN_H
 #define TOKEN_H
 
+#include<string>
 
-
-enum TokenType {
-	_COMMENT_LITERAL_,
-	_INTEGER_LITERAL_,
-	_DOUBLE_LITERAL_,
-	_BOOLEAN_LITERAL_,
-	_STRING_LITERAL_,
-	_IDENTIFIER_OR_KEYWORD_LITERAL_,
-	_ARITHMETIC_OPERATOR_LITERAL_,
-	_RELATIONAL_OPERATOR_LITERAL_,
-	_LOGICAL_OPERATOR_LITERAL_,
-	_OPEN_BRACKET_LITERAL_,
-	_CLOSE_BRACKET_LITERAL_,
-	_OPEN_PARENTHESIS_LITERAL_,
-	_CLOSE_PARENTHESIS_LITERAL_,
-	_OTHER_TOKEN_LITERAL_
-};
-
-
-
+#include "TokenType.hpp"
 
 
 class Token{
@@ -32,6 +14,7 @@ class Token{
 	int position;
 	
 	public:
+		//constructor
 		Token(TokenType token_type, std::string token_data, int line_no, int position){
 			this->token_type = token_type;
 			this->token_data = token_data;
@@ -41,22 +24,30 @@ class Token{
 		
 		
 		// Methods
-		TokenType get_token_type(){
-			return this->token_type;
-		}
+		TokenType get_token_type();
 		
-		std::string get_token_data(){
-			return this->token_data;
-		}
+		std::string get_token_data();
 		
-		int get_line_no(){
-			return this->line_no;
-		}
+		int get_line_no();
 		
-		int get_position(){
-			return this->position;
-		}
+		int get_position();
 };
+
+TokenType Token::get_token_type(){
+	return this->token_type;
+}
+
+std::string Token::get_token_data(){
+	return this->token_data;
+}
+
+int Token::get_line_no(){
+	return this->line_no;
+}
+
+int Token::get_position(){
+	return this->position;
+}
 
 
 

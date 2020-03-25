@@ -7,18 +7,17 @@
 
 #include "tokenizing_helper.hpp"
 #include "program_elements/program_elements.hpp"
-#include "tokenizer/tokenizer.hpp"
+#include "tokenizer/Tokenizer.hpp"
 #include "parser/parser.hpp"
-#include "exceptions/nebula_exceptions.hpp"
-
 
 
 int main(int argc, char* argv[]){
 	
-	std::set_terminate(terminate_handler);
+	if (argc < 2){
+		std::cerr << "No file path provided.\n";
+		throw std::exception();
+	}
 	
-	
-	if (argc < 1) throw std::exception(); // change this
 	std::string file_name = argv[1];
 	
 	
@@ -27,10 +26,8 @@ int main(int argc, char* argv[]){
 	std::queue<std::vector<Token> > program_tokens = tokenizing_helper(input_file);
 	
 	Block* program_block = program_parser(program_tokens);
-	
-//	std::cout << "before\n";
+
 	program_block->check_semantic();
-//	std::cout << "after\n";
 	
 	program_block->run();
 	
