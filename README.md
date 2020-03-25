@@ -5,6 +5,12 @@
 At this point, when I start, I have no idea how compilers or interpreters work. But, let's just hit it.**
 <b>
  
+ ### Edit-14: Modularized entire core for better structuring:
+ * Tokenizer and Program Elements are now a big bunch of files.
+ * Created Custom std::cerr statements for each exception thrown to better locate the source of error.
+ * Modulaization resolved all dependency based issues, but something broke *for* loop.
+ 
+ 
  ### Edit-13: Implemented last remaining *run()* methods:
  * Implmented while blocks run() method.
  * Function calls implemented, had to modularize a lot of code in order to resolve dependencies.
