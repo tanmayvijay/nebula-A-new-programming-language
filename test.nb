@@ -21,6 +21,15 @@ display "if"
 }
 
 
-display i
 
+for i from 1 to 30{
+display i
+if i < 20 and i%5 == 0{
+i = i+3
+
+
+}
+}
+
+display i
 

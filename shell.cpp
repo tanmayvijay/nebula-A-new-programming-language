@@ -1,13 +1,6 @@
 #include<iostream>
-#include<exception>
-#include<fstream>
-#include<string>
-#include<vector>
-#include<queue>
 
 #include "tokenizing_helper.hpp"
-#include "program_elements/program_elements.hpp"
-#include "tokenizer/Tokenizer.hpp"
 #include "parser/parser.hpp"
 
 

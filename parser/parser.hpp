@@ -1,6 +1,23 @@
 #ifndef PARSER_H
 #define PARSER_H
 
+#include <vector>
+#include <regex>
+#include <queue>
+
+#include "../tokenizer/Token.hpp"
+#include "../program_elements/ExpressionStatement.hpp"
+#include "../program_elements/VariableDeclarationStatement.hpp"
+#include "../program_elements/VariableAssignmentStatement.hpp"
+#include "../program_elements/OutputStatement.hpp"
+#include "../program_elements/InputStatement.hpp"
+#include "../program_elements/IfBlock.hpp"
+#include "../program_elements/ForBlock.hpp"
+#include "../program_elements/WhileBlock.hpp"
+#include "../program_elements/Block.hpp"
+#include "../utils/utils.hpp"
+#include "../program_elements/expressions/OperandNodeWithFunctionCall.hpp"
+
 
 //declarations
 bool parsable(std::vector<Token> line_tokens, std::basic_regex<char> pattern);
@@ -89,9 +106,10 @@ ExpressionStatement* expression_statement_parser(std::queue<std::vector<Token> >
 			if (line_tokens.at(i+1).get_token_type() == _OPEN_BRACKET_LITERAL_){
 				Symbol* function_to_call =  super_block->find_symbol(line_tokens.at(i).get_token_data());
 				if(function_to_call->get_symbol_type() != _FUNCTION_){
-					int pos = token.get_position()+token.get_token_data().length();
-					line_tokens = std::vector<Token>(line_tokens.begin()+1, line_tokens.end()-1);
-					throw InvalidSyntaxError(line_tokens, token.get_line_no(), pos);
+//					int pos = token.get_position()+token.get_token_data().length();
+//					line_tokens = std::vector<Token>(line_tokens.begin()+1, line_tokens.end()-1);
+					std::cerr << "Invalid Syntax Error: " << token.get_line_no();
+					throw std::exception();
 				}
 				
 				i+=2; // i at ) or expression's first token
@@ -103,8 +121,9 @@ ExpressionStatement* expression_statement_parser(std::queue<std::vector<Token> >
 					Token& lt = line_tokens.at(i);
 					if (lt.get_token_data() == "," && no_of_open_brackets <= 1){
 						if (param_expression_tokens.empty()){
-							line_tokens = std::vector<Token>(line_tokens.begin()+1, line_tokens.end()-1);
-							throw InvalidSyntaxError(line_tokens, line_tokens.at(i-1).get_line_no(), line_tokens.at(i-1).get_position()+1);
+//							line_tokens = std::vector<Token>(line_tokens.begin()+1, line_tokens.end()-1);
+							std::cerr << "Invalid Syntax Error: " << token.get_line_no();
+							throw std::exception();
 						}
 						
 						ExpressionAST* next_param = expression_statement_parser(param_expression_tokens, super_block)->get_expression();
@@ -135,8 +154,9 @@ ExpressionStatement* expression_statement_parser(std::queue<std::vector<Token> >
 			else{
 				Variable* variable = (Variable*) super_block->find_symbol(token.get_token_data());
 				if (variable->get_symbol_type() != _VARIABLE_){
-					line_tokens = std::vector<Token>(line_tokens.begin()+1, line_tokens.end()-1);
-					throw InvalidSyntaxError(line_tokens, token.get_line_no(), token.get_position());
+//					line_tokens = std::vector<Token>(line_tokens.begin()+1, line_tokens.end()-1);
+					std::cerr << "Invalid Syntax Error: " << token.get_line_no();
+					throw std::exception();
 				}
 				
 				operand_w_exp = new OperandNodeWithVariable(variable);
@@ -179,8 +199,9 @@ ExpressionStatement* expression_statement_parser(std::queue<std::vector<Token> >
 			}
 			
 			if (op_string == "not" && op_type == _BINARY_OP_){
-				line_tokens = std::vector<Token> (line_tokens.begin()+1, line_tokens.end()-1);
-				throw InvalidSyntaxError(line_tokens, token.get_line_no(), token.get_position()+1);
+//				line_tokens = std::vector<Token> (line_tokens.begin()+1, line_tokens.end()-1);
+				std::cerr << "Invalid Syntax Error: " << token.get_line_no();
+				throw std::exception();
 			}
 			
 			if (op_type == _UNARY_OP_) op_precedence = _UNARY_MINUS_NOT_;
@@ -196,8 +217,9 @@ ExpressionStatement* expression_statement_parser(std::queue<std::vector<Token> >
 				ExpressionAST* left_expr = NULL;
 				if (op_node->get_operator_type() == _BINARY_OP_){
 					if (expression_stack.empty()){
-						line_tokens = std::vector<Token>(line_tokens.begin()+1, line_tokens.end()-1);
-						throw InvalidSyntaxError(line_tokens, line_tokens.at(0).get_line_no(), line_tokens.at(0).get_position());
+//						line_tokens = std::vector<Token>(line_tokens.begin()+1, line_tokens.end()-1);
+						std::cerr << "Invalid Syntax Error: " << token.get_line_no();
+						throw std::exception();
 					}
 					
 					left_expr = expression_stack.top();
@@ -232,8 +254,9 @@ ExpressionStatement* expression_statement_parser(std::queue<std::vector<Token> >
 
 				if (op_node->get_operator_type() == _BINARY_OP_){
 					if (expression_stack.empty()){
-						line_tokens = std::vector<Token>(line_tokens.begin()+1, line_tokens.end()-1);
-						throw InvalidSyntaxError(line_tokens, line_tokens.at(0).get_line_no(), line_tokens.at(0).get_position());
+//						line_tokens = std::vector<Token>(line_tokens.begin()+1, line_tokens.end()-1);
+						std::cerr << "Invalid Syntax Error: " << token.get_line_no();
+						throw std::exception();
 					}
 					left_expr = expression_stack.top();
 					expression_stack.pop();
@@ -259,16 +282,18 @@ ExpressionStatement* expression_statement_parser(std::queue<std::vector<Token> >
 	}
 	
 	if (expression_stack.size() == 0){
-		line_tokens = std::vector<Token>(line_tokens.begin()+1, line_tokens.end()-1);
-		throw InvalidSyntaxError(line_tokens, line_tokens.at(0).get_line_no(), line_tokens.at(0).get_position());
+//		line_tokens = std::vector<Token>(line_tokens.begin()+1, line_tokens.end()-1);
+		std::cerr << "Invalid Syntax Error: " << line_tokens.at(1).get_line_no();
+		throw std::exception();
 	}
 	
 	ExpressionAST* expression_ast = expression_stack.top();
 	expression_stack.pop();
 	
 	if (expression_stack.size() != 0 || operator_stack.size() != 0){
-		line_tokens = std::vector<Token>(line_tokens.begin()+1, line_tokens.end()-1);
-		throw InvalidSyntaxError(line_tokens, line_tokens.at(0).get_line_no(), line_tokens.at(0).get_position());
+//		line_tokens = std::vector<Token>(line_tokens.begin()+1, line_tokens.end()-1);
+		std::cerr << "Invalid Syntax Error: " << line_tokens.at(1).get_line_no();
+		throw std::exception();
 	}
 	
 //	expression_ast->_repr_();
@@ -293,7 +318,8 @@ VariableDeclarationStatement* variable_declaration_statement_parser(std::queue<s
 	ValueType type = string_to_ValueType_mapping.find(type_string)->second;
 	
 	if (type == _VOID_ && type_string != "void"){
-		throw InvalidSyntaxError(line_tokens, line_tokens.at(0).get_line_no(), line_tokens.at(0).get_position() );
+		std::cerr << "Invalid Syntax Error: " << line_tokens.at(1).get_line_no();
+		throw std::exception();
 	}
 	
 	std::string name = line_tokens.at(1).get_token_data();
@@ -331,8 +357,10 @@ VariableAssignmentStatement* variable_assignment_statement_parser(std::queue<std
 	
 	Variable* variable = (Variable*) super_block->find_symbol(name);
 	
-	if (variable->get_symbol_type() != _VARIABLE_)
-		throw InvalidSyntaxError(line_tokens, line_tokens.at(0).get_line_no(), line_tokens.at(0).get_position());
+	if (variable->get_symbol_type() != _VARIABLE_){
+		std::cerr << "Invalid Syntax Error: " << line_tokens.at(1).get_line_no();
+		throw std::exception();
+	}
 	
 	return new VariableAssignmentStatement(super_block, variable, expression);
 }
@@ -354,7 +382,8 @@ OutputStatement* output_statement_parser(std::queue<std::vector<Token> >& progra
 		else{
 			if (expression_tokens.size() < 1){
 				int pos = lt.get_position() + 1;
-				throw MissingExpressionError(line_tokens, lt.get_line_no(), pos);
+				std::cerr << "Missing Expression Error: " << line_tokens.at(1).get_line_no();
+				throw std::exception();
 			}
 			ExpressionAST* expression = expression_statement_parser(expression_tokens, super_block)->get_expression();
 			expressions.push_back(expression);
@@ -366,7 +395,8 @@ OutputStatement* output_statement_parser(std::queue<std::vector<Token> >& progra
 	if (expression_tokens.size() < 1){
 		Token& lt = line_tokens.at(i-1);
 		int pos = lt.get_position() + lt.get_token_data().length() + 1;
-		throw MissingExpressionError(line_tokens, lt.get_line_no(), pos);
+		std::cerr << "Missing Expression Error: " << line_tokens.at(1).get_line_no();
+		throw std::exception();
 	}
 		
 	ExpressionAST* expression = expression_statement_parser(expression_tokens, super_block)->get_expression();
@@ -385,8 +415,10 @@ InputStatement* input_statement_parser(std::queue<std::vector<Token> >& program_
 	for(int i=1; i<line_tokens.size(); i+=2 ){ // skip 'scan' token and then skip alternate ',' tokens
 		Token& var_token = line_tokens.at(i);
 		Variable* variable = (Variable*) super_block->find_symbol(var_token.get_token_data());
-		if (variable->get_symbol_type() != _VARIABLE_)
-			throw InvalidSyntaxError(line_tokens, var_token.get_line_no(), var_token.get_position());
+		if (variable->get_symbol_type() != _VARIABLE_){
+			std::cerr << "Invalid Syntax Error: " << line_tokens.at(1).get_line_no();
+			throw std::exception();
+		}
 		
 		if (!variable){
 			std::cout << "\nSymbol '" << var_token.get_token_data() << "' does not exist or accessed before declaration!\n";
@@ -629,7 +661,8 @@ Element* parse_line(std::queue<std::vector<Token> >& program_lines, Block* super
 		return expression_statement_parser(program_lines, super_block);
 	}
 	else{		
-		throw InvalidSyntaxError(line_tokens, line_tokens.at(0).get_line_no(), line_tokens.at(0).get_position());
+		std::cerr << "Invalid Syntax Error: " << line_tokens.at(1).get_line_no();
+		throw std::exception();
 	}
 }
 
