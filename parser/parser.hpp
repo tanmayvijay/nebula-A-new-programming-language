@@ -1,42 +1,24 @@
 #ifndef PARSER_H
 #define PARSER_H
 
-#include<regex>
-#include<string>
-#include<vector>
-#include<exception>
-#include<queue>
-#include<iostream>
-#include<map>
-#include<stack>
 
-#include "../program_elements/program_elements.hpp"
-#include "../tokenizer/tokenizer.hpp"
-#include "../utils/utils.hpp"
-#include "../program_elements/value_type.hpp"
-#include "../program_elements/expression_ast/expression_ast.hpp"
-#include "../program_elements/expression_ast/OperandNodeWithFunctionCall.hpp"
-#include "../program_elements/symbol_table/symbol_table.hpp"
-#include "../program_elements/symbol_table/function.hpp"
-#include "../exceptions/nebula_exceptions.hpp"
-
-
-Element* parse_line(std::queue<std::vector<Token> >& program_lines, Block* super_block);
+//declarations
+bool parsable(std::vector<Token> line_tokens, std::basic_regex<char> pattern);
+ExpressionStatement* expression_statement_parser(std::queue<std::vector<Token> >& program_lines, Block* super_block);
 ExpressionStatement* expression_statement_parser(std::vector<Token>& line_tokens, Block* super_block);
-
-
-std::map<std::string, ValueType> string_to_ValueType_mapping {
-	{"void", _VOID_},
-	{"string", _STRING_},
-	{"integer", _INTEGER_},
-	{"double", _DOUBLE_},
-	{"bool", _BOOLEAN_}
-};
-
+VariableDeclarationStatement* variable_declaration_statement_parser(std::queue<std::vector<Token> >& program_lines, Block* super_block);
+VariableAssignmentStatement* variable_assignment_statement_parser(std::queue<std::vector<Token> >& program_lines, Block* super_block);
+OutputStatement* output_statement_parser(std::queue<std::vector<Token> >& program_lines, Block* super_block);
+InputStatement* input_statement_parser(std::queue<std::vector<Token> >& program_lines, Block* super_block);
+IfBlock* if_block_parser(std::queue<std::vector<Token> >& program_lines, Block* super_block);
+ForBlock* for_block_parser(std::queue<std::vector<Token> >& program_lines, Block* super_block);
+WhileBlock* while_block_parser(std::queue<std::vector<Token> >& program_lines, Block* super_block);
+Element* function_block_parser(std::queue<std::vector<Token> >& program_lines, Block* super_block);
+Element* parse_line(std::queue<std::vector<Token> >& program_lines, Block* super_block);
+Block* program_parser(std::queue<std::vector<Token> > program_lines);
 
 
 //  Regular Expressions for all code elements
-
 std::basic_regex<char> comment_statement_pattern("^(\\$.*)$");
 std::basic_regex<char> output_statement_pattern("^(display.*)$");
 std::basic_regex<char> input_statement_pattern("^(scan ([a-zA-Z_][a-zA-Z_0-9]*)( , [a-zA-Z_][a-zA-Z_0-9]*)*)$");
@@ -46,16 +28,13 @@ std::basic_regex<char> else_statement_pattern("^(else \\{)$");
 std::basic_regex<char> for_statement_pattern("^(for [a-zA-Z_][a-zA-Z0-9_]* from [0-9]+ to [0-9]+( with [0-9]+)? \\{)$");
 std::basic_regex<char> while_statement_pattern("^(while [a-zA-Z0-9._()+*/%>=<! -]+\\{)$");
 std::basic_regex<char> function_statement_pattern("^(fun [a-zA-Z_][a-zA-Z0-9_]* \\( ([a-zA-Z0-9._()+*/%>=<! -]+ (, [a-zA-Z0-9._()+*/%>=<! -]+)* )?\\) (returns [a-zA-Z_][a-zA-Z0-9_]* [a-zA-Z_][a-zA-Z0-9_]* )?\\{)$");
-//std::basic_regex<char> variable_declaration_statement_pattern("^([a-zA-Z_][a-zA-Z0-9_]* [a-zA-Z_][a-zA-Z_0-9]*( = .+)?)$");
 std::basic_regex<char> variable_declaration_statement_pattern("^((string|integer|double|bool) [a-zA-Z_][a-zA-Z0-9_]*( = .+)?)$");
 std::basic_regex<char> variable_assignment_statement_pattern("^([a-zA-Z_][a-zA-Z_0-9]* = .+)$");
 std::basic_regex<char> expression_statement_pattern( "^([a-zA-Z0-9.,\"_()+*/%>=<! -]+)$");
-
-
 //  End of Regular Expressions for all code elements
 
 
-
+//functions
 bool parsable(std::vector<Token> line_tokens, std::basic_regex<char> pattern){
 	std::string line = "";
 	for(Token& lt: line_tokens){
@@ -65,15 +44,6 @@ bool parsable(std::vector<Token> line_tokens, std::basic_regex<char> pattern){
 	line = _trim_from_end_(line);
 	return std::regex_match(line, pattern);
 }
-
-
-
-std::map<TokenType, ValueType> TokenType_to_ValueType_mapping{
-	{_INTEGER_LITERAL_, _INTEGER_},
-	{_DOUBLE_LITERAL_, _DOUBLE_},
-	{_STRING_LITERAL_, _STRING_},
-	{_BOOLEAN_LITERAL_, _BOOLEAN_}
-};
 
 // when entire line is an expression
 ExpressionStatement* expression_statement_parser(std::queue<std::vector<Token> >& program_lines, Block* super_block){
@@ -315,8 +285,6 @@ ExpressionStatement* expression_statement_parser(std::vector<Token>& line_tokens
 }
 
 
-
-
 VariableDeclarationStatement* variable_declaration_statement_parser(std::queue<std::vector<Token> >& program_lines, Block* super_block){
 	std::vector<Token> line_tokens = program_lines.front();
 	program_lines.pop();
@@ -350,8 +318,6 @@ VariableDeclarationStatement* variable_declaration_statement_parser(std::queue<s
 	
 	return new VariableDeclarationStatement (super_block, type, variable, expression);
 }
-
-
 
 
 VariableAssignmentStatement* variable_assignment_statement_parser(std::queue<std::vector<Token> >& program_lines, Block* super_block){
@@ -501,7 +467,6 @@ IfBlock* if_block_parser(std::queue<std::vector<Token> >& program_lines, Block* 
 }
 
 
-
 ForBlock* for_block_parser(std::queue<std::vector<Token> >& program_lines, Block* super_block){
 	std::vector<Token> line_tokens = program_lines.front();
 	program_lines.pop();
@@ -531,7 +496,6 @@ ForBlock* for_block_parser(std::queue<std::vector<Token> >& program_lines, Block
 	return for_block;
 	
 }
-
 
 
 WhileBlock* while_block_parser(std::queue<std::vector<Token> >& program_lines, Block* super_block){
@@ -617,11 +581,7 @@ Element* function_block_parser(std::queue<std::vector<Token> >& program_lines, B
 }
 
 
-
-
-
 ////////////////////////////////////////////////////////////////////////////////
-
 
 
 Element* parse_line(std::queue<std::vector<Token> >& program_lines, Block* super_block){
@@ -674,7 +634,6 @@ Element* parse_line(std::queue<std::vector<Token> >& program_lines, Block* super
 }
 
 
-
 Block* program_parser(std::queue<std::vector<Token> > program_lines){
 	
 	Block* program_block = new Block();
@@ -695,8 +654,6 @@ Block* program_parser(std::queue<std::vector<Token> > program_lines){
 	
 	return program_block;
 }
-
-
 
 
 #endif

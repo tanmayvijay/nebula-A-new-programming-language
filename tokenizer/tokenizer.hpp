@@ -9,6 +9,10 @@
 #include "../utils/utils.hpp"
 
 
+//declarations
+std::vector<Token> tokenize (std::string& line, int& line_no);
+
+
 std::vector<TokenPattern> token_patterns = {
 	TokenPattern(_COMMENT_LITERAL_, "^(\\$.*)"),
 	
