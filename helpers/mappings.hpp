@@ -40,6 +40,7 @@ std::map<std::string, OperatorPrecedence> operator_precendence_mapping {
 	{"*", _MULTIPLY_DIVIDE_MODULUS_},
 	{"/", _MULTIPLY_DIVIDE_MODULUS_},
 	{"%", _MULTIPLY_DIVIDE_MODULUS_},
+	{"**", _POWER_},
 	{"not", _UNARY_MINUS_NOT_},
 	{"[", _SQUARE_BRACKET_},
 	{"(", _BRACKET_}
@@ -62,6 +63,7 @@ std::map<std::string, Operator> string_to_operator_mapping {
 	{"*", _MULTIPLY_OP_},
 	{"/", _DIVIDE_OP_},
 	{"%", _MODULUS_OP_},
+	{"**", _POWER_OP_},
 	{"not", _NOT_OP_},
 	{"[", _OPEN_SQUARE_BRACKET_OP_},
 	{"(", _OPEN_ROUND_BRACKET_OP_}

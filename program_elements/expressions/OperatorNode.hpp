@@ -2,6 +2,7 @@
 #define OPERATOR_NODE_H
 
 #include <iostream>
+#include <cmath>
 
 #include "ExpressionAST.hpp"
 #include "Operator.hpp"
@@ -108,7 +109,6 @@ ValueType OperatorNode::determine_final_type(){ // this automatically does check
 	
 	ValueType l_type = this->left_node->determine_final_type();
 	
-//			std::cout << "L: " << l_type << " | R: " << r_type << "\n";
 	
 	for(Operator op : {_AND_OP_, _OR_OP_})
 		if (this->op == op){
@@ -130,7 +130,7 @@ ValueType OperatorNode::determine_final_type(){ // this automatically does check
 			else if (l_type  == r_type) return _BOOLEAN_;
 			
 			else{
-				std::cerr << "Inconsistent Types Error: " << r_type << " is not " << l_type <<".";
+				std::cerr << "Inconsistent Types Error: " << this->op << " does not support " << r_type << " with " << l_type << ".";
 				throw std::exception();
 			}
 		}
@@ -154,6 +154,13 @@ ValueType OperatorNode::determine_final_type(){ // this automatically does check
 		std::cerr << "Inconsistent Types Error: Only integer type supported in modulus.";
 		throw std::exception();
 	}
+	
+	if (this->op == _POWER_OP_){
+		if ((l_type == _INTEGER_ || l_type == _DOUBLE_) && (r_type == _INTEGER_ || r_type == _DOUBLE_)){
+			if (l_type == _DOUBLE_ || r_type == _DOUBLE_) return _DOUBLE_;
+			return _INTEGER_;
+		}
+	}
 		
 	
 	
@@ -161,10 +168,8 @@ ValueType OperatorNode::determine_final_type(){ // this automatically does check
 		if (l_type == _STRING_ && r_type == _STRING_)
 			return _STRING_;
 	}
-		
-		
 	
-	
+	 // - / and *
 	if (l_type == _INTEGER_ && r_type == _INTEGER_) return _INTEGER_;
 	
 	if ((l_type == _DOUBLE_ && (r_type == _DOUBLE_ || r_type == _INTEGER_)))
@@ -174,7 +179,7 @@ ValueType OperatorNode::determine_final_type(){ // this automatically does check
 		return _DOUBLE_;
 	
 		
-	std::cerr << "Inconsistent Types Error: " << r_type << " is not " << l_type << ".";
+	std::cerr << "Inconsistent Types Error: " << this->op << " does not support " << r_type << " with " << l_type << ".";
 	throw std::exception();
 	
 	
@@ -284,6 +289,19 @@ std::string OperatorNode::evaluate(){
 			int l_value_temp = std::stoi(l_value);
 			int r_value_temp = std::stoi(r_value);
 			int ans = l_value_temp % r_value_temp;
+			return std::to_string(ans);
+		}
+		
+		if (this->op == _POWER_OP_){
+			if (l_type == _DOUBLE_ || r_type == _DOUBLE_){
+				double l_value_temp = std::stod(l_value);
+				double r_value_temp = std::stod(r_value);
+				double ans = pow(l_value_temp, r_value_temp);
+				return std::to_string(ans);
+			}
+			int l_value_temp = std::stoi(l_value);
+			int r_value_temp = std::stoi(r_value);
+			int ans = pow(l_value_temp, r_value_temp);
 			return std::to_string(ans);
 		}
 		

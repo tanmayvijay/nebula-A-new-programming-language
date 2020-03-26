@@ -50,8 +50,11 @@ ValueType OperandNodeWithFunctionCall::determine_final_type(){ // check_semantic
 
 
 std::string OperandNodeWithFunctionCall::evaluate(){
-	this->function_to_call->execute(param_expressions);
-	return this->function_to_call->get_return_variable()->get_value();
+//	this->function_to_call->execute(param_expressions);
+//	return this->function_to_call->get_return_variable()->get_value();
+	
+	return this->function_to_call->execute(param_expressions);
+
 }
 
 

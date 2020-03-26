@@ -21,6 +21,7 @@ class Variable : public Symbol{
 		ExpressionAST* get_symbol_value_expression();
 		
 		void set_value(ExpressionAST* expression);
+		void set_value(std::string var_value);
 		
 		std::string get_value();
 		
@@ -33,14 +34,22 @@ ExpressionAST* Variable::get_symbol_value_expression(){
 	return this->value_expression;
 }
 
+
 void Variable::set_value(ExpressionAST* expression){
 	this->value_expression = expression;
 	this->value = value_expression->evaluate();
 }
 
+
+void Variable::set_value(std::string var_value){
+	this->value = var_value;
+}
+
+
 std::string Variable::get_value(){
 	return this->value;
 }
+
 
 void Variable::check_semantic_in_symbol(){
 	return;

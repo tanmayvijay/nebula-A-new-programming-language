@@ -28,9 +28,9 @@ display "if"
 
 
 "--------for----------------"
-for i from 1 to 30{
-integer x = 100
-display i, ": ", x+i, s
+for i from 1 to 14{
+integer x = 2
+display i, ": ", x**i, s
 
 }
 
@@ -38,3 +38,21 @@ display i, ": ", x+i, s
 "--------dislpay-3----------------"
 display s, i, b, d
 
+
+"--------nested expression with power----------------"
+27/3**3*7
+
+
+"--------nested expression with power 2----------------"
+1 + 27**2 - i*3**4 + 27/3**3*7
+
+"--------nested expression with power ----------------"
+fun add(double a, double b) returns integer c{
+c = a+b
+}
+
+integer a = add(1, add(1,20))
+
+$add(27, 3**add(1,2)/81**0.25**3*3)
+
+5**2*2**2  - add(27, 3**add(1,2)/81**0.25**3*3)	$ = 70

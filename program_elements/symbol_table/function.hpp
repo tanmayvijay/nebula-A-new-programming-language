@@ -32,7 +32,7 @@ class Function : public Symbol{
 		
 		ExpressionAST* get_symbol_value_expression();
 		
-		void execute(std::vector<ExpressionAST*> param_expressions);
+		std::string execute(std::vector<ExpressionAST*> param_expressions);
 		
 		void set_parameters(std::vector<ExpressionAST*> param_expressions);
 		
@@ -65,20 +65,40 @@ ExpressionAST* Function::get_symbol_value_expression(){
 }
 
 
-void Function::execute(std::vector<ExpressionAST*> param_expressions){
-	this->set_parameters(param_expressions);
-	this->function_block->run();
-	
-}
-
-
-void Function::set_parameters(std::vector<ExpressionAST*> param_expressions){
-	for(int i=0; i<this->parameters.size(); i++){
-		Variable* param = this->parameters.at(i);
-		ExpressionAST* param_expr = param_expressions.at(i);
-		param->set_value(param_expr);
+std::string Function::execute(std::vector<ExpressionAST*> param_expressions){
+//	this->set_parameters(param_expressions);
+//	this->function_block->run();
+	std::vector<std::string> old_values;
+	std::vector<std::string> new_values;
+	for (int i=0; i<this->parameters.size(); i++){
+		old_values.push_back(this->parameters.at(i)->get_value());
+		
+		std::string param_value = param_expressions.at(i)->evaluate();
+		new_values.push_back(param_value);
 	}
+	
+	for(int i=0; i<this->parameters.size(); i++){
+		this->parameters.at(i)->set_value( new_values.at(i) );
+	}
+	
+	this->function_block->run();
+	std::string return_value = this->return_variable->get_value();
+	
+	for(int i=0; i<this->parameters.size(); i++){
+		this->parameters.at(i)->set_value( old_values.at(i) );
+	}
+	
+	return return_value;
 }
+
+
+//void Function::set_parameters(std::vector<ExpressionAST*> param_expressions){
+//	for(int i=0; i<this->parameters.size(); i++){
+//		Variable* param = this->parameters.at(i);
+//		ExpressionAST* param_expr = param_expressions.at(i);
+//		param->set_value(param_expr);
+//	}
+//}
 
 
 void Function::check_semantic_in_symbol(){

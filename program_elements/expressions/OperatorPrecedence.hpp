@@ -9,6 +9,7 @@ enum OperatorPrecedence{
 	_GT_GTE_LT_LTE_,
 	_PLUS_MINUS_,
 	_MULTIPLY_DIVIDE_MODULUS_,
+	_POWER_,
 	_UNARY_MINUS_NOT_,
 	_SQUARE_BRACKET_,
 	_BRACKET_,
