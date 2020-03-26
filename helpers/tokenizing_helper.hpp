@@ -6,8 +6,8 @@
 #include<queue>
 #include<fstream>
 
-#include "tokenizer/Tokenizer.hpp"
-#include "utils/utils.hpp"
+#include "../tokenizer/tokenizer.hpp"
+#include "../utils/utils.hpp"
 
 std::queue<std::vector<Token> > tokenizing_helper(std::ifstream& input_file){
 	std::queue<std::vector<Token> > program_tokens;

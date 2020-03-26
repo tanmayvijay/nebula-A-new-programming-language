@@ -13,6 +13,7 @@ class Variable : public Symbol{
 		//constructor
 		Variable(ValueType data_type, std::string id_name, ExpressionAST* value_expression) : Symbol(_VARIABLE_, data_type, id_name){
 			this->value_expression = value_expression;
+			this->value = value_expression->evaluate();
 		}
 
 		

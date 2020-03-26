@@ -390,7 +390,7 @@ std::string OperatorNode::evaluate(){
 				if (ans) return "True";
 				return "False";
 			}
-			
+//			std::cout << l_value << "\nlte-here\n";
 			int l_value_temp = std::stoi(l_value);
 			int r_value_temp = std::stoi(r_value);
 			bool ans = l_value_temp <= r_value_temp;

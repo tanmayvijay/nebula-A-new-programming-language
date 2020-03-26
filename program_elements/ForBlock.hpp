@@ -24,8 +24,9 @@ class ForBlock : public Block{
 			
 			this->loop_variable = new Variable(_INTEGER_, loop_variable_name, lower_limit_expression);
 			this->add_symbol(loop_variable);
+//			std::cout << loop_variable->get_value();
 			OperandNodeWithVariable* loop_var_node = new OperandNodeWithVariable(loop_variable);
-			
+//			std::cout << loop_var_node->evaluate();
 			OperatorNode* plus_op = new OperatorNode("+", _BINARY_OP_);
 			plus_op->set_left_node(loop_var_node);
 			plus_op->set_right_node(step_size_expression);
@@ -50,7 +51,6 @@ class ForBlock : public Block{
 				gte_op->set_right_node(upper_limit_expression);
 				this->condition_expr = gte_op;
 			}
-			
 			
 		}
 		

@@ -3,33 +3,38 @@ integer i = 10
 bool b
 double d
 
+"--------dislpay-1----------------"
+display s, i, b, d
+
 b = True
 
 i=7
 
+"--------dislpay-2----------------"
+display s, i, b, d
 
-display i
-
+"--------while----------------"
 while i<10{
 display i
 i = i+1
 }
 
 
-if i<20{
+
+"--------if----------------"
+if i<=20{
 display "if"
 }
 
 
-
+"--------for----------------"
 for i from 1 to 30{
-display i
-if i < 20 and i%5 == 0{
-i = i+3
-
+integer x = 100
+display i, ": ", x+i, s
 
 }
-}
 
-display i
+
+"--------dislpay-3----------------"
+display s, i, b, d
 
