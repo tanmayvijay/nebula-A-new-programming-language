@@ -1,1 +1,48 @@
+$ Comment
 
+$ Declarations
+integer i = 10
+double d
+bool b
+string s = "some thing"
+
+$ Display
+display s, i, b, d
+20 + i - d
+
+$ Assignment
+b = True	b = True
+i = 7
+
+$ Expressions
+27 / 3 ** 3 * 7
+1 + 27 ** 2 - i * 3 ** 4 + 27 / 3 ** 3 * 7
+
+$ If
+if i <= 20 {
+  display "inside if"
+  i = i + 1
+}
+
+$ While Loop
+while i < 10 {
+  display i
+  i = i + 1
+}
+
+$ For Loop
+for i from 1 to 14 {
+  integer x = 2
+  display i, ": ", x ** i, s
+}
+
+$ Function
+ fun add(double a, double b) returns integer c {
+  c = a+b
+}
+
+integer a = add( 1, add( 1, 20) )
+
+add( 27, 3 ** add( 1, 2 ) / 81 ** 0.25 ** 3 * 3 )
+
+5 ** 2 * 2 ** 2 - add( 27, 3 ** add( 1, 2 ) / 81 ** 0.25 ** 3 * 3 )	$ ans = 70
