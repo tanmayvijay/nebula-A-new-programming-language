@@ -1,58 +1,48 @@
-string s = "some thing"
+$ Comment
+
+$ Declarations
 integer i = 10
-bool b
 double d
+bool b
+string s = "some thing"
 
-"--------dislpay-1----------------"
+$ Display
 display s, i, b, d
+20 + i - d
 
+$ Assignment
 b = True
+i = 7
 
-i=7
+$ Expressions
+27 / 3 ** 3 * 7
+1 + 27 ** 2 - i * 3 ** 4 + 27 / 3 ** 3 * 7
 
-"--------dislpay-2----------------"
-display s, i, b, d
-
-"--------while----------------"
-while i<10{
-display i
-i = i+1
+$ If
+if i <= 20 {
+  display "inside if"
+  i = i + 1
 }
 
-
-
-"--------if----------------"
-if i<=20{
-display "if"
+$ While Loop
+while i < 10 {
+  display i
+  i = i + 1
 }
 
-
-"--------for----------------"
-for i from 1 to 14{
-integer x = 2
-display i, ": ", x**i, s
-
+$ For Loop
+for i from 1 to 14 {
+  integer x = 2
+  display i, ": ", x ** i, s
 }
 
-
-"--------dislpay-3----------------"
-display s, i, b, d
-
-
-"--------nested expression with power----------------"
-27/3**3*7
-
-
-"--------nested expression with power 2----------------"
-1 + 27**2 - i*3**4 + 27/3**3*7
-
-"--------nested expression with power ----------------"
-fun add(double a, double b) returns integer c{
-c = a+b
+$ Function
+fun add(double a, double b) returns integer c {
+  c = a+b
 }
 
-integer a = add(1, add(1,20))
+integer a = add( 1, add( 1, 20) )
 
-$add(27, 3**add(1,2)/81**0.25**3*3)
+add( 27, 3 ** add( 1, 2 ) / 81 ** 0.25 ** 3 * 3 )
 
-5**2*2**2  - add(27, 3**add(1,2)/81**0.25**3*3)	$ = 70
+5 ** 2 * 2 ** 2 - add( 27, 3 ** add( 1, 2 ) / 81 ** 0.25 ** 3 * 3 )	$ ans = 70
