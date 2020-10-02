@@ -1,124 +1,80 @@
-# // nebula //
+# Nebula Language Grammar
 
+1. Comments start with $.
+2. Newline to terminate statements.
+3. Data Types Supported: integer, decimal, bool, string
+4. Variable Declaration:
+    integer i, j=0
+    decimal d, e=1.5
+    bool b, t=True, f=False
+    string s, s2="some string"
+5. Variable Naming Rules:
+    Start with an alphabet or underscore (_).
+    Can include alphanumeric characters and underscores (_). Naming rule (regex): [a-zA-Z_][a-zA-Z0-9_]*
+6. Variable Assignment:
+    i = 20
+    d = 10.2
+    b = True
+    s = "another string"
+7. Expressions:
+    Unary Expression:
+        not b
+        - i
+    Binary Expression:
+        i + 1 - j * d
+        b or t and f
+    Ternary Expression:
+        conditional_expr && true_case || false_case
+8. Conditional Statements:
+    if conditional_expr {
 
-# Language Rules:
-new lines terminate a statement
-white spaces are ignored
-# snake_case is used in code, other cases will also work ... just ignore this rule
+    }
+    else if conditional_expr {
 
+    }
+    else{
 
-# Comments:
-$ this is a comment in nebula
+    }
+9. Loops:
+    For Loops:
+        for i from 1 to 10 {
 
-# Statement Terminator:
-'\n'
+        }
+    While Loops:
+        while conditional_expr {
 
-# variables declaration and initialization:
-type var_name
-type var_name = value/expr
+        }
+10. Functions:
+    fun func_name (type param, type param) returns return_type return_var_name {
+        compute return_var_name here
+        its automatically returned
+    }
+11. Function Invocation:
+    func_name()
+    func_name(params)
+    return_type var_name = func_name(params)
+12. Operators:
+    Unary_operators:
+        not
+        -
+    Binary_operators:
+        +
+        -
+        *
+        /
+        %
+        **
+        >
+        >=
+        <
+        <=
+        ==
+        !=
+        or
+        and
+13. Operator Precedence: just like C.
+14. Input:
+    scan x $ scans and assigns based on data_type of x
 
-Assignment:
-var_name = value/expr
-
-# types:
-string       integer       decimal      bool
-
-# Expressions:
-unary_op expression
-expression binary_op expression
-// conditional_expr && true_case || false_case    # ternary_operator
-
-
-# identifiers:
-naming rule: [a-zA-Z_][a-zA-Z0-9_]*
-
-# values
-string: "something"     ""      "\n"        "c"
-integer: 1       23      456
-decimal: 123.456     1.        .23
-bool: True          False
-
-
-
-# Conditional:
-if conditional_expr{
-
-}
-else if conditional_expr{
-
-}
-else{
-
-}
-
-
-# Loops:
-for i from 1 to 10{
-
-}
-
-
-while conditional_expr{
-
-}
-
-
-
-# Functions or Methods -- run brings the function into memory -- invoke executes the function statements
-fun func_name (type param, type param) returns return_type return_var_name{
-    ...
-    compute return_var_name here
-    its automatically returned
-    ...
-}
-
-
-
-# Function or Method invocation
-func_name()
-func_name(params)
-return_type var_name = func_name(params?)
-var_name = func_name(params?)
-
-
-# unary_operators:
-not - NOT
-- - minus
-
-# binary_operators:
-+
--
-*
-/
-%
-^
-
-# expressions:
-(expression) op (expression op expression)
-expression: 
-x + y
-x - y
-x * y
-x / y
-x ^ y
-
-
-
-# conditional_expr:
-x < y       x <= y
-x > y       x >= y
-x == y      x != y
-
-Example:
-x == y or (z+1 !=0) and not(x+y >= 10) or not a
-Equivalent Intermediate code:
-[ [ [x == y]  or  [ [ [z + 1]  != 0]  and  [ not  [ [x + y]  >= 10] ] ] ]  or  [ not a] ]
-
-# Operator Precedence: -- keep it like C
-
-
-# input methods:
-scan x # scans and assigns based on data_type of x
-
-# output method
-display x, y, z ... each separated by a space ... automatic:('\n') at end
+15. Output:
+display x, y, z $ ... each separated by a space ... automatic:('\n') at end
